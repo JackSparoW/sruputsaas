@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SRUPUT OS v1.5 — Tersambung Supabase</title>
+<title>SRUPUT OS v1.6 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
@@ -1410,8 +1410,10 @@ const App={
             ? '<div class="mini" style="color:var(--bad);margin-top:4px">⚠ '+this._empLimitViolation()+'. Kurangi item agar diskon bisa dipakai.</div>'
             : '<div class="mini" style="color:var(--good);margin-top:4px">✓ harga pegawai diterapkan (maks 2 menu, masing-masing 1)</div>')):''}</div>`:'';
     const promoLine=promo?`<div class="line" style="color:var(--good)"><span>${promo.label}</span><span class="mono">− ${this.rp(saving)}</span></div>`:'';
+    const bundleWarn=this._bundleErr?`<div class="mini" style="color:var(--bad);margin:4px 0">⚠ Promo belum bisa dicek (koneksi). Pastikan jaringan sebelum menagih.</div>`:''; // v1.6
     cf.innerHTML=`<div class="line total"><span>Total</span><span class="mono">${this.rp(total)}</span></div>
       ${promoLine}
+      ${bundleWarn}
       ${promo?`<div class="line total" style="border-top:1px solid var(--line);padding-top:6px"><span>Bayar</span><span class="mono">${this.rp(grandTotal)}</span></div>`:''}
       ${empPicker}
       ${(this._bundlePreview||this._happySaving())&&usingEmp?'<div class="mini" style="color:var(--muted);margin-bottom:6px">Catatan: diskon pegawai dipilih, jadi promo bundle/happy hour tidak diterapkan (tak menumpuk).</div>':''}
@@ -1487,7 +1489,8 @@ const App={
       const items=Object.entries(agg).map(([menu_id,qty])=>({menu_id,qty}));
       const usingEmp=this.state.empSel && !this.state.empUsedToday;
       this._bundlePreview=await Data.bestBundle(items,usingEmp);
-    }catch(e){ this._bundlePreview=null; }
+      this._bundleErr=false;
+    }catch(e){ this._bundlePreview=null; this._bundleErr=true; } // v1.6: tandai gagal-cek (bukan "tak ada promo")
     this.renderCart();
   },
   _changeHTML(total){
@@ -1537,6 +1540,20 @@ const App={
     const rawTotal=this.state.cart.reduce((a,c)=>a+c.price*c.qty,0);
     // v91: total layar = setelah promo terbaik (bundle ATAU happy hour); tak berlaku saat diskon pegawai
     const usingEmp=this.state.empSel && !this.state.empUsedToday;
+    // v1.6: SEGARKAN promo bundle dari server & TUNGGU sebelum menghitung yang ditagih.
+    // Akar bug "diskon kadang tak muncul di layar tapi terpotong di riwayat": preview bundle
+    // bisa gagal DIAM-DIAM atau belum selesai (async) saat kasir menekan Bayar, sehingga layar
+    // menagih harga penuh padahal server tetap menerapkan paket → pelanggan QRIS bisa overpay.
+    // Cek fresh di sini & TOLAK bayar bila koneksi gagal = angka layar selalu = catatan server.
+    try{
+      const _agg={}; this.state.cart.forEach(c=>{ _agg[c.id]=(_agg[c.id]||0)+c.qty; });
+      const _items=Object.entries(_agg).map(([menu_id,qty])=>({menu_id,qty}));
+      this._bundlePreview=await Data.bestBundle(_items,usingEmp);
+      this._bundleErr=false;
+    }catch(e){
+      this.toast('Koneksi bermasalah — promo belum bisa dipastikan. Cek jaringan lalu coba lagi SEBELUM menagih.','bad');
+      btn.disabled=false; btn.textContent='Bayar · '+this.rp(rawTotal); return;
+    }
     const promo=this._bestPromo(rawTotal,usingEmp);
     const bp=(promo&&promo.kind==='bundle')?promo.bp:null; // dipakai utk catatan struk
     const total=rawTotal-(promo?promo.amount:0);
