@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SRUPUT OS v1.6 — Tersambung Supabase</title>
+<title>SRUPUT OS v2.0 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 <!-- Supabase JS v2 via CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -74,11 +74,12 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;letter-spacing:-.01em;line
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,select{font-family:inherit;font-size:15px}
 .hidden{display:none!important}
-#login{min-height:100%;display:grid;place-items:center;padding:24px;background:radial-gradient(120% 120% at 0% 0%,#F7EEDD,#EFE2CC 60%,#E7D7BB)}
+#login{min-height:100%;display:grid;place-items:center;padding:24px;position:relative;background:radial-gradient(125% 120% at 50% 12%,#641608 0%,#3c0d07 44%,#1d0604 100%)}
+  #login::before{content:"";position:absolute;inset:0;background:radial-gradient(48% 30% at 50% 24%,rgba(255,110,40,.18),transparent 70%);pointer-events:none}
 .login-card{width:100%;max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
 .login-head{padding:34px 30px 24px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#FCF8F0,#F7EFE0)}
 .brand{display:flex;align-items:baseline;gap:10px}
-.brand .mark{font-family:'Fraunces';font-weight:900;font-size:34px;color:var(--accent);letter-spacing:-.03em}
+.brand .mark{font-family:'Quicksand',system-ui,sans-serif;font-weight:700;font-size:38px;color:var(--accent);letter-spacing:-.01em;text-shadow:0 1px 0 rgba(192,74,38,.12)}
 .brand .os{font-family:'JetBrains Mono';font-size:12px;font-weight:600;color:var(--muted);border:1px solid var(--line-strong);padding:3px 7px;border-radius:6px;transform:translateY(-4px)}
 .login-head p{color:var(--muted);margin-top:8px;font-size:13.5px}
 .login-body{padding:24px 30px 30px}
@@ -91,20 +92,37 @@ input,select{font-family:inherit;font-size:15px}
 .btn-primary:hover{background:#a83d1d}.btn-primary:disabled{opacity:.6;cursor:wait}
 .note{font-size:11.5px;color:var(--faint);margin-top:16px;line-height:1.5;border-top:1px dashed var(--line);padding-top:14px}
 .err{background:var(--bad-soft);border:1px solid var(--bad);color:var(--bad);border-radius:10px;padding:11px 13px;font-size:13px;margin-bottom:14px}
+  /* ===== v2.0: Login Neon Sign (scoped ke #login) ===== */
+  #login .login-wrap{position:relative;z-index:1;width:100%;max-width:380px;text-align:center}
+  #login .login-brandblock{margin-bottom:22px}
+  #login .brand{display:flex;align-items:baseline;justify-content:center;gap:10px}
+  #login .brand .mark{font-size:60px;color:#fff2e0;text-shadow:0 0 4px rgba(255,205,155,.9),0 0 11px rgba(255,150,80,.8),0 0 24px rgba(255,110,45,.6),0 0 44px rgba(255,85,30,.4),0 0 74px rgba(219,90,25,.3)}
+  #login .brand .os{color:#ffc299;border:1px solid rgba(255,150,90,.45);transform:translateY(-6px);background:transparent}
+  #login .login-tag{color:#e9bfa0;font-size:14px;margin-top:10px}
+  #login .login-card{max-width:none;background:rgba(28,12,8,.5);border:1px solid rgba(255,150,90,.18);border-radius:18px;box-shadow:0 18px 50px rgba(0,0,0,.45);overflow:visible;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:24px 22px;text-align:left}
+  #login .field label{color:#e0b59f}
+  #login .field input{background:rgba(255,255,255,.055);border:1px solid rgba(255,165,115,.22);color:#ffe9d4}
+  #login .field input::placeholder{color:rgba(255,220,190,.4)}
+  #login .field input:focus{border-color:#ff7a30;box-shadow:0 0 0 3px rgba(255,122,48,.18)}
+  #login .btn-primary{width:100%;background:linear-gradient(180deg,#ff8a3d,#e9591d)!important;color:#2a0a04!important;box-shadow:0 8px 24px rgba(233,89,29,.4)!important}
+  #login .btn-primary:hover{filter:brightness(1.05)}
+  #login .note{color:#b89a86;border-top:1px dashed rgba(255,170,120,.18)}
+  #login .note b{color:#e0c3ae}
+  #login .err{background:rgba(255,111,97,.14);border:1px solid rgba(255,111,97,.5);color:#ffb4a0}
 #app{min-height:100%;display:grid;grid-template-columns:240px 1fr}
 @media(max-width:820px){#app{grid-template-columns:1fr}}
-.side{background:#241712;color:#F2E2C9;padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.side{background:#5a0c02;color:#eccabb;padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow-y:auto}
 @media(max-width:820px){.side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:12px}}
 .side .brand2{padding:4px 8px 18px;display:flex;align-items:baseline;gap:8px}
-.side .brand2 .mark{font-family:'Fraunces';font-weight:900;font-size:24px;color:#F0A36F}
-.side .brand2 .os{font-family:'JetBrains Mono';font-size:10px;color:#B79877;border:1px solid #4a382c;padding:2px 5px;border-radius:5px}
-.navlink{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#D8C4A6;font-weight:600;font-size:14px;transition:.13s;text-align:left;width:100%}
+.side .brand2 .mark{font-family:'Quicksand',system-ui,sans-serif;font-weight:700;font-size:27px;color:#FFF1E0;letter-spacing:-.01em;text-shadow:0 0 5px rgba(255,205,150,.6),0 0 14px rgba(255,125,50,.45),0 0 28px rgba(219,109,56,.32)}
+.side .brand2 .os{font-family:'JetBrains Mono';font-size:10px;color:#ecb4a0;border:1px solid rgba(255,170,130,.38);padding:2px 5px;border-radius:5px}
+.navlink{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#eccabb;font-weight:600;font-size:14px;transition:.13s;text-align:left;width:100%}
 .navlink .ic{width:18px;text-align:center;font-size:15px;opacity:.85}
-.navlink:hover{background:#33251c;color:#fff}.navlink.active{background:var(--accent);color:#fff}
+.navlink:hover{background:#6e1206;color:#fff}.navlink.active{background:linear-gradient(180deg,#ff8a47,#e9591d);color:#2a0a04}
 .navlink.soon{opacity:.5}.navlink.soon:hover{background:transparent;cursor:default}
 .side .spacer{flex:1}@media(max-width:820px){.side .spacer{display:none}.navlink{width:auto}}
-.side .who{border-top:1px solid #3a2a20;padding-top:14px;font-size:12px;color:#B79877}
-.side .who b{color:#F2E2C9;display:block;font-size:13.5px}
+.side .who{border-top:1px solid rgba(255,170,130,.2);padding-top:14px;font-size:12px;color:#e3b6a4}
+.side .who b{color:#fff4ec;display:block;font-size:13.5px}
 .main{min-width:0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
 @media(max-width:820px){.main{height:auto;overflow:visible}}
 .topbar{display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--line);background:var(--surface);position:sticky;top:0;z-index:5}
@@ -146,6 +164,55 @@ td{padding:11px 12px;border-bottom:1px solid var(--line)}tr:last-child td{border
 .pay-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 .pay-opt{padding:11px;border:1px solid var(--line-strong);border-radius:10px;text-align:center;font-weight:700;font-size:13px;background:var(--surface-2)}
 .pay-opt.sel{border-color:var(--accent);background:var(--accent-soft)}.pay-opt.sel.qris{border-color:var(--gold);background:#F6EAD0}
+/* ===== v1.8: checkout gaya Convio (warna SRUPUT) ===== */
+.cart-head{padding:16px 16px 12px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:8px}
+.cart .cart-head h3{font-size:17px;padding:0;border:none}
+.cart-sub{font-size:12px;color:var(--muted)}
+.cart-empty2{padding:48px 16px;text-align:center;color:var(--faint)}
+.ce-ic{font-size:36px;opacity:.45;margin-bottom:8px}
+.ce-t{font-weight:700;font-size:15px;color:var(--muted);margin-bottom:2px}
+.ce-s{font-size:12.5px}
+.ci2{padding:10px 8px;border-bottom:1px solid var(--line)}
+.ci2:hover{background:var(--surface-2)}
+.ci2-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ci2-info{min-width:0;flex:1}
+.ci2-nm{font-weight:700;font-size:14px;line-height:1.25}
+.ci2-up{font-size:12px;color:var(--muted);font-family:'JetBrains Mono'}
+.ci2-ctrl{display:flex;align-items:center;gap:10px}
+.stepper{display:flex;align-items:center;gap:2px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:9px;padding:2px}
+.stepper .sbtn{width:28px;height:28px;border-radius:7px;font-weight:700;font-size:17px;display:grid;place-items:center;color:var(--accent);background:transparent}
+.stepper .sbtn:hover{background:var(--accent-soft)}
+.stepper .sqn{min-width:22px;text-align:center;font-weight:700;font-family:'JetBrains Mono';font-size:14px}
+.ci2-lp{min-width:72px;text-align:right;font-family:'JetBrains Mono';font-size:13px;font-weight:600}
+.ci2-note{width:100%;margin-top:8px;padding:6px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surface-2);font-size:12px}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.pay-card{padding:12px 8px;border:1.5px solid var(--line-strong);border-radius:12px;background:var(--surface-2);display:flex;flex-direction:column;align-items:center;gap:5px;transition:.13s}
+.pay-card .pay-ic{font-size:20px;line-height:1}
+.pay-card .pay-lb{font-weight:700;font-size:13px}
+.pay-card.sel{border-color:var(--accent);background:var(--accent-soft)}
+.pay-card.qris.sel{border-color:var(--gold);background:#F6EAD0}
+.sum-total{display:flex;align-items:baseline;justify-content:space-between;margin:6px 0 12px;padding-top:10px;border-top:1px solid var(--line)}
+.sum-total>span:first-child{font-size:14px;color:var(--muted);font-weight:600}
+.sum-amt{font-family:'Fraunces';font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.payBtn-big{font-size:16px;padding:15px}
+/* modal sukses */
+.sx-overlay{position:fixed;inset:0;background:rgba(20,12,8,.55);display:grid;place-items:center;z-index:60;padding:16px;animation:sxin .15s ease}
+@keyframes sxin{from{opacity:0}to{opacity:1}}
+.sx-card{background:var(--surface);border-radius:18px;max-width:380px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;max-height:92vh;overflow:auto}
+.sx-check{width:64px;height:64px;border-radius:50%;background:var(--good);color:#fff;display:grid;place-items:center;font-size:34px;margin:0 auto 12px;font-weight:800}
+.sx-title{font-family:'Fraunces';font-size:22px;font-weight:700;margin-bottom:2px}
+.sx-inv{font-family:'JetBrains Mono';font-size:13px;color:var(--muted);margin-bottom:10px}
+.sx-queue{font-size:14px;margin-bottom:10px}.sx-queue b{color:var(--accent);font-size:22px}
+.sx-items{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 2px;margin:10px 0;text-align:left}
+.sx-irow{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin:3px 0}
+.sx-total{display:flex;justify-content:space-between;font-weight:800;font-size:18px;font-family:'Fraunces';margin:10px 0}
+.sx-change{font-size:13px;color:var(--good);font-weight:700;margin-bottom:8px}
+.sx-btns{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.sx-new{margin-top:12px;width:100%;padding:12px;border-radius:10px;background:transparent;border:1px solid var(--line-strong);font-weight:700;color:var(--muted)}
+.sx-new:hover{background:var(--surface-2)}
+.sx-sub{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted);padding-left:14px}
+.sx-note{font-size:12px;color:var(--muted);padding-left:14px;font-style:italic}
+.ci2-adds{font-size:11.5px;color:var(--accent);font-weight:600;margin:2px 0 1px;line-height:1.35}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120%);background:var(--ink);color:#fff;padding:13px 20px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:0 10px 30px rgba(0,0,0,.25);transition:transform .25s;z-index:50;max-width:90vw}
 #toast.show{transform:translateX(-50%) translateY(0)}#toast.bad{background:var(--bad)}#toast.good{background:var(--good)}
 .banner{background:#F6EAD0;border:1px solid var(--gold);color:#7a5a16;border-radius:12px;padding:13px 15px;font-size:13px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start}
@@ -159,12 +226,12 @@ td{padding:11px 12px;border-bottom:1px solid var(--line)}tr:last-child td{border
 <body>
 
 <div id="login">
-  <div class="login-card">
-    <div class="login-head">
-      <div class="brand"><span class="mark">SRUPUT</span><span class="os">OS · v0.4</span></div>
-      <p><b>Tersambung Supabase.</b> Masuk dengan email & password yang terdaftar di Authentication.</p>
+  <div class="login-wrap">
+    <div class="login-brandblock">
+      <div class="brand"><span class="mark">sruput</span><span class="os">OS</span></div>
+      <p class="login-tag">Kasir &amp; manajemen kedai. Masuk untuk mulai.</p>
     </div>
-    <div class="login-body">
+    <div class="login-card">
       <div id="loginErr" class="err hidden"></div>
       <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username" placeholder="pic@sruput.test"></div>
       <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="••••••••"></div>
@@ -176,11 +243,11 @@ td{padding:11px 12px;border-bottom:1px solid var(--line)}tr:last-child td{border
 
 <div id="app" class="hidden">
   <nav class="side">
-    <div class="brand2"><span class="mark">SRUPUT</span><span class="os">OS</span></div>
+    <div class="brand2"><span class="mark">sruput</span><span class="os">OS</span></div>
     <div id="nav"></div>
     <div class="spacer"></div>
     <div class="who">Masuk sebagai<b id="whoRole">—</b><span id="whoBranch">—</span>
-      <button class="navlink" style="margin-top:10px;background:#33251c" onclick="App.logout()"><span class="ic">⟲</span> Keluar</button>
+      <button class="navlink" style="margin-top:10px;background:#781308" onclick="App.logout()"><span class="ic">⟲</span> Keluar</button>
     </div>
   </nav>
   <div class="main">
@@ -702,6 +769,52 @@ const BTPrint={
     push([27,97,0]);
     push([10,10,10,10]);                 // umpan kertas (58mm umumnya tanpa pemotong)
     return new Uint8Array(out);
+  },
+  /* ====== STRUK BARISTA (v97) — untuk dapur/peracik: TANPA harga, item & catatan ditonjolkan ====== */
+  escposKitchen(d,width,rc){
+    width=width||32;
+    rc=Object.assign({sep:'dash'},rc||{});
+    const enc=new TextEncoder(), out=[];
+    const push=a=>{ for(const b of a) out.push(b); };
+    const txt=t=>{ const e=enc.encode(this.ascii(t)); for(const b of e) out.push(b); };
+    const line=t=>{ txt(t); out.push(10); };
+    const blank=()=>{ out.push(10); };
+    const sepChar=rc.sep==='double'?'=':(rc.sep==='dot'?'.':'-');
+    const hr=()=>line(sepChar.repeat(width));
+    const wrap=(t,cols)=>{ cols=cols||width; t=this.ascii(t); const w=[]; while(t.length>cols){w.push(t.slice(0,cols));t=t.slice(cols);} w.push(t); return w; };
+    push([27,64]);                                   // init
+    /* HEADER (center, besar) */
+    push([27,97,1]); push([27,69,1]);
+    push(this._sizeBoth(2)); line('STRUK BARISTA'); push(this._sizeBoth(1));
+    push([27,69,0]); line(d.branchName||'');
+    /* NOMOR ANTRIAN besar — paling penting untuk barista */
+    if(d.queue!=null){
+      blank(); line('Antrian');
+      push([27,69,1]); push(this._sizeBoth(3)); line('#'+d.queue); push(this._sizeBoth(1)); push([27,69,0]);
+    }
+    push([27,97,0]);                                 // kiri
+    hr();
+    line(d.invoice||'-');
+    const when=d.when?new Date(d.when):new Date();
+    line(when.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'})
+        +(d.cashier?('  Kasir: '+d.cashier):''));
+    hr(); blank();
+    /* ISI — qty+nama (tinggi 2x, tebal), modifier +/-, catatan ditebalkan. TANPA harga. */
+    (d.items||[]).forEach(it=>{
+      const det=it.addsDetail||[]; const qn=Number(it.qty)||1;
+      const bname=(it.baseName||(it.name||'').replace(/\s*\([^)]*\)\s*$/,''));
+      push([27,69,1]); push(this._sizeTall(2));
+      wrap(qn+'x '+bname,width).forEach(w=>line(w));
+      push(this._sizeTall(1)); push([27,69,0]);
+      det.forEach(a=>{ const sign=a.kind==='add'?'+ ':'- '; wrap('   '+sign+(a.name||''),width).forEach(w=>line(w)); });
+      if(it.note){ push([27,69,1]); wrap('   >> '+it.note,width).forEach(w=>line(w)); push([27,69,0]); }
+      blank();
+    });
+    hr();
+    if(d.discounts&&d.discounts.length){ d.discounts.forEach(x=>line('Diskon: '+x.label)); hr(); }
+    push([27,97,1]); line('* untuk barista *'); push([27,97,0]);
+    push([10,10,10,10]);
+    return new Uint8Array(out);
   }
 };
 
@@ -1143,7 +1256,7 @@ const App={
         <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><span id="connBadge" style="display:inline-block;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700">● Online</span></div>
         <div class="banner info" style="background:var(--good-soft);border-color:var(--good);color:#1f4d33"><span class="i">◔</span><div>Shift <b>terbuka</b> di ${bname}. Transaksi terikat ke shift ini. Tutup shift di menu <b>Shift Kasir</b> saat selesai.</div></div>
         <div class="pos"><div class="menu-grid" id="menuGrid"></div>
-        <div class="cart"><h3>Keranjang · ${bname}</h3><div class="cart-items" id="cartItems"></div><div class="cart-foot" id="cartFoot"></div></div></div>`;
+        <div class="cart"><div class="cart-head"><h3 id="cartHead">Pesanan</h3><span class="cart-sub">${bname}</span></div><div class="cart-items" id="cartItems"></div><div class="cart-foot" id="cartFoot"></div></div></div>`;
       this.renderMenu();this.renderCart();
       this._initOfflineSync(); // pasang listener koneksi & badge
       this._updateConnBadge();
@@ -1389,9 +1502,19 @@ const App={
   },
   renderCart(){
     const ci=document.getElementById('cartItems'),cf=document.getElementById('cartFoot');
-    if(!this.state.cart.length){ci.innerHTML='<div class="cart-empty">Belum ada item.<br>Tap menu untuk menambah.</div>';cf.innerHTML='';return;}
-    ci.innerHTML=this.state.cart.map((c,idx)=>`<div class="ci"><button class="qbtn" onclick="App.chg('${c.key}',-1)">−</button><span class="qn">${c.qty}</span><button class="qbtn" onclick="App.chg('${c.key}',1)">+</button><span class="nm">${c.name}</span><span class="lp">${this.rp(c.price*c.qty)}</span></div>
-      <div style="padding:0 4px 8px 40px"><input value="${(c.note||'').replace(/"/g,'&quot;')}" onchange="App.setCartNote('${c.key}',this.value)" placeholder="catatan (mis. extra panas)" style="width:100%;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface-2);font-size:12px"></div>`).join('');
+    const _hd=document.getElementById('cartHead');
+    if(!this.state.cart.length){ci.innerHTML='<div class="cart-empty2"><div class="ce-ic">\ud83e\uddfe</div><div class="ce-t">Keranjang kosong</div><div class="ce-s">Ketuk produk untuk menambahkan.</div></div>';cf.innerHTML='';if(_hd)_hd.textContent='Pesanan';return;}
+    if(_hd){const _n=this.state.cart.reduce((a,c)=>a+c.qty,0);_hd.textContent='Pesanan \u00b7 '+_n+' item';}
+    ci.innerHTML=this.state.cart.map((c,idx)=>`<div class="ci2">
+      <div class="ci2-top">
+        <div class="ci2-info"><div class="ci2-nm">${c.baseName||c.name}</div>${(c.addsDetail&&c.addsDetail.length)?`<div class="ci2-adds">${c.addsDetail.map(a=>`${a.kind==='add'?'+':'−'} ${a.name}`).join(' · ')}</div>`:''}<div class="ci2-up">${this.rp(c.price)}</div></div>
+        <div class="ci2-ctrl">
+          <div class="stepper"><button class="sbtn" onclick="App.chg('${c.key}',-1)">\u2212</button><span class="sqn">${c.qty}</span><button class="sbtn" onclick="App.chg('${c.key}',1)">+</button></div>
+          <div class="ci2-lp">${this.rp(c.price*c.qty)}</div>
+        </div>
+      </div>
+      <input class="ci2-note" value="${(c.note||'').replace(/"/g,'&quot;')}" onchange="App.setCartNote('${c.key}',this.value)" placeholder="catatan (mis. extra panas)">
+    </div>`).join('');
     const total=this.state.cart.reduce((a,c)=>a+c.price*c.qty,0);
     // v91: promo terbaik = bundle ATAU happy hour (tak menumpuk, tak saat diskon pegawai)
     const usingEmp=this.state.empSel && !this.state.empUsedToday;
@@ -1411,20 +1534,23 @@ const App={
             : '<div class="mini" style="color:var(--good);margin-top:4px">✓ harga pegawai diterapkan (maks 2 menu, masing-masing 1)</div>')):''}</div>`:'';
     const promoLine=promo?`<div class="line" style="color:var(--good)"><span>${promo.label}</span><span class="mono">− ${this.rp(saving)}</span></div>`:'';
     const bundleWarn=this._bundleErr?`<div class="mini" style="color:var(--bad);margin:4px 0">⚠ Promo belum bisa dicek (koneksi). Pastikan jaringan sebelum menagih.</div>`:''; // v1.6
-    cf.innerHTML=`<div class="line total"><span>Total</span><span class="mono">${this.rp(total)}</span></div>
-      ${promoLine}
+    cf.innerHTML=`
+      ${promo?`<div class="line"><span>Subtotal</span><span class="mono">${this.rp(total)}</span></div>${promoLine}`:''}
       ${bundleWarn}
-      ${promo?`<div class="line total" style="border-top:1px solid var(--line);padding-top:6px"><span>Bayar</span><span class="mono">${this.rp(grandTotal)}</span></div>`:''}
       ${empPicker}
       ${(this._bundlePreview||this._happySaving())&&usingEmp?'<div class="mini" style="color:var(--muted);margin-bottom:6px">Catatan: diskon pegawai dipilih, jadi promo bundle/happy hour tidak diterapkan (tak menumpuk).</div>':''}
-      <div class="pay-row"><button class="pay-opt ${this.state.pay==='cash'?'sel':''}" onclick="App.setPay('cash')">💵 Cash</button><button class="pay-opt qris ${this.state.pay==='qris'?'sel':''}" onclick="App.setPay('qris')">▦ QRIS</button></div>
-      ${this.state.pay==='qris'?'<div class="mini" style="margin-bottom:8px">⚠ QRIS belum integrasi merchant — tercatat sbg metode saja.</div>':''}
-      ${this.state.pay==='cash'?`<div style="margin-bottom:8px">
+      <div class="pay-grid">
+        <button class="pay-card ${this.state.pay==='cash'?'sel':''}" onclick="App.setPay('cash')"><div class="pay-ic">\ud83d\udcb5</div><div class="pay-lb">Tunai</div></button>
+        <button class="pay-card qris ${this.state.pay==='qris'?'sel':''}" onclick="App.setPay('qris')"><div class="pay-ic">\u25a6</div><div class="pay-lb">QRIS</div></button>
+      </div>
+      ${this.state.pay==='qris'?'<div class="mini" style="margin-bottom:8px">\u26a0 QRIS belum integrasi merchant — tercatat sbg metode saja.</div>':''}
+      ${this.state.pay==='cash'?`<div style="margin-bottom:10px">
         <label class="mini" style="display:block;margin-bottom:4px">Uang diterima (opsional, untuk hitung kembalian)</label>
-        <input id="cashReceived" type="number" inputmode="numeric" value="${this.state.cashReceived}" oninput="App.setCashReceived(this.value)" placeholder="mis. 50000" style="width:100%;padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">
+        <input id="cashReceived" type="number" inputmode="numeric" value="${this.state.cashReceived}" oninput="App.setCashReceived(this.value)" placeholder="mis. 50000" style="width:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2)">
         <div id="changeBox" class="mini" style="margin-top:6px">${this._changeHTML(grandTotal)}</div>
       </div>`:''}
-      <button class="btn btn-primary" id="payBtn" onclick="App.checkout()">Bayar · ${this.rp(grandTotal)}</button>`;
+      <div class="sum-total"><span>Total</span><span class="sum-amt">${this.rp(grandTotal)}</span></div>
+      <button class="btn btn-primary payBtn-big" id="payBtn" onclick="App.checkout()">Bayar \u00b7 ${this.rp(grandTotal)}</button>`;
   },
   /* v91: hitung PERKIRAAN potongan Happy Hour "Beli N" di sisi klien, agar kasir
      melihat potongan di layar bayar SEBELUM menekan bayar (kembalian jadi benar).
@@ -1605,7 +1731,7 @@ const App={
       this._posStockServer=await Data.stock(this.state.posBranch); // refresh stok dari server
       this.state.stock=this._stockMinusQueue(this._posStockServer);
       this.renderMenu();this.renderCart();
-      if(q!=null) this._showQueue(q,changeMsg);
+      this._showSuccess(changeMsg);
       // auto-print kalau diaktifkan di Setting
       if(this._printAutoOn()) this.printReceipt(this._lastReceipt,{auto:true}); // v86: per-perangkat
     }catch(e){
@@ -1805,6 +1931,82 @@ const App={
       ${qrImg}
     </div>`;
   },
+  /* v97: versi HTML struk barista (fallback dialog/PDF) — tanpa harga */
+  _kitchenHTML(d){
+    const esc=s=>String(s||'').replace(/</g,'&lt;');
+    const when=d.when?new Date(d.when):new Date();
+    const tgl=when.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const jam=when.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+    let items='';
+    (d.items||[]).forEach(it=>{
+      const det=it.addsDetail||[]; const qn=Number(it.qty)||1;
+      const bname=(it.baseName||(it.name||'').replace(/\s*\([^)]*\)\s*$/,''));
+      items+=`<div class="ki">${qn}x ${esc(bname)}</div>`;
+      det.forEach(a=>{ const sign=a.kind==='add'?'+':'\u2212'; items+=`<div class="ksub">${sign} ${esc(a.name||'')}</div>`; });
+      if(it.note) items+=`<div class="knote">\u00bb ${esc(it.note)}</div>`;
+    });
+    return `<div class="rc">
+      <div class="c big">STRUK BARISTA</div>
+      <div class="c">${esc(d.branchName||'')}</div>
+      ${d.queue!=null?`<div class="c" style="margin-top:4px">Antrian</div><div class="c q">#${d.queue}</div>`:''}
+      <hr>
+      <div>${esc(d.invoice||'-')}</div>
+      <div>${tgl} ${jam}${d.cashier?' \u00b7 Kasir: '+esc(d.cashier):''}</div>
+      <hr>
+      ${items}
+      <hr>
+      ${(d.discounts&&d.discounts.length)?`<div class="kdisc">${d.discounts.map(x=>'Diskon: '+esc(x.label)).join('<br>')}</div><hr>`:''}
+      <div class="c sm">* untuk barista *</div>
+    </div>`;
+  },
+  async printKitchen(){
+    if(!this._lastReceipt){ this.toast('Belum ada transaksi untuk dicetak','bad'); return; }
+    await this.printReceipt(this._lastReceipt,{kitchen:true});
+  },
+  /* v1.8: modal sukses gaya Convio — TAMPILAN saja, dipanggil setelah transaksi tercatat.
+     Pakai _lastReceipt (sudah disimpan sebelum keranjang dikosongkan). */
+  _showSuccess(changeMsg){
+    const d=this._lastReceipt; if(!d) return;
+    const esc=s=>String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const itemsHtml=(d.items||[]).map(it=>{
+      const det=it.addsDetail||[]; const qn=Number(it.qty)||1;
+      if(det.length){
+        const baseUnit=Number(it.price)-Number(it.addPrice||0);
+        const bname=esc(it.baseName||(it.name||'').replace(/\s*\([^)]*\)\s*$/,''));
+        let h=`<div class="sx-irow"><span>${qn}× ${bname}</span><span>${this.rp(baseUnit*qn)}</span></div>`;
+        det.forEach(a=>{ const sign=a.kind==='add'?'+':'−'; const pr=(a.kind==='add'&&Number(a.price)>0)?this.rp(Number(a.price)*qn):''; h+=`<div class="sx-sub"><span>${sign} ${esc(a.name)}</span><span>${pr}</span></div>`; });
+        if(it.note) h+=`<div class="sx-note">» ${esc(it.note)}</div>`;
+        return h;
+      }
+      let h=`<div class="sx-irow"><span>${qn}× ${esc(it.name)}</span><span>${this.rp(Number(it.price)*qn)}</span></div>`;
+      if(it.note) h+=`<div class="sx-note">» ${esc(it.note)}</div>`;
+      return h;
+    }).join('');
+    const _sub=(d.items||[]).reduce((a,c)=>a+Number(c.price)*Number(c.qty),0);
+    let discHtml='';
+    if(d.discounts&&d.discounts.length){
+      discHtml=`<div class="sx-irow" style="color:var(--muted)"><span>Subtotal</span><span>${this.rp(_sub)}</span></div>`;
+      d.discounts.forEach(x=>{ discHtml+=`<div class="sx-irow" style="color:var(--good)"><span>${esc(x.label)}</span><span>−${this.rp(x.amount)}</span></div>`; });
+    }
+    const old=document.getElementById('sxOverlay'); if(old) old.remove();
+    const ov=document.createElement('div'); ov.className='sx-overlay'; ov.id='sxOverlay';
+    ov.innerHTML=`<div class="sx-card">
+      <div class="sx-check">\u2713</div>
+      <div class="sx-title">Transaksi tersimpan</div>
+      <div class="sx-inv">${d.invoice||'-'}</div>
+      ${d.queue!=null?`<div class="sx-queue">Antrian <b>#${d.queue}</b></div>`:''}
+      <div class="sx-items">${itemsHtml}${discHtml}</div>
+      <div class="sx-total"><span>Total</span><span>${this.rp(d.total)}</span></div>
+      ${changeMsg?`<div class="sx-change">${changeMsg.replace(' \u00b7 ','')}</div>`:''}
+      <div class="sx-btns">
+        <button class="btn btn-primary" style="width:100%" onclick="App.printReceipt()">\ud83d\udda8 Cetak Struk</button>
+        <button class="btn" style="width:100%;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.printKitchen()">\ud83e\uddd1\u200d\ud83c\udf73 Struk Barista</button>
+      </div>
+      <button class="sx-new" onclick="App.closeSuccess()">Transaksi Baru</button>
+    </div>`;
+    document.body.appendChild(ov);
+  },
+  closeSuccess(){ const o=document.getElementById('sxOverlay'); if(o)o.remove(); this.renderCart(); },
   /* cetak struk — router 3 metode (v86), pengaturan PER PERANGKAT di Setting > Printer.
      opt.auto=true saat dipanggil otomatis pasca-transaksi: gagal BLE/RawBT TIDAK memaksa
      dialog (biar kasir tidak diganggu popup tiap transaksi) — cukup toast pengarah. */
@@ -1813,10 +2015,11 @@ const App={
     const d=data||this._lastReceipt;
     if(!d){ this.toast('Belum ada transaksi untuk dicetak','bad'); return; }
     const cfg=BTPrint.cfg();
+    const bytes=opt.kitchen?BTPrint.escposKitchen(d,cfg.width||32,this._rcpt()):BTPrint.escpos(d,cfg.width||32,this._rcpt());
     if(cfg.method==='ble'){
       try{
         if(!(await BTPrint.ensureConnected())) await BTPrint.connect(); // connect = butuh ketukan
-        await BTPrint.write(BTPrint.escpos(d,cfg.width||32,this._rcpt()));
+        await BTPrint.write(bytes);
         if(!opt.auto) this.toast('Struk terkirim ke printer','good');
         return;
       }catch(e){
@@ -1825,16 +2028,16 @@ const App={
         this.toast('Cetak Bluetooth gagal: '+((e&&e.message)||'')+' — memakai dialog print','bad');
       }
     }else if(cfg.method==='rawbt'){
-      try{ BTPrint.printRawBT(BTPrint.escpos(d,cfg.width||32,this._rcpt())); return; }
+      try{ BTPrint.printRawBT(bytes); return; }
       catch(e){ this.toast('RawBT gagal: '+((e&&e.message)||''),'bad'); if(opt.auto) return; }
     }
     if(opt.auto && cfg.method!=='dialog') return;
-    this._printDialog(d);
+    this._printDialog(d,opt.kitchen);
   },
   // efektif auto-print: pengaturan PERANGKAT menang; null = ikut setting global owner
   _printAutoOn(){ const a=BTPrint.cfg().auto; if(a===true)return true; if(a===false)return false; return !!this._autoPrintOn; },
   // jalur lama: jendela print 58mm via dialog print Android (fallback)
-  _printDialog(d){
+  _printDialog(d,kitchen){
     if(!d){ this.toast('Belum ada transaksi untuk dicetak','bad'); return; }
     const css=`@page{size:58mm auto;margin:0}
       *{margin:0;padding:0;box-sizing:border-box}
@@ -1846,8 +2049,8 @@ const App={
       .sub{font-size:10px;padding-left:6px}
       hr{border:none;border-top:1px dashed #000;margin:5px 0}
       .tot{font-size:13px;font-weight:700;margin-top:2px}
-      .q{font-size:22px;font-weight:800}`;
-    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Struk</title><style>${css}</style></head><body>${this._receiptHTML(d)}<script>window.onload=function(){setTimeout(function(){window.print();},250);};window.onafterprint=function(){window.close();};<\/script></body></html>`;
+      .q{font-size:22px;font-weight:800}\n      .ki{font-size:16px;font-weight:800;margin-top:4px}.ksub{font-size:12px;padding-left:10px}.knote{font-size:12.5px;font-weight:700;padding-left:10px}.kdisc{font-size:12px;font-weight:700;margin:4px 0}`;
+    const html=`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Struk</title><style>${css}</style></head><body>${kitchen?this._kitchenHTML(d):this._receiptHTML(d)}<script>window.onload=function(){setTimeout(function(){window.print();},250);};window.onafterprint=function(){window.close();};<\/script></body></html>`;
     const w=window.open('','_print','width=300,height=600');
     if(!w){ this.toast('Popup diblokir — izinkan popup untuk mencetak','bad'); return; }
     w.document.open(); w.document.write(html); w.document.close();
@@ -1859,10 +2062,11 @@ const App={
       <div class="mini" style="color:var(--muted)">Nomor Antrian</div>
       <div style="font-size:48px;font-weight:800;color:var(--accent);line-height:1.1">#${q}</div>
       <div class="mini" style="margin-top:4px">Sebutkan nomor ini saat order siap.${changeMsg?'<br><b>'+changeMsg.replace(' · ','')+'</b>':''}</div>
-      <div style="display:flex;gap:8px;margin-top:12px">
-        <button class="btn" style="flex:1;background:var(--surface);border:1px solid var(--accent);color:var(--accent)" onclick="App.printReceipt()">🖨 Cetak Struk</button>
-        <button class="btn btn-primary" style="flex:1" onclick="App.renderCart()">Order Baru</button>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn" style="flex:1;min-width:130px;background:var(--surface);border:1px solid var(--accent);color:var(--accent)" onclick="App.printReceipt()">🖨 Cetak Struk</button>
+        <button class="btn" style="flex:1;min-width:130px;background:var(--surface);border:1px solid var(--line-strong)" onclick="App.printKitchen()">🧑‍🍳 Struk Barista</button>
       </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px" onclick="App.renderCart()">Order Baru</button>
     </div>`;
   },
 
@@ -3072,6 +3276,7 @@ const App={
           <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
             ${pcfg.method==='ble'?`<button class="btn" style="width:auto;margin:0;padding:9px 16px;background:var(--accent);color:#fff" onclick="App.printConnect()">🔗 Hubungkan Printer</button>`:''}
             <button class="btn" style="width:auto;margin:0;padding:9px 16px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.printTest()">🖨 Tes Cetak</button>
+            <button class="btn" style="width:auto;margin:0;padding:9px 16px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.printTestKitchen()">🧑‍🍳 Tes Barista</button>
             <span class="mini" id="btPrnStatus" style="align-self:center;color:var(--muted)">${pcfg.method==='ble'?(pcfg.deviceName?'Printer tersimpan: '+pcfg.deviceName+' (sambung ulang otomatis saat cetak)':'Belum ada printer tersambung'):''}</span>
           </div>
         </div>`;
@@ -3298,6 +3503,15 @@ const App={
       items:[{name:'Butterscotch Latte',qty:1,price:13000},{name:'Thai Tea',qty:2,price:10000,note:'less sugar'}],
       discounts:[],total:33000,received:50000,queue:7,when:new Date()};
     await this.printReceipt(dummy,{});
+  },
+  async printTestKitchen(){
+    const dummy={invoice:'TES-BARISTA',branchName:'Tes Perangkat Ini',cashier:CURRENT.name||'-',queue:7,when:new Date(),
+      items:[
+        {baseName:'Butterscotch Latte',name:'Butterscotch Latte',qty:1,price:13000,addPrice:3000,
+         addsDetail:[{kind:'less',name:'Less Sugar'},{kind:'add',name:'Extra Shot',price:3000}],note:'sajikan panas'},
+        {name:'Thai Tea',qty:2,price:10000,note:'es sedikit'}
+      ]};
+    await this.printReceipt(dummy,{kitchen:true});
   },
   async saveProfile(userId){
     const role=document.getElementById('role_'+userId).value;
