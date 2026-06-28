@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SRUPUT · Laporan Penyusutan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brick:#5a0c02; --brick2:#730B00; --ember:#e9591d; --ember2:#ff8a47;
+  --cream:#FCF8EC; --ink:#2a0a04; --paper:#f4eddf; --card:#ffffff;
+  --loss:#c0392b; --gain:#1e8a4c; --muted:#8a7a6e; --line:#e7ddca;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+.wm{font-family:'Quicksand',sans-serif;font-weight:700;letter-spacing:.5px}
+
+/* ===== LOGIN ===== */
+#loginView{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(120% 90% at 50% 18%, #7a1004 0%, #4f0700 42%, #320500 100%);position:relative;overflow:hidden}
+#loginView::before{content:"";position:absolute;top:-30%;left:50%;transform:translateX(-50%);width:520px;height:520px;
+  background:radial-gradient(circle, rgba(233,89,29,.34), transparent 62%);filter:blur(12px);pointer-events:none}
+.brandblock{text-align:center;margin-bottom:22px;position:relative;z-index:2}
+.brandblock .mark{font-family:'Quicksand',sans-serif;font-weight:700;font-size:58px;color:#ffd9b8;line-height:1;
+  text-shadow:0 0 7px rgba(255,150,90,.95),0 0 22px rgba(233,89,29,.8),0 0 46px rgba(233,89,29,.45)}
+.brandblock .sub{margin-top:10px;color:#f4c9ad;font-size:14px;letter-spacing:3px;text-transform:uppercase;font-weight:600;opacity:.92}
+.login-card{position:relative;z-index:2;width:100%;max-width:360px;background:rgba(28,6,2,.62);border:1px solid rgba(255,150,90,.22);
+  backdrop-filter:blur(8px);border-radius:18px;padding:24px 22px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.login-card label{display:block;font-size:12px;color:#f0c6aa;margin:0 0 6px 2px;font-weight:600}
+.login-card input{width:100%;padding:13px 14px;border-radius:11px;border:1px solid rgba(255,170,120,.25);
+  background:rgba(255,245,235,.06);color:#fff;font-size:15px;margin-bottom:14px;outline:none}
+.login-card input:focus{border-color:var(--ember2);background:rgba(255,245,235,.1)}
+.btn-ember{width:100%;padding:14px;border:none;border-radius:11px;cursor:pointer;font-weight:700;font-size:15px;color:#2a0a04;
+  background:linear-gradient(180deg,var(--ember2),var(--ember));box-shadow:0 6px 18px rgba(233,89,29,.4)}
+.btn-ember:active{transform:translateY(1px)}
+.btn-ember:disabled{opacity:.6;cursor:default}
+.login-err{color:#ffb4a4;font-size:13px;margin-top:6px;min-height:18px;text-align:center}
+
+/* ===== DASHBOARD ===== */
+header.top{background:linear-gradient(120deg,var(--brick),var(--brick2));color:#fff;padding:14px 18px;
+  display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:30;box-shadow:0 2px 14px rgba(60,10,4,.28)}
+header.top .mark{font-size:24px;color:#ffe2cb;text-shadow:0 0 6px rgba(255,150,90,.85),0 0 16px rgba(233,89,29,.55)}
+header.top .ttl{font-size:13px;opacity:.92;letter-spacing:.5px;border-left:1px solid rgba(255,210,180,.3);padding-left:12px}
+header.top .sp{flex:1}
+header.top .who{font-size:12px;opacity:.85;text-align:right;line-height:1.3}
+.logout{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:7px 12px;border-radius:9px;
+  cursor:pointer;font-size:12px;font-weight:600}
+.wrap{max-width:1060px;margin:0 auto;padding:16px 14px 60px}
+
+.controls{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;
+  display:flex;flex-wrap:wrap;gap:12px 18px;align-items:flex-end}
+.cgroup{display:flex;flex-direction:column;gap:6px}
+.cgroup .lab{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:7px 12px;border-radius:20px;border:1px solid var(--line);background:#faf6ee;cursor:pointer;font-size:13px;font-weight:600;color:#6a584c}
+.chip.on{background:var(--brick);color:#fff;border-color:var(--brick)}
+.controls input[type=date],.controls input[type=text]{padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:13px;background:#fff;color:var(--ink)}
+.toggle{display:flex;align-items:center;gap:7px;font-size:13px;color:#6a584c;font-weight:600;cursor:pointer;user-select:none}
+.toggle input{width:16px;height:16px;accent-color:var(--ember)}
+.btn-mini{padding:9px 14px;border:none;border-radius:9px;background:var(--ink);color:#fff;font-weight:600;font-size:13px;cursor:pointer}
+
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin-bottom:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px}
+.card .k{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+.card .v{font-size:23px;font-weight:800;font-family:'Quicksand',sans-serif;line-height:1.1}
+.card .s{font-size:11.5px;color:var(--muted);margin-top:5px}
+.v.loss{color:var(--loss)} .v.gain{color:var(--gain)}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.panel h3{font-family:'Quicksand',sans-serif;font-size:15px;margin-bottom:3px;color:var(--brick2)}
+.panel .desc{font-size:12px;color:var(--muted);margin-bottom:14px}
+
+/* bar chart */
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:10px;overflow-x:auto}
+.bar-c{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:42px;flex:1}
+.bar-v{font-size:10px;color:var(--loss);font-weight:700;white-space:nowrap}
+.bar{width:60%;min-width:18px;max-width:34px;background:linear-gradient(180deg,#e0644b,var(--loss));border-radius:5px 5px 0 0;min-height:2px;transition:height .3s}
+.bar.g{background:linear-gradient(180deg,#3bbf78,var(--gain))}
+.bar-l{font-size:10px;color:var(--muted);text-align:center;line-height:1.2;white-space:nowrap}
+
+/* outlet summary */
+.osum{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.ocard{border:1px solid var(--line);border-radius:11px;padding:12px;background:#faf6ee}
+.ocard .on{font-weight:700;font-size:13px;margin-bottom:6px;color:var(--ink)}
+.ocard .ol{font-size:18px;font-weight:800;font-family:'Quicksand',sans-serif;color:var(--loss)}
+.ocard .om{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700;
+  padding:9px 10px;border-bottom:2px solid var(--line)}
+.tbl th.r,.tbl td.r{text-align:right}
+.tbl td{padding:11px 10px;border-bottom:1px solid #f0e8d8;vertical-align:middle}
+.tbl tr.row{cursor:pointer}
+.tbl tr.row:hover{background:#faf6ee}
+.bahan{font-weight:700;color:var(--ink)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.pill.b{background:#f3e6df;color:var(--brick2)}
+.amt-loss{color:var(--loss);font-weight:700}
+.amt-gain{color:var(--gain);font-weight:700}
+.muted{color:var(--muted)}
+.detail{background:#fbf7ef}
+.detail td{padding:0}
+.detail .inner{padding:10px 14px 14px}
+.dt{width:100%;border-collapse:collapse;font-size:12.5px}
+.dt th{font-size:10px;color:var(--muted);text-transform:uppercase;padding:5px 8px;text-align:left;border-bottom:1px solid var(--line)}
+.dt th.r,.dt td.r{text-align:right}
+.dt td{padding:6px 8px;border-bottom:1px solid #f0e8d8}
+.caret{display:inline-block;width:14px;color:var(--ember);font-weight:700;transition:transform .15s}
+.row.open .caret{transform:rotate(90deg)}
+
+.note{font-size:12px;color:var(--muted);line-height:1.6;background:#fbf7ef;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.note b{color:var(--ink)}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+.spin{display:inline-block;width:18px;height:18px;border:3px solid rgba(0,0,0,.15);border-top-color:var(--ember);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(max-width:560px){.controls{gap:10px}.card .v{font-size:20px}.brandblock .mark{font-size:48px}}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="loginView">
+  <div class="brandblock">
+    <div class="mark wm">sruput</div>
+    <div class="sub">Laporan Penyusutan</div>
+  </div>
+  <div class="login-card">
+    <label>Email</label>
+    <input id="email" type="email" autocomplete="username" placeholder="email owner">
+    <label>Password</label>
+    <input id="password" type="password" autocomplete="current-password" placeholder="••••••••">
+    <button id="loginBtn" class="btn-ember">Masuk</button>
+    <div id="loginErr" class="login-err"></div>
+  </div>
+</div>
+
+<!-- ===================== DASHBOARD ===================== -->
+<div id="dashView" style="display:none">
+  <header class="top">
+    <span class="mark wm">sruput</span>
+    <span class="ttl">Laporan Penyusutan Stok</span>
+    <span class="sp"></span>
+    <span class="who" id="who"></span>
+    <button class="logout" id="logoutBtn">Keluar</button>
+  </header>
+
+  <div class="wrap">
+    <div class="controls">
+      <div class="cgroup">
+        <span class="lab">Outlet</span>
+        <div class="chips" id="outletChips"></div>
+      </div>
+      <div class="cgroup">
+        <span class="lab">Dari</span>
+        <input type="date" id="fromDate">
+      </div>
+      <div class="cgroup">
+        <span class="lab">Sampai</span>
+        <input type="date" id="toDate">
+      </div>
+      <div class="cgroup">
+        <span class="lab">Cari bahan</span>
+        <input type="text" id="search" placeholder="mis. Susu UHT">
+      </div>
+      <div class="cgroup">
+        <span class="lab">&nbsp;</span>
+        <label class="toggle"><input type="checkbox" id="showAdmin"> Tampilkan koreksi administratif</label>
+      </div>
+      <div class="cgroup">
+        <span class="lab">&nbsp;</span>
+        <button class="btn-mini" id="refreshBtn">↻ Muat ulang</button>
+      </div>
+    </div>
+
+    <div id="content">
+      <div class="empty"><span class="spin"></span> Memuat data opname…</div>
+    </div>
+
+    <div class="note" style="margin-top:18px">
+      <b>Cara baca laporan ini.</b> Penyusutan = selisih saat opname antara stok fisik dan angka aplikasi
+      (<i>fisik − aplikasi</i>). Angka <span class="amt-loss">merah</span> = stok hilang (fisik lebih sedikit dari catatan) —
+      ini susut nyata: over-pour, remake, minuman gratis/tester, tumpah. Angka <span class="amt-gain">hijau</span> = fisik lebih
+      banyak — biasanya barang datang yang telat diinput.<br><br>
+      <b>Yang dikecualikan otomatis:</b> periode setup awal (sebelum 2 Juni 2026), koreksi salah input, penghapusan bahan,
+      pengaturan stok minimum, cabang test, dan bahan non-aktif. Itu bukan susut. Centang "koreksi administratif" untuk melihatnya.
+      Nilai rupiah dihitung dari harga modal per satuan bahan saat ini.
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ===== Konfigurasi (sama dgn aplikasi POS; anon key aman, RLS yang menjaga) ===== */
+const SUPABASE_URL="https://lqsleeaidgfuzktetzlc.supabase.co";
+const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxc2xlZWFpZGdmdXprdGV0emxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NzU3MjUsImV4cCI6MjA5NTE1MTcyNX0.2gvQdQRwFgCraDKthOD6GXS-MbeA4SCR928f9RGv8jQ";
+
+/* Periode setup migrasi (kalibrasi data awal) — dikecualikan dari hitungan susut secara default */
+const DATA_START="2026-06-02";
+/* Kata kunci alasan yang BUKAN susut (koreksi administratif) */
+const ADMIN_REASONS=["dihapus","salah input","min setting","minimum","revisi","setup","hapus","koreksi","migrasi","awal","initial","reset"];
+/* Nama tampilan outlet */
+const BR={b2:"Pasput",dpk001:"Pengasinan",b1:"Permai",gw:"Gudang",test:"Test"};
+/* Outlet nyata yang ditampilkan default (test & gudang disembunyikan kecuali dipilih) */
+const REAL_OUTLETS=["b2","dpk001","b1"];
+
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+
+let RAW=[];        // event opname terolah
+let INGS={};       // peta bahan by id
+let STATE={outlets:new Set(REAL_OUTLETS),from:DATA_START,to:todayJkt(),q:"",showAdmin:false};
+
+/* ---------- util ---------- */
+function todayJkt(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});}
+function ymdJkt(iso){return new Date(iso).toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});}
+function num(v){const n=parseFloat(v);return isNaN(n)?0:n;}
+function rp(n){const s=Math.round(Math.abs(n)).toLocaleString('id-ID');return (n<0?'−Rp':'Rp')+s;}
+function qfmt(n,u){return (Math.round(n*100)/100).toLocaleString('id-ID')+(u?(' '+u):'');}
+function el(id){return document.getElementById(id);}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+/* ---------- auth ---------- */
+async function doLogin(){
+  const btn=el('loginBtn'),err=el('loginErr');
+  const email=el('email').value.trim(),password=el('password').value;
+  if(!email||!password){err.textContent='Isi email dan password.';return;}
+  btn.disabled=true;btn.textContent='Memproses…';err.textContent='';
+  const {error}=await sb.auth.signInWithPassword({email,password});
+  btn.disabled=false;btn.textContent='Masuk';
+  if(error){err.textContent='Gagal masuk: '+error.message;return;}
+  await afterLogin();
+}
+async function afterLogin(){
+  const {data:{user}}=await sb.auth.getUser();
+  el('loginView').style.display='none';
+  el('dashView').style.display='block';
+  el('who').textContent=user?user.email:'';
+  buildOutletChips();
+  el('fromDate').value=STATE.from;el('toDate').value=STATE.to;
+  await loadAll();
+}
+async function doLogout(){await sb.auth.signOut();location.reload();}
+
+/* ---------- muat & olah data ---------- */
+async function loadAll(){
+  el('content').innerHTML='<div class="empty"><span class="spin"></span> Memuat data opname…</div>';
+  try{
+    const [{data:ings,error:e1},{data:events,error:e2}]=await Promise.all([
+      sb.from('ingredients').select('id,name,unit,cost,active'),
+      sb.from('audit_log').select('changed_at,row_id,action,actor_name,old_data,new_data')
+        .eq('action','STOCK_SET').eq('table_name','branch_stock')
+        .order('changed_at',{ascending:true}).limit(5000)
+    ]);
+    if(e1)throw e1; if(e2)throw e2;
+    INGS={}; (ings||[]).forEach(i=>INGS[i.id]=i);
+    const byName={}; (ings||[]).forEach(i=>byName[i.name]=i);
+
+    RAW=(events||[]).map(ev=>{
+      const nd=ev.new_data||{},od=ev.old_data||{};
+      const parts=String(ev.row_id||'').split(':');
+      const branch=nd.cabang||parts[0]||'?';
+      const ingId=parts.slice(1).join(':');
+      const ing=INGS[ingId]||byName[nd.bahan];
+      const before=num(od.qty),after=num(nd.qty);
+      const selisih=after-before;
+      const cost=ing?num(ing.cost):0;
+      const reason=(nd.alasan||'').toLowerCase().trim();
+      const ymd=ymdJkt(ev.changed_at);
+      let admin=false;
+      if(branch==='test')admin=true;
+      else if(!ing||ing.active===false)admin=true;
+      else if(ADMIN_REASONS.some(r=>reason.includes(r)))admin=true;
+      else if(ymd<DATA_START)admin=true;            // setup awal
+      else if(Math.abs(selisih)<0.0001)admin=true;  // hanya set min, tak ada perubahan
+      return {ymd,branch,ingId,ingName:(ing?ing.name:(nd.bahan||ingId)),unit:(ing?ing.unit:''),
+        before,after,selisih,cost,rpv:selisih*cost,reason:(nd.alasan||''),actor:ev.actor_name||'',admin};
+    });
+    render();
+  }catch(err){
+    el('content').innerHTML='<div class="empty">Gagal memuat data.<br><span class="muted">'+esc(err.message||err)+
+      '</span><br><br>Pastikan akun yang dipakai adalah <b>owner</b> (audit log hanya bisa dibaca owner).</div>';
+  }
+}
+
+/* ---------- filter + agregasi + render ---------- */
+function currentRows(){
+  return RAW.filter(r=>{
+    if(!STATE.outlets.has(r.branch))return false;
+    if(r.ymd<STATE.from||r.ymd>STATE.to)return false;
+    if(STATE.q&&!r.ingName.toLowerCase().includes(STATE.q))return false;
+    if(!STATE.showAdmin&&r.admin)return false;
+    return true;
+  });
+}
+function render(){
+  const rows=currentRows();
+  if(!rows.length){
+    el('content').innerHTML='<div class="cards"></div><div class="empty">Tidak ada data opname pada filter ini.<br>'+
+      '<span class="muted">Coba lebarkan rentang tanggal atau pilih outlet lain.</span></div>';
+    return;
+  }
+  // summary
+  let loss=0,gain=0; const days=new Set(),outAgg={},key={};
+  rows.forEach(r=>{
+    days.add(r.ymd+'|'+r.branch);
+    if(r.rpv<0)loss+=r.rpv; else gain+=r.rpv;
+    outAgg[r.branch]=(outAgg[r.branch]||0)+r.rpv;
+    const k=r.branch+'||'+r.ingName;
+    (key[k]||(key[k]={branch:r.branch,name:r.ingName,unit:r.unit,qty:0,rpv:0,loss:0,n:0,last:'',ev:[]}));
+    const g=key[k];g.qty+=r.selisih;g.rpv+=r.rpv;if(r.rpv<0)g.loss+=r.rpv;g.n++;if(r.ymd>g.last)g.last=r.ymd;g.ev.push(r);
+  });
+  // worst outlet & ingredient (by loss)
+  let worstOut='-',worstOutV=0;
+  Object.entries(outAgg).forEach(([b,v])=>{if(v<worstOutV){worstOutV=v;worstOut=BR[b]||b;}});
+  const aggList=Object.values(key).sort((a,b)=>a.loss-b.loss); // paling rugi dulu
+  const worstIng=aggList.length&&aggList[0].loss<0?aggList[0]:null;
+
+  const cards=`<div class="cards">
+    <div class="card"><div class="k">Total Susut</div><div class="v loss">${rp(loss)}</div><div class="s">nilai stok hilang</div></div>
+    <div class="card"><div class="k">Selisih Lebih</div><div class="v gain">${rp(gain)}</div><div class="s">fisik > catatan (restock telat?)</div></div>
+    <div class="card"><div class="k">Susut Bersih</div><div class="v ${(loss+gain)<0?'loss':'gain'}">${rp(loss+gain)}</div><div class="s">susut − selisih lebih</div></div>
+    <div class="card"><div class="k">Outlet Terberat</div><div class="v" style="font-size:19px">${esc(worstOut)}</div><div class="s">${worstOut==='-'?'':rp(worstOutV)} susut</div></div>
+    <div class="card"><div class="k">Bahan Terberat</div><div class="v" style="font-size:17px">${worstIng?esc(worstIng.name):'-'}</div><div class="s">${worstIng?rp(worstIng.loss):''}</div></div>
+    <div class="card"><div class="k">Sesi Opname</div><div class="v">${days.size}</div><div class="s">${rows.length} baris penyesuaian</div></div>
+  </div>`;
+
+  // tren per tanggal (susut saja, magnitudo)
+  const byDate={};
+  rows.forEach(r=>{if(r.rpv<0)byDate[r.ymd]=(byDate[r.ymd]||0)+(-r.rpv);});
+  const dates=Object.keys(byDate).sort();
+  let trend='';
+  if(dates.length){
+    const mx=Math.max(...dates.map(d=>byDate[d]));
+    trend=`<div class="panel"><h3>Tren susut per tanggal opname</h3>
+      <div class="desc">Makin pendek batangnya, makin kecil susut. Tujuan: tren menurun.</div>
+      <div class="bars">${dates.map(d=>{const h=Math.max(2,Math.round(byDate[d]/mx*120));
+        return `<div class="bar-c"><div class="bar-v">${rp(-byDate[d]).replace('−','')}</div>
+          <div class="bar" style="height:${h}px"></div>
+          <div class="bar-l">${d.slice(5)}</div></div>`;}).join('')}</div></div>`;
+  }
+
+  // ringkasan per outlet
+  const outletCards=Object.entries(outAgg).sort((a,b)=>a[1]-b[1]).map(([b,v])=>{
+    const sess=new Set(rows.filter(r=>r.branch===b).map(r=>r.ymd)).size;
+    return `<div class="ocard"><div class="on">${esc(BR[b]||b)} <span class="muted" style="font-weight:500">(${b})</span></div>
+      <div class="ol">${rp(Math.min(0,v))}</div><div class="om">${sess} sesi opname · bersih ${rp(v)}</div></div>`;
+  }).join('');
+  const outletPanel=`<div class="panel"><h3>Per outlet</h3><div class="desc">Susut nilai rupiah per cabang pada periode ini.</div><div class="osum">${outletCards}</div></div>`;
+
+  // tabel ranking
+  const trows=aggList.map((g,i)=>{
+    const cls=g.rpv<0?'amt-loss':'amt-gain';
+    const det=g.ev.slice().sort((a,b)=>a.ymd<b.ymd?1:-1).map(e=>`<tr>
+      <td>${e.ymd}</td><td class="r">${qfmt(e.before)}</td><td class="r">${qfmt(e.after)}</td>
+      <td class="r ${e.selisih<0?'amt-loss':'amt-gain'}">${e.selisih>0?'+':''}${qfmt(e.selisih)}</td>
+      <td class="r ${e.rpv<0?'amt-loss':'amt-gain'}">${rp(e.rpv)}</td>
+      <td class="muted">${esc(e.reason||(e.admin?'(administratif)':'—'))}</td></tr>`).join('');
+    return `<tr class="row" data-i="${i}">
+        <td><span class="caret">▸</span> <span class="bahan">${esc(g.name)}</span></td>
+        <td><span class="pill b">${esc(BR[g.branch]||g.branch)}</span></td>
+        <td class="r ${g.qty<0?'amt-loss':'amt-gain'}">${g.qty>0?'+':''}${qfmt(g.qty,g.unit)}</td>
+        <td class="r ${cls}">${rp(g.rpv)}</td>
+        <td class="r muted">${g.n}×</td>
+        <td class="r muted">${g.last.slice(5)}</td>
+      </tr>
+      <tr class="detail" id="d${i}" style="display:none"><td colspan="6"><div class="inner">
+        <table class="dt"><thead><tr><th>Tgl opname</th><th class="r">App</th><th class="r">Fisik</th>
+        <th class="r">Selisih</th><th class="r">Rp</th><th>Alasan</th></tr></thead><tbody>${det}</tbody></table>
+      </div></td></tr>`;
+  }).join('');
+
+  const table=`<div class="panel"><h3>Peringkat penyusutan per bahan</h3>
+    <div class="desc">Urut dari kerugian terbesar. Ketuk baris untuk lihat tiap opname.</div>
+    <table class="tbl"><thead><tr><th>Bahan</th><th>Outlet</th><th class="r">Selisih total</th>
+    <th class="r">Nilai (Rp)</th><th class="r">Opname</th><th class="r">Terakhir</th></tr></thead>
+    <tbody>${trows}</tbody></table></div>`;
+
+  el('content').innerHTML=cards+trend+outletPanel+table;
+  document.querySelectorAll('.tbl tr.row').forEach(tr=>tr.addEventListener('click',()=>{
+    const i=tr.dataset.i,d=el('d'+i);const open=d.style.display!=='none';
+    d.style.display=open?'none':'table-row';tr.classList.toggle('open',!open);
+  }));
+}
+
+/* ---------- kontrol ---------- */
+function buildOutletChips(){
+  const all=['b2','dpk001','b1','gw','test'];
+  el('outletChips').innerHTML=all.map(b=>`<span class="chip ${STATE.outlets.has(b)?'on':''}" data-b="${b}">${BR[b]||b}</span>`).join('');
+  document.querySelectorAll('#outletChips .chip').forEach(c=>c.addEventListener('click',()=>{
+    const b=c.dataset.b;if(STATE.outlets.has(b))STATE.outlets.delete(b);else STATE.outlets.add(b);
+    c.classList.toggle('on');render();
+  }));
+}
+el('loginBtn').addEventListener('click',doLogin);
+el('password').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+el('logoutBtn').addEventListener('click',doLogout);
+el('refreshBtn').addEventListener('click',loadAll);
+el('fromDate').addEventListener('change',e=>{STATE.from=e.target.value;render();});
+el('toDate').addEventListener('change',e=>{STATE.to=e.target.value;render();});
+el('search').addEventListener('input',e=>{STATE.q=e.target.value.toLowerCase().trim();render();});
+el('showAdmin').addEventListener('change',e=>{STATE.showAdmin=e.target.checked;render();});
+
+/* ---------- mulai: pakai sesi tersimpan bila ada ---------- */
+(async()=>{const {data:{session}}=await sb.auth.getSession();if(session)await afterLogin();})();
+</script>
+</body>
+</html>
