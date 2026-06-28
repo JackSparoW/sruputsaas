@@ -267,6 +267,8 @@ const SUPABASE_URL="https://lqsleeaidgfuzktetzlc.supabase.co";
 const SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxc2xlZWFpZGdmdXprdGV0emxjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NzU3MjUsImV4cCI6MjA5NTE1MTcyNX0.2gvQdQRwFgCraDKthOD6GXS-MbeA4SCR928f9RGv8jQ";
 let sb=null;
 const CURRENT={user:null,role:null,branch:null,name:null};
+/* ===== ESCAPE HTML (cegah XSS dari teks bebas: catatan, alasan, supplier, nama) ===== */
+function escHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 
 /* ===== HELPER TIMEZONE WIB (Asia/Jakarta, UTC+7) ===== */
 // Semua tampilan tanggal/jam pakai WIB, tidak peduli timezone device/browser.
@@ -1862,7 +1864,7 @@ const App={
   // bangun HTML struk 58mm dari snapshot transaksi
   _receiptHTML(d){
     const rp=n=>'Rp'+Number(n||0).toLocaleString('id-ID');
-    const esc=s=>String(s||'').replace(/</g,'&lt;');
+    const esc=escHtml;
     const when=d.when?new Date(d.when):new Date();
     const tgl=when.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
     const jam=when.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
@@ -1933,7 +1935,7 @@ const App={
   },
   /* v97: versi HTML struk barista (fallback dialog/PDF) — tanpa harga */
   _kitchenHTML(d){
-    const esc=s=>String(s||'').replace(/</g,'&lt;');
+    const esc=escHtml;
     const when=d.when?new Date(d.when):new Date();
     const tgl=when.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
     const jam=when.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
@@ -1967,7 +1969,7 @@ const App={
      Pakai _lastReceipt (sudah disimpan sebelum keranjang dikosongkan). */
   _showSuccess(changeMsg){
     const d=this._lastReceipt; if(!d) return;
-    const esc=s=>String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const esc=escHtml;
     const itemsHtml=(d.items||[]).map(it=>{
       const det=it.addsDetail||[]; const qn=Number(it.qty)||1;
       if(det.length){
@@ -2174,7 +2176,7 @@ const App={
             ${archived
               ? `<button class="btn" style="padding:6px 12px;background:var(--good);color:#fff;font-size:12px" onclick="App.activateIngredient('${i.id}')">Aktifkan</button>`
               : `<button class="btn" style="padding:6px 12px;background:var(--accent);color:#fff;font-size:12px" onclick="App.saveIngredient('${i.id}')">Simpan</button>
-                 <button class="btn" style="padding:6px 12px;background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad);font-size:12px;margin-left:4px" onclick="App.archiveIngredient('${i.id}','${(i.name||'').replace(/'/g,'')}')">Arsip</button>`}
+                 <button class="btn" style="padding:6px 12px;background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad);font-size:12px;margin-left:4px" onclick="App.archiveIngredient('${i.id}','${(i.name||'').replace(/[<>'"]/g,'')}')">Arsip</button>`}
           </td>
         </tr>`;}).join('');
         html+=`<div class="sec-title">Kelola Bahan Baku <span class="mini" style="text-transform:none;font-weight:500">(owner)</span></div>
@@ -2727,7 +2729,7 @@ const App={
           <td class="mini">${tgl}</td>
           <td class="right mono">${this.rp(Number(s.total))}</td>
           <td class="mini">${voidBy} · ${voidAt}</td>
-          <td class="mini muted">${s.void_reason||'—'}</td>
+          <td class="mini muted">${escHtml(s.void_reason||'—')}</td>
         </tr>`;
       }).join(''):`<tr><td colspan="5" class="mini">Tidak ada transaksi dibatalkan di periode ini. 👍</td></tr>`;
 
@@ -3344,7 +3346,7 @@ const App={
           <option value="">(tanpa cabang)</option>${branches.map(b=>`<option value="${b.id}" ${p.branch_id===b.id?'selected':''}>${b.name} · ${b.type==='warehouse'?'gudang':'outlet'}</option>`).join('')}</select>`;
         const delBtn=isSelf
           ? `<span class="mini muted" title="Tidak bisa mencabut akses akun sendiri">akun Anda</span>`
-          : `<button class="btn" style="padding:6px 10px;background:var(--bad-soft);color:var(--bad);font-size:12px;border:1px solid var(--bad)" onclick="App.revokeUser('${p.user_id}','${(p.email||p.full_name||'user').replace(/'/g,"")}')">Cabut akses</button>`;
+          : `<button class="btn" style="padding:6px 10px;background:var(--bad-soft);color:var(--bad);font-size:12px;border:1px solid var(--bad)" onclick="App.revokeUser('${p.user_id}','${(p.email||p.full_name||'user').replace(/[<>'"]/g,"")}')">Cabut akses</button>`;
         return `<tr><td>${nameInp}</td><td class="mini mono">${p.email||'<span class=muted>—</span>'}</td><td>${roleSel}</td><td>${brSel}</td>
           <td><button class="btn" style="padding:6px 12px;background:var(--accent);color:#fff;font-size:12px" onclick="App.saveProfile('${p.user_id}')">Simpan</button></td>
           <td>${delBtn}</td></tr>`;
@@ -3685,7 +3687,7 @@ const App={
       const lines=items.map(it=>{
         const m=(this._hMenu||[]).find(x=>x.id===it.menu_id);
         const nm=m?m.name:it.menu_id;
-        const noteTxt=it.note?` <span class="mini" style="color:var(--accent)">· ${it.note}</span>`:'';
+        const noteTxt=it.note?` <span class="mini" style="color:var(--accent)">· ${escHtml(it.note)}</span>`:'';
         const up=Number(it.unit_price);
         // tanda diskon: harga jual < harga menu normal saat ini
         const isDisc=m && up < Number(m.price);
@@ -3744,7 +3746,7 @@ const App={
         const catOpts=cats.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
         const wdRows=withdrawals.length?withdrawals.map(w=>`<tr>
           <td class="mini">${fmtWIB(w.created_at)}</td>
-          <td class="mini">${w.reason}${w.note?` <span class="muted">· ${w.note}</span>`:''}</td>
+          <td class="mini">${escHtml(w.reason)}${w.note?` <span class="muted">· ${escHtml(w.note)}</span>`:''}</td>
           <td class="right mono" style="color:var(--bad)">−${this.rp(w.amount)}</td></tr>`).join(''):'<tr><td colspan="3" class="mini muted">Belum ada ambil kas di shift ini.</td></tr>';
         html+=`<div class="card pad" style="margin-bottom:18px;border:1px solid var(--accent)">
           <b style="display:block;margin-bottom:6px">Ambil Kas dari Laci</b>
@@ -3804,7 +3806,7 @@ const App={
         return `<tr ${clickable?`style="cursor:pointer" onclick="App.toggleShiftDetail(${idx})"`:''}>
           <td class="mini">${clickable?'<span style="color:var(--accent)">▸</span> ':''}${opStr}</td>
           ${CURRENT.role==='owner'?`<td class="mini">${s.branch_id}</td>`:''}
-          <td class="mini">${s.cashier_name||s.cashier_id.slice(0,6)}</td>
+          <td class="mini">${escHtml(s.cashier_name||s.cashier_id.slice(0,6))}</td>
           <td class="right mono">${this.rp(s.opening_cash)}</td>
           <td class="right mono">${s.closing_cash!=null?this.rp(s.closing_cash):'—'}</td>
           ${canSeeDiff?`<td class="right">${diffCell}</td>`:''}
@@ -3846,7 +3848,7 @@ const App={
       const diffColor=diff===0?'var(--good)':(diff>0?'var(--gold)':'var(--bad)');
       const diffTxt=diff===0?'PAS — cocok':(diff>0?('LEBIH '+this.rp(diff)):('KURANG '+this.rp(Math.abs(diff))));
       const diffHint=diff===0?'Kas laci cocok dengan sistem.':(diff>0?'Uang fisik lebih banyak dari seharusnya. Kemungkinan: kembalian belum diberikan, atau ada transaksi yang belum/terlambat diinput.':'Uang fisik kurang dari seharusnya. Kemungkinan: ada uang diambil tapi tak dicatat (Ambil Kas), salah kembalian, atau transaksi cash yang uangnya tak masuk laci.');
-      const wdRows=withdrawals.length?withdrawals.map(w=>`<div class="line"><span class="mini">${fmtWIB(w.created_at)} · ${w.reason}${w.note?` (${w.note})`:''}</span><span class="mono" style="color:var(--bad)">−${this.rp(w.amount)}</span></div>`).join(''):'<div class="mini muted">Tidak ada ambil kas tercatat di shift ini.</div>';
+      const wdRows=withdrawals.length?withdrawals.map(w=>`<div class="line"><span class="mini">${fmtWIB(w.created_at)} · ${escHtml(w.reason)}${w.note?` (${escHtml(w.note)})`:''}</span><span class="mono" style="color:var(--bad)">−${this.rp(w.amount)}</span></div>`).join(''):'<div class="mini muted">Tidak ada ambil kas tercatat di shift ini.</div>';
       // daftar transaksi: pisah aktif & void
       const active=salesList.filter(x=>x.status!=='voided');
       const voided=salesList.filter(x=>x.status==='voided');
@@ -3861,11 +3863,11 @@ const App={
           <td>${payTag}</td>
           <td class="right mono ${isVoid?'':''}" style="${isVoid?'text-decoration:line-through;color:var(--muted)':''}">${this.rp(x.total)}</td>
           <td>${isVoid?'<span class="tag low" style="background:var(--bad);color:#fff;font-size:10px">BATAL</span>':'<span class="tag ok" style="font-size:10px">aktif</span>'}</td>
-          <td class="mini muted">${isVoid?(x.void_reason||'(tanpa alasan)'):''}</td></tr>`;
+          <td class="mini muted">${isVoid?escHtml(x.void_reason||'(tanpa alasan)'):''}</td></tr>`;
       }).join(''):'<tr><td colspan="6" class="mini muted">Tidak ada transaksi di shift ini.</td></tr>';
       box.innerHTML=`<div class="card pad" style="margin-top:12px;border:1px solid ${diffColor}">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-          <b>Rincian Shift — ${s.cashier_name||s.cashier_id.slice(0,6)}</b>
+          <b>Rincian Shift — ${escHtml(s.cashier_name||s.cashier_id.slice(0,6))}</b>
           <span class="mini muted">${fmtWIB(s.opened_at)} → ${s.closed_at?fmtWIB(s.closed_at):'—'}</span>
         </div>
         <div class="mini" style="font-weight:700;color:var(--muted);margin-bottom:4px">UANG MASUK</div>
@@ -3983,8 +3985,8 @@ const App={
           detail=`<b>${inv}</b> · <span style="color:var(--bad)">${tot} dibatalkan</span> · <span class="muted">alasan: ${alasan}</span>`;
         }
         else if(r.action==='UPDATE'||r.action==='STOCK_ADD'||r.action==='STOCK_SET') detail=diffSummary(r.old_data,r.new_data);
-        else if(r.action==='INSERT') detail='<span class="muted">'+(r.new_data?.name||r.new_data?.full_name||r.row_id||'')+'</span>';
-        else if(r.action==='DELETE') detail='<span class="muted">'+(r.old_data?.name||r.old_data?.full_name||r.row_id||'')+'</span>';
+        else if(r.action==='INSERT') detail='<span class="muted">'+escHtml(r.new_data?.name||r.new_data?.full_name||r.row_id||'')+'</span>';
+        else if(r.action==='DELETE') detail='<span class="muted">'+escHtml(r.old_data?.name||r.old_data?.full_name||r.row_id||'')+'</span>';
         return `<tr>
           <td class="mini">${tgl}</td>
           <td class="mini">${tableLabel[r.table_name]||r.table_name}</td>
@@ -4088,7 +4090,7 @@ const App={
           ${tableLabel?`<td class="mini">${e.branch_id}</td>`:''}
           <td><span class="tag">${catName(e.category)}</span></td>
           <td class="right mono">${this.rp(e.amount)}</td>
-          <td class="mini muted">${e.note||''}</td>
+          <td class="mini muted">${escHtml(e.note||'')}</td>
           <td><button class="btn" style="padding:5px 10px;background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad);font-size:11px" onclick="App.delExpense('${e.id}')">Hapus</button></td>
         </tr>`;
       }).join(''):`<tr><td colspan="${tableLabel?6:5}" class="mini">Belum ada pengeluaran bulan ini.</td></tr>`;
@@ -4241,9 +4243,9 @@ const App={
           ${showBranch?`<td class="mini">${brMap[w.branch_id]||w.branch_id}</td>`:''}
           <td><b>${i?i.name:w.ingredient_id}</b></td>
           <td class="right mono">${Number(w.qty)} ${i?i.unit:''}</td>
-          <td><span class="tag low">${w.reason}</span></td>
+          <td><span class="tag low">${escHtml(w.reason)}</span></td>
           <td class="right mono muted">${this.rp(w.cost_est||0)}</td>
-          <td class="mini muted">${w.note||''}</td></tr>`;
+          <td class="mini muted">${escHtml(w.note||'')}</td></tr>`;
       }).join(''):`<tr><td colspan="${showBranch?7:6}" class="mini">Belum ada waste bulan ini.</td></tr>`;
       html+=`<div class="sec-title">Waste ${monthName}</div>
         <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Waktu</th>${showBranch?'<th>Cabang</th>':''}<th>Bahan</th><th class="right">Jumlah</th><th>Alasan</th><th class="right">Nilai</th><th>Catatan</th></tr></thead><tbody>${rows}</tbody></table></div>`;
@@ -4343,7 +4345,7 @@ const App={
           <td class="right mono">${Number(p.qty)} ${i?i.unit:''}</td>
           <td class="right mono">${this.rp(p.unit_price)}</td>
           <td class="right mono">${this.rp(p.total_cost)}</td>
-          <td class="mini muted">${p.supplier||''}</td>${act}</tr>`;
+          <td class="mini muted">${escHtml(p.supplier||'')}</td>${act}</tr>`;
       }).join(''):`<tr><td colspan="${CURRENT.role==='owner'?7:6}" class="mini">Belum ada pembelian bulan ini.</td></tr>`;
       this._purList=list;
       html+=`<div class="sec-title">Pembelian ${monthName}</div>
