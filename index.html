@@ -323,12 +323,12 @@ const hourOfWIB=ts=>{
 
 /* role -> menu yg aktif di slice ini. 'soon' = belum tersambung (jujur, bukan demo palsu) */
 const NAV={
-  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
-  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
+  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
+  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
   crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['attend','◔','Absensi Saya',0],['settings','⚙','Setting Printer',1]],
   media:[['content','✦','Rekomendasi Konten',0]],
-  gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
-  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
+  gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
+  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
 };
 const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet'};
 
@@ -909,7 +909,7 @@ const App={
   go(page){
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat']}[page]||[page,''];
+    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])this['render_'+page]();
   },
@@ -2192,7 +2192,8 @@ const App={
           <td>${archived?'<span class="tag low">arsip</span>':'<span class="tag ok">aktif</span>'}</td>
           <td style="white-space:nowrap">
             ${archived
-              ? `<button class="btn" style="padding:6px 12px;background:var(--good);color:#fff;font-size:12px" onclick="App.activateIngredient('${i.id}')">Aktifkan</button>`
+              ? `<button class="btn" style="padding:6px 12px;background:var(--good);color:#fff;font-size:12px" onclick="App.activateIngredient('${i.id}')">Aktifkan</button>
+                 <button class="btn" style="padding:6px 12px;background:var(--bad);color:#fff;font-size:12px;margin-left:4px" onclick="App.forceDeleteIngredient('${i.id}','${(i.name||'').replace(/[<>'"]/g,'')}')" title="Hapus permanen — hanya bila tanpa riwayat">Hapus</button>`
               : `<button class="btn" style="padding:6px 12px;background:var(--accent);color:#fff;font-size:12px" onclick="App.saveIngredient('${i.id}')">Simpan</button>
                  <button class="btn" style="padding:6px 12px;background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad);font-size:12px;margin-left:4px" onclick="App.archiveIngredient('${i.id}','${(i.name||'').replace(/[<>'"]/g,'')}')">Arsip</button>`}
           </td>
@@ -3184,6 +3185,9 @@ const App={
               ? `<button class="btn" style="padding:5px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.toggleBranchExempt('${b.id}',false)" title="Klik untuk jadikan outlet mitra (kena royalti)"><span class="tag" style="font-size:10px">Pusat · bebas royalti</span></button>`
               : `<button class="btn" style="padding:5px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.toggleBranchExempt('${b.id}',true)" title="Klik untuk jadikan pusat (bebas royalti)"><span class="tag warn" style="font-size:10px">Mitra · kena 6%</span></button>`)
           : '<span class="mini muted">—</span>'}</td>
+        <td>${b.owner_user_id?'<span class="mini muted">—</span>':(b.is_supply_source
+          ? `<span class="tag warn" style="font-size:10px">★ Sumber</span>`
+          : `<button class="btn" style="padding:5px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.doSetSupplySource('${b.id}','${(b.name||'').replace(/[<>'"]/g,'')}')" title="Jadikan sumber pasok permintaan stok mitra/PIC">Jadikan sumber</button>`)}</td>
         <td style="white-space:nowrap">
           <button class="btn" style="padding:6px 10px;background:var(--accent);color:#fff;font-size:12px" onclick="App.saveBranch('${b.id}')">Simpan</button>
           <button class="btn" style="padding:6px 10px;background:var(--bad-soft);color:var(--bad);font-size:12px;border:1px solid var(--bad)" onclick="App.delBranch('${b.id}','${b.name.replace(/'/g,"")}')">Hapus</button>
@@ -3208,8 +3212,8 @@ const App={
           <div class="mini" style="margin-top:10px">Cabang baru otomatis dibuatkan baris stok kosong untuk tiap bahan (qty 0), agar POS langsung bisa dipakai setelah di-restock. <b>Alamat, Telp/WA, dan IG</b> dicetak di struk outlet ini (brand & ucapan footer diatur global di Setting → Tampilan Struk).</div>
         </div>
         <div class="sec-title">Jaringan Cabang</div>
-        <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Nama</th><th>Kota</th><th>Alamat struk</th><th>Telp/WA</th><th>IG</th><th>Tipe</th><th>Royalti</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
-        <div class="mini" style="margin-top:10px;opacity:.75">Ketuk label di kolom Royalti untuk mengubah status: <b>Pusat</b> (outlet milikmu, bebas royalti) atau <b>Mitra</b> (kena royalti 6% dari omzet bersih). Lihat tagihan di menu Royalti Mitra.<br><b>Alamat struk / Telp / IG</b> dicetak otomatis di struk sesuai outlet tempat transaksi — ubah lalu tekan Simpan. Brand & ucapan footer seragam, diatur di Setting → Tampilan Struk.</div>`;
+        <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Nama</th><th>Kota</th><th>Alamat struk</th><th>Telp/WA</th><th>IG</th><th>Tipe</th><th>Royalti</th><th>Gudang sumber</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="mini" style="margin-top:10px;opacity:.75">Ketuk label di kolom Royalti untuk mengubah status: <b>Pusat</b> (outlet milikmu, bebas royalti) atau <b>Mitra</b> (kena royalti 6% dari omzet bersih). Lihat tagihan di menu Royalti Mitra.<br><b>Gudang sumber</b>: cabang tempat stok dipotong saat memenuhi permintaan stok mitra/PIC — hanya satu, harus milik Pusat. Klik "Jadikan sumber" untuk memindahkan.<br><b>Alamat struk / Telp / IG</b> dicetak otomatis di struk sesuai outlet tempat transaksi — ubah lalu tekan Simpan. Brand & ucapan footer seragam, diatur di Setting → Tampilan Struk.</div>`;
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
   async toggleBranchExempt(id,exempt){
@@ -3218,6 +3222,24 @@ const App={
       this.toast(exempt?'Cabang ditandai sebagai Pusat (bebas royalti)':'Cabang ditandai sebagai Mitra (kena 6%)','good');
       this.render_branches();
     }catch(e){ this.toast((e&&e.message)||'Gagal mengubah status royalti','bad'); }
+  },
+  async doSetSupplySource(id,name){
+    if(!confirm('Jadikan "'+name+'" sebagai GUDANG SUMBER?\n\nSemua permintaan stok mitra/PIC akan memotong stok dari cabang ini. Sumber lama otomatis dilepas (hanya satu sumber aktif).'))return;
+    try{
+      const{data,error}=await sb.rpc('set_supply_source',{p_branch:id});
+      if(error)throw error;
+      this.toast('Gudang sumber sekarang: '+(data||name),'good');
+      this.render_branches();
+    }catch(e){ this.toast((e&&e.message)||'Gagal mengatur gudang sumber','bad'); }
+  },
+  async forceDeleteIngredient(id,name){
+    if(!confirm('HAPUS PERMANEN bahan "'+name+'"?\n\nHanya bisa bila bahan TIDAK punya riwayat (resep, pembelian, waste, transfer, permintaan stok, opname, beli lokal). Baris stok & harga pasoknya ikut terhapus. Tindakan ini tidak bisa dibatalkan.'))return;
+    try{
+      const{data,error}=await sb.rpc('force_delete_ingredient',{p_id:id});
+      if(error)throw error;
+      this.toast('Bahan "'+(data||name)+'" dihapus permanen','good');
+      this.render_inventory();
+    }catch(e){ this.toast((e&&e.message)||'Gagal menghapus','bad'); }
   },
   async saveBranch(id){
     const name=(document.getElementById('bn_name_'+id).value||'').trim();
@@ -5147,6 +5169,129 @@ const App={
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
 
+  /* ===== OWNER: Skor Kesehatan (mesin metrik: rpc health_metrics) — aditif ===== */
+  HEALTH_TH:{margin:{good:55,warn:40},labaPct:{good:5,warn:0},expR:{good:25,warn:40},wasteR:{good:2,warn:5},voidR:{good:2,warn:5},shrinkR:{good:1,warn:3},lowStock:{good:0,warn:3},missCogs:{good:0,warn:2}},
+  healthEval(m,prev,isMitra){
+    const T=this.HEALTH_TH, N=x=>Number(x||0), D=[];
+    const omz=N(m.omzet), cogs=N(m.cogs_sum), exp=N(m.expenses_sum), laba=omz-cogs-exp;
+    const pct=(a,b)=>b>0?a/b*100:null;
+    const st=(v,good,warn,invert)=>v==null?'na':(invert?(v<=good?'good':v<=warn?'warn':'bad'):(v>=good?'good':v>=warn?'warn':'bad'));
+    const margin=pct(omz-cogs,omz);
+    D.push({label:'Margin kotor',disp:margin==null?'—':margin.toFixed(1)+'%',status:st(margin,T.margin.good,T.margin.warn),target:'≥ '+T.margin.good+'%',hint:margin==null?'Belum ada penjualan pada periode ini.':margin>=T.margin.good?'Sehat — pertahankan disiplin resep & harga bahan.':margin>=T.margin.warn?'Cek kenaikan harga bahan atau porsi berlebih di racikan.':'Margin tergerus serius: audit HPP per produk & harga jual.'});
+    const labaR=pct(laba,omz);
+    D.push({label:'Laba operasional',disp:this.rp(laba)+(labaR!=null?' ('+labaR.toFixed(1)+'%)':''),status:laba>0?(labaR>=T.labaPct.good?'good':'warn'):(omz>0?'bad':'na'),target:'> '+T.labaPct.good+'% omzet',hint:laba>0?(labaR>=T.labaPct.good?'Outlet menghasilkan laba di atas ambang.':'Untung tipis — margin aman tapi pengeluaran menggerus.'):(omz>0?'RUGI pada periode ini: bedah pengeluaran & waste sekarang.':'Belum ada penjualan pada periode ini.')});
+    const expR=pct(exp,omz);
+    D.push({label:'Rasio pengeluaran',disp:expR==null?'—':expR.toFixed(1)+'% ('+this.rp(exp)+')',status:st(expR,T.expR.good,T.expR.warn,true),target:'≤ '+T.expR.good+'%',hint:expR==null?'—':expR<=T.expR.good?'Terkendali.':expR<=T.expR.warn?'Mulai berat — cek kategori pengeluaran terbesar.':'Pengeluaran memakan omzet: bekukan biaya non-esensial.'});
+    const wasteR=pct(N(m.waste_cost),omz);
+    D.push({label:'Waste',disp:this.rp(N(m.waste_cost))+' · '+N(m.waste_count)+'×'+(wasteR!=null?' ('+wasteR.toFixed(1)+'%)':''),status:st(wasteR,T.wasteR.good,T.wasteR.warn,true),target:'≤ '+T.wasteR.good+'% omzet',hint:wasteR==null?'—':wasteR<=T.wasteR.good?'Wajar.':wasteR<=T.wasteR.warn?'Cek alasan waste terbanyak — expired atau salah racik?':'Waste tidak normal: audit penyimpanan & SOP racikan.'});
+    const tot=N(m.tx_count)+N(m.void_count), voidR=tot>0?N(m.void_count)/tot*100:null;
+    D.push({label:'Void transaksi',disp:N(m.void_count)+'× · '+this.rp(N(m.void_total))+(voidR!=null?' ('+voidR.toFixed(1)+'%)':''),status:st(voidR,T.voidR.good,T.voidR.warn,true),target:'≤ '+T.voidR.good+'%',hint:voidR==null?'—':voidR<=T.voidR.good?'Normal.':voidR<=T.voidR.warn?'Agak tinggi — lihat alasan void di Riwayat Transaksi.':'Void berlebihan: pola per kasir perlu diperiksa.'});
+    const negS=N(m.shift_diff_neg_count), sumS=N(m.shift_diff_sum);
+    D.push({label:'Selisih kas shift',disp:this.rp(sumS)+' · '+negS+' shift minus (terburuk '+this.rp(N(m.shift_diff_worst))+')',status:N(m.shift_count)===0?'na':(negS===0&&sumS>=0?'good':(negS<=1&&sumS>-50000?'warn':'bad')),target:'0 shift minus',hint:N(m.shift_count)===0?'Belum ada shift ditutup pada periode ini.':negS===0&&sumS>=0?'Kas cocok.':negS<=1&&sumS>-50000?'Ada selisih — cocokkan dengan rekap shift terkait.':'Selisih kas berulang/besar: rekonsiliasi per kasir hari ini juga.'});
+    D.push({label:'Stok menipis (saat ini)',disp:N(m.low_stock_count)+' bahan ≤ minimum',status:st(N(m.low_stock_count),T.lowStock.good,T.lowStock.warn,true),target:'0 bahan',hint:N(m.low_stock_count)===0?'Aman.':'Restock sebelum kehabisan — cek halaman Stok & Bahan.'});
+    D.push({label:'Integritas COGS',disp:N(m.missing_cogs_count)+' transaksi tanpa COGS',status:st(N(m.missing_cogs_count),T.missCogs.good,T.missCogs.warn,true),target:'0 transaksi',hint:N(m.missing_cogs_count)===0?'Semua transaksi punya snapshot biaya.':'Ada transaksi ber-omzet tanpa COGS — resep menu belum diset? Margin outlet ini tidak bisa dipercaya sampai ini nol.'});
+    const shrinkR=pct(N(m.opname_shrink_value),omz);
+    D.push({label:'Penyusutan opname',disp:N(m.opname_adjust_count)===0?'belum ada opname direview':this.rp(N(m.opname_shrink_value))+' · '+N(m.opname_adjust_count)+' penyesuaian',status:N(m.opname_adjust_count)===0?'na':st(shrinkR,T.shrinkR.good,T.shrinkR.warn,true),target:'≤ '+T.shrinkR.good+'% omzet',hint:N(m.opname_adjust_count)===0?'Jalankan opname rutin agar penyusutan terpantau.':shrinkR<=T.shrinkR.good?'Selisih fisik wajar.':shrinkR<=T.shrinkR.warn?'Selisih fisik mulai berarti — perketat serah terima shift.':'Penyusutan besar: kemungkinan bocor (pemakaian tak tercatat / hilang).'});
+    if(isMitra) D.push({label:'Royalti tertunggak',disp:this.rp(N(m.royalty_unpaid)),status:N(m.royalty_unpaid)<=0?'good':'bad',target:'Rp0',hint:N(m.royalty_unpaid)<=0?'Tidak ada tunggakan.':'Ada tagihan royalti belum lunas.'});
+    let growth=null; if(prev&&Number(prev.omzet)>0) growth=(omz-Number(prev.omzet))/Number(prev.omzet)*100;
+    return {dims:D,laba,omz,growth,txPerDay:null};
+  },
+  async render_health(){
+    const v=document.getElementById('view');
+    if(CURRENT.role!=='owner'){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner/Pusat</b></div>`; return; }
+    v.innerHTML=this.loadingHTML('Menghitung kesehatan outlet…');
+    try{
+      const branches=(await Data.branches()).filter(b=>b.type!=='warehouse');
+      if(!this.state.healthOutlet||!branches.find(b=>b.id===this.state.healthOutlet)) this.state.healthOutlet=branches[0]?branches[0].id:null;
+      if(!this.state.healthDays) this.state.healthDays=7;
+      const bId=this.state.healthOutlet, days=this.state.healthDays;
+      if(!bId){ v.innerHTML=`<div class="card pad mini muted">Belum ada outlet.</div>`; return; }
+      const br=branches.find(b=>b.id===bId), isMitra=!!br.owner_user_id;
+      const d=new Date(), iso=x=>x.toISOString().slice(0,10);
+      const end=iso(d), start=iso(new Date(d.getTime()-(days-1)*864e5));
+      const pEnd=iso(new Date(d.getTime()-days*864e5)), pStart=iso(new Date(d.getTime()-(2*days-1)*864e5));
+      const [cur,prv]=await Promise.all([
+        sb.rpc('health_metrics',{p_branch:bId,p_start:start,p_end:end}),
+        sb.rpc('health_metrics',{p_branch:bId,p_start:pStart,p_end:pEnd})
+      ]);
+      if(cur.error)throw cur.error;
+      const m=(cur.data&&cur.data[0])||null, mp=(prv.data&&prv.data[0])||null;
+      if(!m){ v.innerHTML=this.errHTML({message:'Tidak ada akses ke outlet ini'}); return; }
+      const R=this.healthEval(m,mp,isMitra);
+      const nBad=R.dims.filter(x=>x.status==='bad').length, nWarn=R.dims.filter(x=>x.status==='warn').length, nNa=R.dims.filter(x=>x.status==='na').length;
+      const overall=nBad>0?['KRITIS','var(--bad)']:nWarn>0?['PERLU PERHATIAN','var(--gold)']:['SEHAT','var(--good)'];
+      const cmap={good:'var(--good)',warn:'var(--gold)',bad:'var(--bad)',na:'var(--muted)'};
+      const selB=branches.map(b=>`<option value="${b.id}" ${b.id===bId?'selected':''}>${escHtml(b.name)}${b.owner_user_id?' (mitra)':''}</option>`).join('');
+      const cards=R.dims.map(x=>`<div class="card pad" style="border-left:4px solid ${cmap[x.status]}"><div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline"><b>${x.label}</b><span class="mini" style="color:${cmap[x.status]};font-weight:700">${x.status==='good'?'BAIK':x.status==='warn'?'WASPADA':x.status==='bad'?'MASALAH':'N/A'}</span></div><div class="mono" style="margin:6px 0 2px;font-size:15px">${x.disp}</div><div class="mini muted">Target: ${x.target}</div><div class="mini" style="margin-top:6px">${x.hint}</div></div>`).join('');
+      v.innerHTML=`
+        <div class="card pad" style="margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <select onchange="App.state.healthOutlet=this.value;App.render_health()" style="padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">${selB}</select>
+          <select onchange="App.state.healthDays=Number(this.value);App.render_health()" style="padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)"><option value="7" ${days===7?'selected':''}>7 hari</option><option value="30" ${days===30?'selected':''}>30 hari</option></select>
+          <div style="flex:1;min-width:180px;text-align:right"><span class="mini muted">${start} → ${end}</span><div style="font-size:20px;font-weight:800;color:${overall[1]}">${overall[0]}</div><div class="mini muted">${nBad} masalah · ${nWarn} waspada${nNa?' · '+nNa+' n/a':''}</div></div>
+        </div>
+        <div class="card pad" style="margin-bottom:14px;display:flex;gap:18px;flex-wrap:wrap">
+          <div><div class="mini muted">Omzet</div><b class="mono">${this.rp(R.omz)}</b>${R.growth!=null?` <span class="mini" style="color:${R.growth>=0?'var(--good)':'var(--bad)'}">${R.growth>=0?'▲':'▼'} ${Math.abs(R.growth).toFixed(1)}% vs periode lalu</span>`:''}</div>
+          <div><div class="mini muted">Laba operasional</div><b class="mono" style="color:${R.laba>=0?'var(--good)':'var(--bad)'}">${this.rp(R.laba)}</b></div>
+          <div><div class="mini muted">Transaksi</div><b class="mono">${Number(m.tx_count)}</b> <span class="mini muted">(${(Number(m.tx_count)/days).toFixed(1)}/hari)</span></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">${cards}</div>
+        <div class="mini" style="margin-top:12px;opacity:.7">Status keseluruhan = dimensi terburuk (bukan rata-rata) — satu masalah nyata tidak boleh tertutup delapan angka bagus. Ambang bisa dikalibrasi di HEALTH_TH. "Stok menipis" & "Royalti" adalah kondisi saat ini, bukan periode.</div>`;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+
+  /* ===== Prediksi Stok (rpc stock_forecast) — owner/mitra/PIC — aditif ===== */
+  fcClass(r){
+    const q=Number(r.qty_now), a=Number(r.avg_daily), dl=r.days_left==null?null:Number(r.days_left);
+    if(a<=0) return q>0?'diam':'kosong';
+    if(q<=0||dl<=2) return 'kritis';
+    if(dl<=7) return 'segera';
+    return 'aman';
+  },
+  fcDays(dl){ if(dl==null)return '—'; const n=Number(dl); return n>90?'90+':String(n); },
+  async render_forecast(){
+    const v=document.getElementById('view');
+    v.innerHTML=this.loadingHTML('Menghitung prediksi…');
+    try{
+      let bId=null, headSel='';
+      if(CURRENT.role==='owner'){
+        const branches=(await Data.branches()).filter(b=>b.type==='outlet');
+        if(!this.state.fcOutlet||!branches.find(b=>b.id===this.state.fcOutlet)) this.state.fcOutlet=branches[0]?branches[0].id:null;
+        bId=this.state.fcOutlet;
+        headSel=`<select onchange="App.state.fcOutlet=this.value;App.render_forecast()" style="padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">${branches.map(b=>`<option value="${b.id}" ${b.id===bId?'selected':''}>${escHtml(b.name)}${b.owner_user_id?' (mitra)':''}</option>`).join('')}</select>`;
+      }else if(CURRENT.role==='mitra'){
+        if(!await this.mtrEnsure()){ v.innerHTML=this.mtrNoOutlet(); return; }
+        bId=this.state.mtrOutlet; headSel=this.mtrBar();
+      }else{ bId=CURRENT.branch; }
+      if(!bId){ v.innerHTML=`<div class="card pad mini muted">Outlet tidak ditemukan.</div>`; return; }
+      const{data,error}=await sb.rpc('stock_forecast',{p_branch:bId,p_hist:28,p_cover:7});
+      if(error)throw error;
+      const rows=(data||[]);
+      const grp={kritis:[],segera:[],aman:[],diam:[]};
+      rows.forEach(r=>{const c=this.fcClass(r); if(grp[c])grp[c].push(r);});
+      Object.values(grp).forEach(g=>g.sort((a,b)=>(a.days_left==null?1e9:Number(a.days_left))-(b.days_left==null?1e9:Number(b.days_left))));
+      const cell=r=>{
+        const minWarn=Number(r.min_qty)<=0?'<span class="tag low">min belum diset</span>':(Number(r.suggest_min)>Number(r.min_qty)*1.5?'<span class="tag warn">naikkan</span>':'');
+        return `<tr><td><b>${escHtml(r.name)}</b>${r.active===false?' <span class="tag low">arsip</span>':''}<div class="mini muted">${escHtml(r.unit)}</div></td>
+        <td class="right mono">${Number(r.qty_now)}</td>
+        <td class="right mono">${Number(r.avg_daily)}<div class="mini muted">±${Number(r.sd_daily)}</div></td>
+        <td class="right mono"><b>${this.fcDays(r.days_left)}</b></td>
+        <td class="right mono">${Number(r.pending_qty)>0?Number(r.pending_qty):'—'}</td>
+        <td class="right mono">${Number(r.suggest_order)>0?('<b>'+Number(r.suggest_order)+'</b>'):'—'}</td>
+        <td class="right mono">${Number(r.suggest_min)} ${minWarn}<div class="mini muted">skrg: ${Number(r.min_qty)}</div></td></tr>`;
+      };
+      const table=(list)=>`<div class="card pad" style="overflow-x:auto;margin-bottom:14px"><table><thead><tr><th>Bahan</th><th class="right">Stok</th><th class="right">Pakai/hari</th><th class="right">Sisa hari</th><th class="right">Pending</th><th class="right">Saran pesan (7h)</th><th class="right">Saran min</th></tr></thead><tbody>${list.map(cell).join('')}</tbody></table></div>`;
+      let html=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">${headSel}
+        <div style="flex:1;min-width:200px;text-align:right"><span class="tag ${grp.kritis.length?'low':'ok'}">${grp.kritis.length} kritis</span> <span class="tag ${grp.segera.length?'warn':'ok'}">${grp.segera.length} ≤7 hari</span> <span class="tag">${grp.diam.length} tidak bergerak</span></div></div>`;
+      if(grp.kritis.length) html+=`<div class="sec-title" style="color:var(--bad)">Kritis — habis ≤2 hari / sudah habis</div>`+table(grp.kritis);
+      if(grp.segera.length) html+=`<div class="sec-title" style="color:var(--gold)">Segera — habis ≤7 hari</div>`+table(grp.segera);
+      if(grp.aman.length) html+=`<div class="sec-title">Aman</div>`+table(grp.aman);
+      if(grp.diam.length) html+=`<div class="sec-title">Tidak bergerak 28 hari — kandidat arsip / cek stok mati</div>`+table(grp.diam);
+      if(!rows.length) html+=`<div class="card pad mini muted">Tidak ada data bahan untuk outlet ini.</div>`;
+      html+=`<div class="mini" style="margin-top:4px;opacity:.7">Metode: rata-rata pemakaian harian 28 hari kalender (resep + topping "add" + waste; request "less" tidak dikurangkan → estimasi sedikit konservatif) + stok pengaman 90% (1.28σ). "Saran pesan" sudah dikurangi permintaan pending. Prediksi buta terhadap promo, menu baru, dan cuaca — angka besar pada outlet ber-data tipis wajar tampil "90+".</div>`;
+      v.innerHTML=html;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+
   async render_mtrhpp(){
     const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Menghitung HPP…');
     try{
@@ -5535,10 +5680,10 @@ const App={
       }
 
       html+=`<div class="sec-title" style="margin-top:24px">Harga pasok (Pusat → mitra)</div>
-        <div class="banner info"><span class="i">▦</span><div>Harga jual Pusat ke mitra per satuan. Isi/ubah lalu simpan — dipakai saat memenuhi permintaan & sebagai basis biaya mitra. Centang "Beli lokal" agar mitra boleh membeli bahan itu sendiri.</div></div>
+        <div class="banner info"><span class="i">▦</span><div>${CURRENT.role==='owner'?`Harga jual Pusat ke mitra per satuan. Isi/ubah lalu simpan — dipakai saat memenuhi permintaan & sebagai basis biaya mitra. Centang "Beli lokal" agar mitra boleh membeli bahan itu sendiri.`:`Daftar harga pasok (hanya baca). Perubahan harga & izin beli lokal hanya bisa dilakukan oleh Owner.`}</div></div>
         <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Bahan</th><th>Satuan</th><th style="text-align:center">Beli lokal</th><th class="right">Harga pasok (Rp)</th></tr></thead><tbody>
-        ${ings.map(i=>`<tr><td><b>${escHtml(i.name)}</b></td><td class="mini muted">${escHtml(i.unit)}</td><td style="text-align:center"><input type="checkbox" ${i.local_allowed?'checked':''} onchange="App.toggleLocalAllowed('${i.id}',this.checked,this)" style="width:18px;height:18px;cursor:pointer"></td><td class="right"><input id="sp_${escHtml(i.id)}" type="number" step="0.01" value="${spmap[i.id]!=null?spmap[i.id]:''}" placeholder="—" style="width:130px;text-align:right;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"></td></tr>`).join('')}
-        </tbody></table><button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" id="spSaveBtn" onclick="App.doSaveSupplyPrices()">Simpan harga pasok</button></div>`;
+        ${ings.map(i=>`<tr><td><b>${escHtml(i.name)}</b></td><td class="mini muted">${escHtml(i.unit)}</td><td style="text-align:center"><input type="checkbox" ${i.local_allowed?'checked':''} ${CURRENT.role==='owner'?`onchange="App.toggleLocalAllowed('${i.id}',this.checked,this)"`:'disabled'} style="width:18px;height:18px;cursor:${CURRENT.role==='owner'?'pointer':'not-allowed'}"></td><td class="right">${CURRENT.role==='owner'?`<input id="sp_${escHtml(i.id)}" type="number" step="0.01" value="${spmap[i.id]!=null?spmap[i.id]:''}" placeholder="—" style="width:130px;text-align:right;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)">`:`<span class="mono">${spmap[i.id]!=null?this.rp(spmap[i.id]):'—'}</span>`}</td></tr>`).join('')}
+        </tbody></table>${CURRENT.role==='owner'?`<button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" id="spSaveBtn" onclick="App.doSaveSupplyPrices()">Simpan harga pasok</button>`:''}</div>`;
       v.innerHTML=html;
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
