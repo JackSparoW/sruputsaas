@@ -303,6 +303,19 @@ const fmtWIB=ts=>{
   return `${p.day}/${p.month} ${hh}:${p.minute}`;
 };
 // 'dd/mm' — untuk tampilan tanggal singkat (pengeluaran, pembelian)
+// 'yyyy-mm-dd' dalam zona WIB (bukan UTC). WAJIB untuk rentang laporan operasional:
+// toISOString() memberi tanggal UTC → pukul 01:00 WIB masih terhitung "kemarin".
+const wibISODate=ts=>{
+  const d=ts?new Date(ts):new Date();
+  const p=new Intl.DateTimeFormat('en-CA',{timeZone:WIB,year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+  return p; // en-CA memberi format YYYY-MM-DD
+};
+// Tambah/kurang N hari pada tanggal WIB, kembalikan 'yyyy-mm-dd' WIB
+const wibShiftDays=(baseTs,deltaDays)=>{
+  const d=new Date(baseTs?baseTs:Date.now());
+  d.setTime(d.getTime()+deltaDays*864e5);
+  return wibISODate(d);
+};
 const fmtDateWIB=ts=>{
   if(!ts)return '—';
   const p=_wibParts(ts,false,false);
@@ -527,19 +540,17 @@ const Data={
     const args={p_branch:branch,p_items:items,p_payment:payment};
     if(employeeId)args.p_employee=employeeId;
     let data,error;
-    // TAHAP 1: record_sale_v2 = record_sale lama + anti-dobel (p_client_id) + waktu jual asli (p_sold_at).
-    // Bila migrasi SQL belum dijalankan, otomatis fallback ke record_sale lama agar POS tetap hidup.
-    if(clientId){
-      args.p_client_id=clientId;
-      if(soldAt)args.p_sold_at=soldAt;
-      ({data,error}=await sb.rpc("record_sale_v2",args));
-      if(error&&(error.code==='PGRST202'||/could not find the function/i.test(error.message||''))){
-        console.warn('record_sale_v2 belum ada di database — fallback record_sale lama TANPA proteksi anti-dobel. Jalankan tahap1-migrasi.sql.');
-        delete args.p_client_id;delete args.p_sold_at;
-        ({data,error}=await sb.rpc("record_sale",args));
-      }
-    }else{
-      ({data,error}=await sb.rpc("record_sale",args));
+    // PRODUKSI: WAJIB record_sale_v2 (anti-dobel via p_client_id). Fallback ke record_sale
+    // lama DIMATIKAN — mencatat transaksi tanpa proteksi anti-dobel berisiko transaksi ganda
+    // saat retry/sync. Bila v2 tidak ada, transaksi DIHENTIKAN dengan error jelas.
+    if(!clientId){
+      throw new Error('Transaksi tidak dapat diproses: pengaman anti-dobel (clientId) tidak tersedia. Muat ulang aplikasi.');
+    }
+    args.p_client_id=clientId;
+    if(soldAt)args.p_sold_at=soldAt;
+    ({data,error}=await sb.rpc("record_sale_v2",args));
+    if(error&&(error.code==='PGRST202'||/could not find the function/i.test(error.message||''))){
+      throw new Error('record_sale_v2 belum terpasang di database. Jalankan migrasi tahap 1 sebelum menerima transaksi. Transaksi dihentikan demi mencegah pencatatan ganda.');
     }
     if(error)throw error;
     // data = sale_id; ambil invoice_no-nya
@@ -915,7 +926,7 @@ const App={
   },
 
   loadingHTML(msg){return `<div class="loading"><div class="spin"></div>${msg||'Memuat…'}</div>`;},
-  errHTML(e){return `<div class="banner"><span class="i">⚠</span><div><b>Gagal memuat data.</b><br>${(e&&e.message)||e}<br><span class="mini">Cek koneksi, atau apakah RLS mengizinkan peran ini.</span></div></div>`;},
+  errHTML(e){return `<div class="banner"><span class="i">⚠</span><div><b>Gagal memuat data.</b><br>${escHtml((e&&e.message)||String(e))}<br><span class="mini">Cek koneksi, atau apakah RLS mengizinkan peran ini.</span></div></div>`;},
 
   /* ---------- DASHBOARD (cloud) ---------- */
   async render_gudangDashboard(){
@@ -4920,6 +4931,8 @@ const App={
       const monthLabel=new Date(y,m-1,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
       const branches=await Data.branches();
       const mitraOutlets=branches.filter(b=>b.owner_user_id);
+      const PKG_MIN={Start:{min:300000,label:'Rp300.000/bln'},Growth:{min:750000,label:'Rp750.000/bln'},Signature:{min:750000,label:'Rp750.000–1.000.000/bln'}};
+      this._pkgMin=PKG_MIN;
       const [rsRes,rcRes]=await Promise.all([
         sb.from('royalty_settings').select('branch_id,percent,active'),
         sb.from('royalty_charges').select('id,branch_id,period_start,period_end,net_sales,percent,amount,status,payment_note').eq('period_start',pStart).eq('period_end',pEnd)
@@ -4950,9 +4963,21 @@ const App={
         const canIssue=pct!=null && !(charge&&charge.status==='paid');
         let action=`<button class="btn ${canIssue?'btn-primary':''}" ${canIssue?'':'disabled'} style="width:auto;padding:8px 14px${canIssue?'':';opacity:.45'}" onclick="App.doIssueRoyalty('${o.id}','${pStart}','${pEnd}',this)">${charge?'Terbitkan ulang':'Terbitkan tagihan'}</button>`;
         if(charge && charge.status!=='paid'){ action+=` <button class="btn" style="width:auto;padding:8px 14px;background:var(--good);color:#fff" onclick="App.doVerifyRoyalty('${charge.id}',this)">Verifikasi bayar</button>`; }
+        const pkg=o.package_type, join=o.join_date, minR=o.min_royalty!=null?Number(o.min_royalty):null;
+        let minInfo='';
+        if(o.owner_user_id){
+          if(!pkg||!join){ minInfo=`<div class="mini" style="color:var(--gold);margin-top:4px">Paket/tanggal gabung belum diatur — minimum royalti tidak berlaku. Atur di bawah.</div>`; }
+          else {
+            const joinD=new Date(join+'T00:00:00+07:00'); const active3=new Date(joinD); active3.setMonth(active3.getMonth()+3);
+            const minActive=new Date(pStart+'T00:00:00+07:00')>=active3;
+            const pctAmt=pct!=null?Math.round(previewNet*pct/100):null;
+            const willUseMin=minActive&&minR!=null&&pctAmt!=null&&minR>pctAmt;
+            minInfo=`<div class="mini muted" style="margin-top:4px">Paket <b>${escHtml(pkg)}</b> · gabung ${join} · minimum ${minR!=null?this.rp(minR):'—'} ${minActive?'<span class="tag ok" style="font-size:10px">aktif</span>':'<span class="tag" style="font-size:10px;background:var(--surface-2)">belum (masa 3 bln)</span>'}${willUseMin?' → <b style="color:var(--accent)">tagihan pakai minimum</b>':''}</div>`;
+          }
+        }
         return `<div class="card pad" style="margin-bottom:12px">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
-            <div><b>${escHtml(o.name)}</b> ${badge}<div class="mini muted">omzet bersih ${this.rp(net)} · margin <b>${marginPct}%</b> · tarif ${usedPct!=null?usedPct+'%':'<span style="color:var(--bad)">belum diatur</span>'}</div></div>
+            <div><b>${escHtml(o.name)}</b> ${badge}<div class="mini muted">omzet bersih ${this.rp(net)} · margin <b>${marginPct}%</b> · tarif ${usedPct!=null?usedPct+'%':'<span style="color:var(--bad)">belum diatur</span>'}</div>${minInfo}</div>
             <div style="text-align:right"><div class="mono" style="font-size:18px;font-weight:700;color:${amt?'var(--accent)':'var(--muted)'}">${amt!=null?this.rp(amt):'—'}</div></div>
           </div>
           ${charge&&charge.payment_note?`<div class="mini muted" style="margin-top:4px">Catatan: ${escHtml(charge.payment_note)}</div>`:''}
@@ -4964,11 +4989,39 @@ const App={
         <div class="banner info"><span class="i">%</span><div>Persentase royalti dari omzet bersih, per outlet mitra. Dipakai saat menerbitkan tagihan.</div></div>
         <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Outlet mitra</th><th class="right">Tarif (%)</th></tr></thead><tbody>
         ${mitraOutlets.map(o=>`<tr><td><b>${escHtml(o.name)}</b></td><td class="right"><input id="rs_${escHtml(o.id)}" type="number" step="0.1" min="0" max="100" value="${rsmap[o.id]!=null?rsmap[o.id]:''}" placeholder="—" style="width:110px;text-align:right;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"></td></tr>`).join('')}
-        </tbody></table><button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" id="rsSaveBtn" onclick="App.doSaveRoyaltySettings()">Simpan tarif</button></div>`;
+        </tbody></table><button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" id="rsSaveBtn" onclick="App.doSaveRoyaltySettings()">Simpan tarif</button></div>
+        <div class="sec-title" style="margin-top:24px">Paket & minimum royalti</div>
+        <div class="banner info"><span class="i">◈</span><div>Minimum royalti per paket, berlaku <b>setelah bulan ke-3</b> sejak tanggal gabung (dihitung dari tanggal Perjanjian Kemitraan). Tagihan = <b>yang lebih besar</b> antara persen×omzet dan minimum. Rekomendasi: Start ${this._pkgMin.Start.label}, Growth ${this._pkgMin.Growth.label}, Signature ${this._pkgMin.Signature.label}. <b>Tanggal gabung wajib cocok dengan dokumen kemitraan.</b></div></div>
+        <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Outlet mitra</th><th>Paket</th><th>Tanggal gabung</th><th class="right">Minimum (Rp/bln)</th></tr></thead><tbody>
+        ${mitraOutlets.map(o=>`<tr><td><b>${escHtml(o.name)}</b></td>
+          <td><select id="pkg_${escHtml(o.id)}" onchange="App.trnSuggestMin('${escHtml(o.id)}',this.value)" style="padding:6px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2)"><option value="">—</option>${['Start','Growth','Signature'].map(pk=>`<option value="${pk}" ${o.package_type===pk?'selected':''}>${pk}</option>`).join('')}</select></td>
+          <td><input id="join_${escHtml(o.id)}" type="date" value="${o.join_date||''}" style="padding:6px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2)"></td>
+          <td class="right"><input id="min_${escHtml(o.id)}" type="number" step="1000" min="0" value="${o.min_royalty!=null?Number(o.min_royalty):''}" placeholder="—" style="width:130px;text-align:right;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"></td></tr>`).join('')}
+        </tbody></table><button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" onclick="App.doSavePackageMin()">Simpan paket & minimum</button></div>`;
       v.innerHTML=html;
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
   switchRoyaltyMonth(mn){ this._royaltyMonth=mn; this.render_royalty(); },
+  trnSuggestMin(id,pkg){
+    const el=document.getElementById('min_'+id); if(!el||el.value)return;
+    const map={Start:300000,Growth:750000,Signature:850000};
+    if(map[pkg])el.value=map[pkg];
+  },
+  async doSavePackageMin(){
+    try{
+      const outlets=[...document.querySelectorAll('[id^="pkg_"]')].map(el=>el.id.slice(4));
+      for(const id of outlets){
+        const pkg=document.getElementById('pkg_'+id).value||null;
+        const join=document.getElementById('join_'+id).value||null;
+        const minV=document.getElementById('min_'+id).value.trim();
+        const min=minV===''?null:Number(minV);
+        if(min!=null&&(isNaN(min)||min<0)){ this.toast('Minimum tidak valid','bad'); return; }
+        const{error}=await sb.from('branches').update({package_type:pkg,join_date:join,min_royalty:min}).eq('id',id);
+        if(error)throw error;
+      }
+      this.toast('Paket & minimum tersimpan','good'); this.render_royalty();
+    }catch(e){ this.toast((e&&e.message)||'Gagal menyimpan','bad'); }
+  },
   async doIssueRoyalty(branch,pStart,pEnd,btn){
     if(!confirm('Terbitkan tagihan royalti untuk periode ini? Tagihan akan tersimpan & muncul di aplikasi mitra.'))return;
     if(btn){btn.disabled=true;btn.textContent='…';}
@@ -5252,9 +5305,9 @@ const App={
       const bId=this.state.healthOutlet, days=this.state.healthDays;
       if(!bId){ v.innerHTML=`<div class="card pad mini muted">Belum ada outlet.</div>`; return; }
       const br=branches.find(b=>b.id===bId), isMitra=!!br.owner_user_id;
-      const d=new Date(), iso=x=>x.toISOString().slice(0,10);
-      const end=iso(d), start=iso(new Date(d.getTime()-(days-1)*864e5));
-      const pEnd=iso(new Date(d.getTime()-days*864e5)), pStart=iso(new Date(d.getTime()-(2*days-1)*864e5));
+      const now=Date.now();
+      const end=wibISODate(now), start=wibShiftDays(now,-(days-1));
+      const pEnd=wibShiftDays(now,-days), pStart=wibShiftDays(now,-(2*days-1));
       const [cur,prv]=await Promise.all([
         sb.rpc('health_metrics',{p_branch:bId,p_start:start,p_end:end}),
         sb.rpc('health_metrics',{p_branch:bId,p_start:pStart,p_end:pEnd})
@@ -5331,10 +5384,12 @@ const App={
       const branch=CURRENT.role==='owner'?document.getElementById('tkBr').value:this._tktFixedBranch;
       const title=(document.getElementById('tkTitle').value||'').trim();
       if(title.length<4){ this.toast('Judul minimal 4 karakter','bad'); btn.disabled=false; btn.textContent='Kirim ticket'; return; }
+      const url=(document.getElementById('tkUrl').value||'').trim();
+      if(url && !/^https:\/\/[^\s]+$/i.test(url)){ this.toast('URL bukti harus diawali https:// (link aman). Kosongkan bila tidak ada.','bad'); btn.disabled=false; btn.textContent='Kirim ticket'; return; }
       const payload={branch_id:branch,category:document.getElementById('tkCat').value,title,
         description:(document.getElementById('tkDesc').value||'').trim()||null,
         priority:document.getElementById('tkPrio').value,
-        attachment_url:(document.getElementById('tkUrl').value||'').trim()||null};
+        attachment_url:url||null};
       if(this._tktPrefill&&this._tktPrefill.report_id&&this._tktPrefill.title===title){ payload.ai_report_id=this._tktPrefill.report_id; }
       const{data,error}=await sb.from('support_tickets').insert(payload).select('ticket_no').single();
       if(error)throw error;
@@ -5440,11 +5495,16 @@ const App={
 
   /* ===== AI REPORT (rpc report_data + rule engine client) — owner/mitra (+PIC via fungsi) ===== */
   airRanges(type){
-    const d=new Date(), iso=x=>x.toISOString().slice(0,10), day=864e5;
-    if(type==='daily') return {start:iso(d),end:iso(d),pstart:iso(new Date(d-day)),pend:iso(new Date(d-day)),label:'Hari ini vs kemarin'};
-    if(type==='weekly') return {start:iso(new Date(d-6*day)),end:iso(d),pstart:iso(new Date(d-13*day)),pend:iso(new Date(d-7*day)),label:'7 hari vs 7 hari sebelumnya'};
-    const first=new Date(d.getFullYear(),d.getMonth(),1); const len=Math.round((d-first)/day)+1;
-    return {start:iso(first),end:iso(d),pstart:iso(new Date(first-len*day)),pend:iso(new Date(first-day)),label:'Bulan berjalan vs '+len+' hari sebelumnya'};
+    const now=Date.now();
+    const today=wibISODate(now);
+    if(type==='daily') return {start:today,end:today,pstart:wibShiftDays(now,-1),pend:wibShiftDays(now,-1),label:'Hari ini vs kemarin'};
+    if(type==='weekly') return {start:wibShiftDays(now,-6),end:today,pstart:wibShiftDays(now,-13),pend:wibShiftDays(now,-7),label:'7 hari vs 7 hari sebelumnya'};
+    // bulan berjalan: hari-1 bulan ini (WIB) s/d hari ini
+    const y=Number(wibISODate(now).slice(0,4)), m=Number(wibISODate(now).slice(5,7));
+    const first=y+'-'+String(m).padStart(2,'0')+'-01';
+    const dayOfMonth=Number(wibISODate(now).slice(8,10));
+    // periode pembanding: rentang hari yang sama tepat sebelum tanggal 1
+    return {start:first,end:today,pstart:wibShiftDays(first+'T00:00:00+07:00',-dayOfMonth),pend:wibShiftDays(first+'T00:00:00+07:00',-1),label:'Bulan berjalan vs '+dayOfMonth+' hari sebelumnya'};
   },
   airPct(a,b){ return (b>0)?((a-b)/b*100):null; },
   airRules(cur,prev,fc,type){
@@ -5555,10 +5615,16 @@ const App={
       const canAssess=CURRENT.role==='owner'||CURRENT.role==='pic'; // frontend hint; server enforce is_central_assessor
       const canManage=CURRENT.role!=='crew';
       const modRows=mods.map(m=>{const a=asgMap[m.id]; const st=a?a.status:'Not Started'; const pr=a?Number(a.progress):0;
-        return `<tr><td><b>${escHtml(m.code)}</b> ${escHtml(m.title)}</td><td class="right">${pr}%</td><td class="right">${this.trnBadge(st)}</td>${canManage?`<td class="right"><select onchange="App.trnSetStatus('${pid}','${m.id}',this.value)" style="padding:5px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2);font-size:11px">${this.TRN_STATUS.map(s=>`<option ${s===st?'selected':''}>${s}</option>`).join('')}</select></td>`:''}</tr>`;
+        return `<tr><td><b>${escHtml(m.code)}</b> ${escHtml(m.title)}</td><td class="right">${pr}%</td><td class="right">${this.trnBadge(st)}</td>${canManage?`<td class="right"><select onchange="App.trnSetStatus('${pid}','${m.id}',this.value)" style="padding:5px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2);font-size:11px">${this.TRN_STATUS.filter(s=>s!=='Certified'||CURRENT.role==='owner'||s===st).map(s=>`<option ${s===st?'selected':''}>${s}</option>`).join('')}</select></td>`:''}</tr>`;
       }).join('');
       const assessRows=assess.length?assess.map(a=>`<div class="card pad" style="margin-bottom:6px"><div style="display:flex;justify-content:space-between"><b>${escHtml(a.assessment_type)}</b><span class="tag ${a.result==='Pass'?'ok':a.result==='Fail'?'low':'warn'}">${escHtml(a.result||'-')} · ${a.final_score||'-'}</span></div><div class="mini muted" style="margin-top:3px">Teori ${a.theory_score??'-'} · Praktik ${a.practice_score??'-'} · Attitude ${a.attitude_score??'-'} · SOP ${a.sop_score??'-'} · ${fmtDateWIB(a.assessed_at)}</div>${a.notes?`<div class="mini" style="margin-top:3px">${escHtml(a.notes)}</div>`:''}${a.result==='Fail'||a.result==='Remedial'?`<button class="btn" style="width:auto;padding:5px 10px;font-size:11px;margin-top:6px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.trnTicketRemedial('${pid}','${escHtml(p.full_name)}','${p.branch_id}')">Buat ticket remedial</button>`:''}</div>`).join(''):'<div class="mini muted">Belum ada assessment.</div>';
-      const certRows=certs.length?certs.map(c=>`<div class="card pad" style="margin-bottom:6px"><div style="display:flex;justify-content:space-between"><span><b class="mono">${escHtml(c.certificate_no||'-')}</b> · ${escHtml(c.certificate_type)}</span><span class="tag ${c.status==='Active'?'ok':'low'}">${escHtml(c.status)}</span></div><div class="mini muted" style="margin-top:3px">Terbit ${c.issued_at}${c.expired_at?' · Expired '+c.expired_at:''}</div></div>`).join(''):'<div class="mini muted">Belum ada sertifikat.</div>';
+      const _wibToday=wibISODate(Date.now());
+      const certRows=certs.length?certs.map(c=>{
+        const isExp=c.expired_at && c.expired_at < _wibToday;
+        const soon=c.expired_at && !isExp && c.expired_at <= wibShiftDays(Date.now(),30);
+        const effStatus=isExp?'Expired':c.status;
+        return `<div class="card pad" style="margin-bottom:6px${isExp?';border-left:3px solid var(--bad)':soon?';border-left:3px solid var(--gold)':''}"><div style="display:flex;justify-content:space-between"><span><b class="mono">${escHtml(c.certificate_no||'-')}</b> · ${escHtml(c.certificate_type)}</span><span class="tag ${effStatus==='Active'?'ok':'low'}">${escHtml(effStatus)}${soon?' · segera habis':''}</span></div><div class="mini muted" style="margin-top:3px">Terbit ${c.issued_at}${c.expired_at?' · Berlaku s/d '+c.expired_at:' · tanpa expiry'}</div></div>`;
+      }).join(''):'<div class="mini muted">Belum ada sertifikat.</div>';
       v.innerHTML=`<button class="btn" style="width:auto;padding:7px 14px;margin-bottom:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.render_training()">← Daftar</button>
         <div class="card pad" style="margin-bottom:12px"><b style="font-size:16px">${escHtml(p.full_name)}</b> <span class="mini muted">${escHtml(p.role)}${p.package_type?' · '+escHtml(p.package_type):''} · ${escHtml(p.branch_id||'')}</span></div>
         <div class="card pad" style="margin-bottom:12px"><b>Modul pelatihan</b><div style="overflow-x:auto;margin-top:8px"><table><thead><tr><th>Modul</th><th class="right">Progress</th><th class="right">Status</th>${canManage?'<th class="right">Ubah</th>':''}</tr></thead><tbody>${modRows}</tbody></table></div></div>
@@ -5573,21 +5639,41 @@ const App={
       const{error}=await sb.from('training_assignments').upsert(patch,{onConflict:'participant_id,module_id'}); if(error)throw error; this.toast('Status modul: '+status,'good'); }
     catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
   },
+  /* SRUPUT Academy — aturan assessment & sertifikasi.
+     ASUMSI (sesuaikan bila SOP Academy berbeda): bobot & ambang di bawah bisa kamu ubah
+     di satu tempat ini. Theory 20% Practice 40% Attitude 20% SOP 20% — praktik & SOP
+     diberi bobot besar karena ini operasional F&B, bukan ujian teori. */
+  ACADEMY:{
+    weights:{theory:0.20,practice:0.40,attitude:0.20,sop:0.20},
+    minClearance:70,   // Operational Clearance: boleh operasi setelah training 3 hari
+    minFull:75,        // Full Certification: setelah OJT 30 hari
+    remedialFloor:60,  // di bawah minFull tapi >= ini → Remedial (boleh mengulang); < ini → Fail
+    certValidMonths:12 // masa berlaku Full Certification sebelum wajib re-sertifikasi
+  },
+  academyScore(th,pr,at,sop){ const w=this.ACADEMY.weights;
+    return Math.round(th*w.theory+pr*w.practice+at*w.attitude+sop*w.sop); },
+  academyResult(final,type){
+    const min=(type&&/clearance/i.test(type))?this.ACADEMY.minClearance:this.ACADEMY.minFull;
+    if(final>=min)return 'Pass';
+    if(final>=this.ACADEMY.remedialFloor)return 'Remedial';
+    return 'Fail';
+  },
   async trnAddAssessment(pid,branch){
     const type=prompt('Jenis assessment (mis. Operational Clearance / 30-day):','30-day'); if(!type)return;
     const th=Number(prompt('Nilai Teori (0-100):','')); const pr=Number(prompt('Nilai Praktik (0-100):',''));
     const at=Number(prompt('Nilai Attitude (0-100):','')); const sop=Number(prompt('Nilai SOP (0-100):',''));
     if([th,pr,at,sop].some(x=>isNaN(x)||x<0||x>100)){ this.toast('Nilai harus 0-100','bad'); return; }
-    const final=Math.round((th+pr+at+sop)/4);
-    const result=final>=75?'Pass':final>=60?'Remedial':'Fail';
+    const final=this.academyScore(th,pr,at,sop);
+    const result=this.academyResult(final,type);
     const notes=prompt('Catatan (opsional):','')||null;
     try{ const{error}=await sb.from('training_assessments').insert({participant_id:pid,branch_id:branch,assessment_type:type,theory_score:th,practice_score:pr,attitude_score:at,sop_score:sop,final_score:final,result,notes}); if(error)throw error; this.toast('Assessment tersimpan: '+result+' ('+final+')',result==='Pass'?'good':'bad'); this.trnOpenParticipant(pid); }
     catch(e){ this.toast((e&&e.message)||'Gagal (hanya Pusat yang boleh menilai)','bad'); }
   },
   async trnIssueCert(pid){
     const type=prompt('Jenis sertifikat (Operational Clearance / Full Certification / Re-certification):','Full Certification'); if(!type)return;
-    const months=Number(prompt('Berlaku berapa bulan? (kosong=tanpa expiry)','12'));
-    let exp=null; if(!isNaN(months)&&months>0){ const d=new Date(); d.setMonth(d.getMonth()+months); exp=d.toISOString().slice(0,10); }
+    const defMonths=/clearance/i.test(type)?'':String(this.ACADEMY.certValidMonths);
+    const months=Number(prompt('Berlaku berapa bulan? (kosong=tanpa expiry, mis. Operational Clearance)',defMonths));
+    let exp=null; if(!isNaN(months)&&months>0){ exp=wibShiftDays(Date.now(),Math.round(months*30.44)); }
     try{ const{error}=await sb.from('training_certificates').insert({participant_id:pid,certificate_type:type,expired_at:exp}); if(error)throw error; this.toast('Sertifikat diterbitkan','good'); this.trnOpenParticipant(pid); }
     catch(e){ this.toast((e&&e.message)||'Gagal (hanya Pusat yang boleh menerbitkan)','bad'); }
   },
@@ -5749,8 +5835,8 @@ const App={
         bId=this.state.mtrOutlet; headSel=this.mtrBar();
       }else{ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner & Mitra</b></div>`; return; }
       if(!this.state.anDays) this.state.anDays=7;
-      const days=this.state.anDays, d=new Date(), iso=x=>x.toISOString().slice(0,10);
-      const end=iso(d), start=iso(new Date(d.getTime()-(days-1)*864e5));
+      const days=this.state.anDays, now=Date.now();
+      const end=wibISODate(now), start=wibShiftDays(now,-(days-1));
       const{data,error}=await sb.rpc('anomaly_scan',{p_branch:bId,p_start:start,p_end:end});
       if(error)throw error;
       const rows=(data||[]);
