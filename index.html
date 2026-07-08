@@ -323,12 +323,12 @@ const hourOfWIB=ts=>{
 
 /* role -> menu yg aktif di slice ini. 'soon' = belum tersambung (jujur, bukan demo palsu) */
 const NAV={
-  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
-  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
-  crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['attend','◔','Absensi Saya',0],['settings','⚙','Setting Printer',1]],
+  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
+  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
+  crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',0],['settings','⚙','Setting Printer',1]],
   media:[['content','✦','Rekomendasi Konten',0]],
   gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
-  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
+  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
 };
 const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet'};
 
@@ -909,7 +909,7 @@ const App={
   go(page){
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat']}[page]||[page,''];
+    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])this['render_'+page]();
   },
@@ -5191,6 +5191,31 @@ const App={
 
   /* ===== OWNER: Skor Kesehatan (mesin metrik: rpc health_metrics) — aditif ===== */
   HEALTH_TH:{margin:{good:55,warn:40},labaPct:{good:5,warn:0},expR:{good:25,warn:40},wasteR:{good:2,warn:5},voidR:{good:2,warn:5},shrinkR:{good:1,warn:3},lowStock:{good:0,warn:3},missCogs:{good:0,warn:2}},
+  /* Outlet Health Score BERBOBOT (spek Modul 3): Sales25 Margin20 Stock15 Waste15 Disiplin15 Training10 */
+  outletHealthScore(m, fc, trainingPct){
+    const N=x=>Number(x||0);
+    const omz=N(m.omzet), cogs=N(m.cogs_sum), exp=N(m.expenses_sum), waste=N(m.waste_cost);
+    const clamp=x=>Math.max(0,Math.min(100,x));
+    // Sales: laba operasional positif & rasio sehat
+    const laba=omz-cogs-exp, labaR=omz>0?laba/omz*100:0;
+    const sales=omz<=0?0:clamp(50+labaR*3); // labaR 0%→50, 10%→80, 17%→100
+    // Margin
+    const margin=omz>0?(omz-cogs)/omz*100:0;
+    const marginS=clamp((margin-25)/(60-25)*100); // 25%→0, 60%→100
+    // Stock accuracy: low_stock_count (0 bagus)
+    const low=N(m.low_stock_count); const stockS=clamp(100-low*20);
+    // Waste ratio
+    const wasteR=omz>0?waste/omz*100:0; const wasteS=clamp(100-wasteR*20); // 5%→0
+    // Operational discipline: selisih kas + tx tanpa cogs
+    const negShift=N(m.shift_diff_neg_count), missCogs=N(m.missing_cogs_count);
+    const discS=clamp(100-negShift*25-missCogs*10);
+    // Training completion 0-100
+    const trainS=clamp(N(trainingPct));
+    const score=Math.round(sales*0.25+marginS*0.20+stockS*0.15+wasteS*0.15+discS*0.15+trainS*0.10);
+    const band=score>=85?['Healthy','var(--good)']:score>=70?['Watchlist','var(--gold)']:score>=50?['Risk','#e8833a']:['Critical','var(--bad)'];
+    return {score,band,parts:[['Sales',Math.round(sales),25],['Margin',Math.round(marginS),20],['Stok',Math.round(stockS),15],['Waste',Math.round(wasteS),15],['Disiplin',Math.round(discS),15],['Training',Math.round(trainS),10]]};
+  },
+
   healthEval(m,prev,isMitra){
     const T=this.HEALTH_TH, N=x=>Number(x||0), D=[];
     const omz=N(m.omzet), cogs=N(m.cogs_sum), exp=N(m.expenses_sum), laba=omz-cogs-exp;
@@ -5259,6 +5284,160 @@ const App={
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
 
+  /* ===== TICKET SUPPORT — semua role (crew: buat + lihat miliknya) — aditif ===== */
+  TKT_CAT:{operasional:'Operasional',stok:'Stok / Bahan',menu_resep:'Menu / Resep',pos_os:'POS / SRUPUT OS',pembayaran:'Pembayaran / QRIS',equipment:'Equipment',komplain:'Komplain Pelanggan',sdm:'Training / SDM',marketing:'Marketing / Promo',royalti_invoice:'Royalti / Invoice',lainnya:'Lainnya'},
+  TKT_CREW_CAT:['operasional','pos_os','equipment','komplain','lainnya'],
+  TKT_PRIO:['Low','Medium','High','Critical'],
+  TKT_STATUS:['Open','In Review','Waiting Mitra','Waiting Pusat','Resolved','Closed','Rejected'],
+  tktSlaJam:{Critical:2,High:6,Medium:24,Low:48},
+  tktBadge(s){const m={Open:'warn','In Review':'',"Waiting Mitra":'warn','Waiting Pusat':'warn',Resolved:'ok',Closed:'',Rejected:'low'};return `<span class="tag ${m[s]||''}">${escHtml(s)}</span>`;},
+  tktOverdue(t){ if(['Resolved','Closed','Rejected'].includes(t.status))return false; return t.due_at && new Date(t.due_at) < new Date(); },
+  async render_ticket(){
+    const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat tiket…');
+    try{
+      const role=CURRENT.role;
+      // outlet default utk form
+      let outletOpts='';
+      if(role==='owner'){ const brs=(await Data.branches()).filter(b=>b.type==='outlet'); this._tktBranches=brs; outletOpts=brs.map(b=>`<option value="${b.id}">${escHtml(b.name)}${b.owner_user_id?' (mitra)':''}</option>`).join(''); }
+      else if(role==='mitra'){ if(!await this.mtrEnsure()){ v.innerHTML=this.mtrNoOutlet(); return; } this._tktFixedBranch=this.state.mtrOutlet; }
+      else { this._tktFixedBranch=CURRENT.branch; }
+      const cats=role==='crew'?this.TKT_CREW_CAT:Object.keys(this.TKT_CAT);
+      const catOpts=cats.map(c=>`<option value="${c}">${this.TKT_CAT[c]}</option>`).join('');
+      const prioOpts=this.TKT_PRIO.map(p=>`<option value="${p}" ${p==='Medium'?'selected':''}>${p} · respon ≤${this.tktSlaJam[p]}j</option>`).join('');
+      const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
+      let html=`<div class="card pad" style="margin-bottom:16px"><b style="display:block;margin-bottom:12px">${role==='crew'?'Laporkan kendala':'Buat ticket baru'}</b>
+        <div style="display:grid;gap:10px">
+          ${role==='owner'?`<div><label class="mini" style="display:block;margin-bottom:4px">Outlet</label><select id="tkBr" style="${fld};width:100%">${outletOpts}</select></div>`:''}
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="flex:1;min-width:150px"><label class="mini" style="display:block;margin-bottom:4px">Kategori</label><select id="tkCat" style="${fld};width:100%">${catOpts}</select></div>
+            <div style="min-width:150px"><label class="mini" style="display:block;margin-bottom:4px">Prioritas</label><select id="tkPrio" style="${fld};width:100%">${prioOpts}</select></div>
+          </div>
+          <div><label class="mini" style="display:block;margin-bottom:4px">Judul masalah</label><input id="tkTitle" maxlength="120" placeholder="Ringkas, min 4 karakter" style="${fld};width:100%"></div>
+          <div><label class="mini" style="display:block;margin-bottom:4px">Deskripsi</label><textarea id="tkDesc" rows="3" placeholder="Jelaskan detail: apa, kapan, dampaknya" style="${fld};width:100%;resize:vertical"></textarea></div>
+          <div><label class="mini" style="display:block;margin-bottom:4px">URL bukti (opsional)</label><input id="tkUrl" placeholder="link foto/video jika ada" style="${fld};width:100%"></div>
+          <button class="btn btn-primary" style="width:auto;padding:11px 18px" id="tkSubmit" onclick="App.tktCreate()">Kirim ticket</button>
+        </div></div>
+        <div class="sec-title">Daftar ticket</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+          <select id="tkFilter" onchange="App.tktLoadList()" style="${fld}"><option value="aktif">Aktif (belum selesai)</option><option value="all">Semua</option>${this.TKT_STATUS.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>
+        </div>
+        <div id="tkList">${this.loadingHTML('Memuat…')}</div>`;
+      v.innerHTML=html; this.tktLoadList();
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  async tktCreate(){
+    const btn=document.getElementById('tkSubmit'); btn.disabled=true; btn.textContent='Mengirim…';
+    try{
+      const branch=CURRENT.role==='owner'?document.getElementById('tkBr').value:this._tktFixedBranch;
+      const title=(document.getElementById('tkTitle').value||'').trim();
+      if(title.length<4){ this.toast('Judul minimal 4 karakter','bad'); btn.disabled=false; btn.textContent='Kirim ticket'; return; }
+      const payload={branch_id:branch,category:document.getElementById('tkCat').value,title,
+        description:(document.getElementById('tkDesc').value||'').trim()||null,
+        priority:document.getElementById('tkPrio').value,
+        attachment_url:(document.getElementById('tkUrl').value||'').trim()||null};
+      if(this._tktPrefill&&this._tktPrefill.report_id&&this._tktPrefill.title===title){ payload.ai_report_id=this._tktPrefill.report_id; }
+      const{data,error}=await sb.from('support_tickets').insert(payload).select('ticket_no').single();
+      if(error)throw error;
+      this.toast('Ticket '+data.ticket_no+' dibuat','good');
+      document.getElementById('tkTitle').value=''; document.getElementById('tkDesc').value=''; document.getElementById('tkUrl').value='';
+      this.tktLoadList();
+    }catch(e){ this.toast((e&&e.message)||'Gagal membuat ticket','bad'); }
+    btn.disabled=false; btn.textContent='Kirim ticket';
+  },
+  async tktLoadList(){
+    const el=document.getElementById('tkList'); if(!el)return;
+    const f=document.getElementById('tkFilter')?document.getElementById('tkFilter').value:'aktif';
+    try{
+      let q=sb.from('support_tickets').select('id,ticket_no,branch_id,category,title,priority,status,due_at,created_at,created_by').order('created_at',{ascending:false}).limit(60);
+      if(f==='aktif') q=q.not('status','in','("Resolved","Closed","Rejected")');
+      else if(f!=='all') q=q.eq('status',f);
+      const{data,error}=await q; if(error)throw error;
+      if(!data||!data.length){ el.innerHTML=`<div class="card pad mini muted">Tidak ada ticket.</div>`; return; }
+      const overdue=data.filter(t=>this.tktOverdue(t)).length;
+      const crit=data.filter(t=>t.priority==='Critical'&&t.status==='Open').length;
+      const waitMitra=data.filter(t=>t.status==='Waiting Mitra').length;
+      const resNotClosed=data.filter(t=>t.status==='Resolved').length;
+      let banner='';
+      if(overdue||crit||waitMitra||resNotClosed){ banner=`<div class="card pad" style="margin-bottom:12px;border-left:4px solid var(--bad)"><b>Perhatian</b><div class="mini" style="margin-top:4px">${[overdue?overdue+' ticket melewati SLA':'',crit?crit+' Critical belum ditangani':'',waitMitra?waitMitra+' menunggu mitra':'',resNotClosed?resNotClosed+' selesai tapi belum ditutup':''].filter(Boolean).join(' · ')}</div></div>`; }
+      el.innerHTML=banner+data.map(t=>{
+        const od=this.tktOverdue(t);
+        return `<div class="card pad" style="margin-bottom:8px;cursor:pointer;${od?'border-left:4px solid var(--bad)':''}" onclick="App.tktOpen('${t.id}')">
+          <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+            <span><b class="mono mini">${t.ticket_no}</b> · <b>${escHtml(t.title)}</b></span>
+            <span style="display:flex;gap:6px;align-items:center">${od?'<span class="tag low">OVERDUE</span>':''}<span class="tag ${t.priority==='Critical'?'low':t.priority==='High'?'warn':''}">${t.priority}</span>${this.tktBadge(t.status)}</span></div>
+          <div class="mini muted" style="margin-top:3px">${this.TKT_CAT[t.category]||t.category}${CURRENT.role==='owner'?' · '+escHtml(t.branch_id):''} · ${fmtDateWIB(t.created_at)}</div></div>`;
+      }).join('');
+    }catch(e){ el.innerHTML=this.errHTML(e); }
+  },
+  async tktOpen(id){
+    const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat ticket…');
+    try{
+      const[tRes,mRes,lRes]=await Promise.all([
+        sb.from('support_tickets').select('*').eq('id',id).single(),
+        sb.from('support_ticket_messages').select('id,sender_id,message,attachment_url,created_at').eq('ticket_id',id).order('created_at',{ascending:true}),
+        sb.from('support_ticket_status_logs').select('old_status,new_status,note,created_at,changed_by').eq('ticket_id',id).order('created_at',{ascending:true})
+      ]);
+      if(tRes.error)throw tRes.error; const t=tRes.data;
+      this._tktCur=t;
+      const isOwner=CURRENT.role==='owner', od=this.tktOverdue(t);
+      const msgs=(mRes.data||[]).map(m=>`<div style="padding:8px 11px;background:var(--surface-2);border-radius:9px;margin-bottom:7px"><div class="mini muted" style="margin-bottom:2px">${fmtDateWIB(m.created_at)}</div><div>${escHtml(m.message)}</div>${m.attachment_url?`<a href="${escHtml(m.attachment_url)}" target="_blank" class="mini" style="color:var(--accent)">Lihat lampiran ↗</a>`:''}</div>`).join('')||'<div class="mini muted">Belum ada komentar.</div>';
+      const logs=(lRes.data||[]).map(l=>`<div class="mini" style="padding:3px 0"><span class="muted">${fmtDateWIB(l.created_at)}</span> · ${l.old_status?escHtml(l.old_status)+' → ':''}<b>${escHtml(l.new_status)}</b>${l.note?' · '+escHtml(l.note):''}</div>`).join('');
+      // aksi status
+      let statusCtl='';
+      const canComment=!['Closed','Rejected'].includes(t.status);
+      if(isOwner){
+        statusCtl=`<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px">
+          <select id="tkNewStatus" style="padding:8px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">${this.TKT_STATUS.map(s=>`<option value="${s}" ${s===t.status?'selected':''}>${s}</option>`).join('')}</select>
+          <input id="tkResNote" placeholder="Catatan resolusi (opsional)" style="padding:8px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);flex:1;min-width:160px">
+          <button class="btn btn-primary" style="width:auto;padding:9px 15px" onclick="App.tktUpdateStatus('${id}')">Ubah status</button></div>`;
+      } else if(t.status==='Resolved'){
+        statusCtl=`<button class="btn" style="width:auto;padding:9px 15px;margin-top:8px;background:var(--good);color:#fff" onclick="App.tktClose('${id}')">Tutup ticket (selesai)</button>`;
+      } else if(canComment){
+        statusCtl=`<button class="btn" style="width:auto;padding:9px 15px;margin-top:8px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.tktSetWaitingPusat('${id}')">Kirim balik ke Pusat</button>`;
+      }
+      v.innerHTML=`<button class="btn" style="width:auto;padding:7px 14px;margin-bottom:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.render_ticket()">← Daftar</button>
+        <div class="card pad" style="margin-bottom:12px;${od?'border-left:4px solid var(--bad)':''}">
+          <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline"><span><b class="mono mini">${t.ticket_no}</b> · <b>${escHtml(t.title)}</b></span><span style="display:flex;gap:6px">${od?'<span class="tag low">OVERDUE</span>':''}<span class="tag ${t.priority==='Critical'?'low':t.priority==='High'?'warn':''}">${t.priority}</span>${this.tktBadge(t.status)}</span></div>
+          <div class="mini muted" style="margin-top:4px">${this.TKT_CAT[t.category]||t.category}${isOwner?' · '+escHtml(t.branch_id):''} · dibuat ${fmtDateWIB(t.created_at)} · SLA ${fmtDateWIB(t.due_at)}</div>
+          ${t.description?`<div style="margin-top:8px">${escHtml(t.description)}</div>`:''}
+          ${t.attachment_url?`<a href="${escHtml(t.attachment_url)}" target="_blank" class="mini" style="color:var(--accent)">Lihat bukti ↗</a>`:''}
+          ${t.resolution_note?`<div class="mini" style="margin-top:8px;color:var(--good)"><b>Resolusi:</b> ${escHtml(t.resolution_note)}</div>`:''}
+          ${statusCtl}</div>
+        <div class="card pad" style="margin-bottom:12px"><b>Timeline percakapan</b><div style="margin-top:8px">${msgs}</div>
+          ${canComment?`<div style="display:flex;gap:8px;margin-top:10px"><input id="tkMsg" placeholder="Tulis komentar…" style="padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);flex:1" onkeydown="if(event.key==='Enter')App.tktSendMsg('${id}')"><button class="btn btn-primary" style="width:auto;padding:9px 15px" onclick="App.tktSendMsg('${id}')">Kirim</button></div>`:'<div class="mini muted" style="margin-top:8px">Ticket sudah final — komentar ditutup.</div>'}</div>
+        <div class="card pad"><b>Riwayat status</b><div style="margin-top:8px">${logs}</div></div>`;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  async tktSendMsg(id){
+    const inp=document.getElementById('tkMsg'); const msg=(inp.value||'').trim(); if(!msg)return;
+    try{ const{error}=await sb.from('support_ticket_messages').insert({ticket_id:id,message:msg}); if(error)throw error; inp.value=''; this.tktOpen(id); }
+    catch(e){ this.toast((e&&e.message)||'Gagal mengirim','bad'); }
+  },
+  async tktUpdateStatus(id){
+    const s=document.getElementById('tkNewStatus').value, note=(document.getElementById('tkResNote').value||'').trim()||null;
+    try{ const{error}=await sb.rpc('ticket_set_status',{p_id:id,p_status:s,p_note:note}); if(error)throw error; this.toast('Status: '+s,'good'); this.tktOpen(id); }
+    catch(e){ this.toast((e&&e.message)||'Gagal ubah status','bad'); }
+  },
+  async tktClose(id){ try{ const{error}=await sb.rpc('ticket_set_status',{p_id:id,p_status:'Closed',p_note:null}); if(error)throw error; this.toast('Ticket ditutup','good'); this.tktOpen(id);}catch(e){this.toast((e&&e.message)||'Gagal','bad');} },
+  async tktSetWaitingPusat(id){ try{ const{error}=await sb.rpc('ticket_set_status',{p_id:id,p_status:'Waiting Pusat',p_note:null}); if(error)throw error; this.toast('Dikirim balik ke Pusat','good'); this.tktOpen(id);}catch(e){this.toast((e&&e.message)||'Gagal','bad');} },
+  // integrasi dari AI Report: prefill ticket dari alert high-priority
+  tktFromReport(){
+    const rep=this.state.airLast; if(!rep){ this.toast('Buat report dulu','bad'); return; }
+    const highAlert=(rep.alerts||[]).find(a=>a.level==='High')||(rep.alerts||[])[0];
+    this._tktPrefill={branch:rep.branch,report_id:rep.savedId||null,
+      title:'['+rep.type+'] '+(highAlert?highAlert.text.slice(0,90):'Tindak lanjut AI Report'),
+      desc:(rep.summary||'')+'\n\n'+(rep.actions||[]).map((a,i)=>(i+1)+'. '+a).join('\n'),
+      priority:rep.priority==='High'?'High':rep.priority==='Medium'?'Medium':'Low',
+      category:'operasional'};
+    this.go('ticket');
+    setTimeout(()=>{ try{
+      if(CURRENT.role==='owner'&&document.getElementById('tkBr'))document.getElementById('tkBr').value=this._tktPrefill.branch;
+      document.getElementById('tkTitle').value=this._tktPrefill.title;
+      document.getElementById('tkDesc').value=this._tktPrefill.desc;
+      document.getElementById('tkPrio').value=this._tktPrefill.priority;
+    }catch(e){} },150);
+  },
+
   /* ===== AI REPORT (rpc report_data + rule engine client) — owner/mitra (+PIC via fungsi) ===== */
   airRanges(type){
     const d=new Date(), iso=x=>x.toISOString().slice(0,10), day=864e5;
@@ -5318,8 +5497,126 @@ const App={
     const actions=alerts.filter(a=>a.level!=='Low').slice(0,3).map(a=>a.action).concat(recs.filter(r=>r.priority==='High').slice(0,2).map(r=>r.text));
     return {summary,key,alerts,recs,actions:[...new Set(actions)],priority};
   },
+  /* ===== TRAINING DASHBOARD / SRUPUT ACADEMY — semua peran (crew: hanya dirinya) ===== */
+  TRN_STATUS:['Not Started','In Progress','Completed','Need Remedial','Certified','Expired'],
+  trnBadge(s){const m={'Not Started':'', 'In Progress':'warn','Completed':'ok','Need Remedial':'low','Certified':'ok','Expired':'low'};return `<span class="tag ${m[s]||''}">${escHtml(s)}</span>`;},
+  async render_training(){
+    const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat training…');
+    try{
+      // fallback aman bila tabel belum ada
+      const probe=await sb.from('training_modules').select('id').limit(1);
+      if(probe.error){ v.innerHTML=`<div class="card pad"><b>Modul belum dikonfigurasi.</b><div class="mini muted" style="margin-top:6px">Jalankan migration terlebih dahulu.</div></div>`; return; }
+      if(CURRENT.role==='crew'){ return this.trnRenderCrew(); }
+      // owner/mitra/pic: dashboard peserta
+      let branches=[], bId=null, headSel='';
+      if(CURRENT.role==='owner'){ branches=(await Data.branches()).filter(b=>b.type==='outlet'); if(!this.state.trnOutlet||!branches.find(b=>b.id===this.state.trnOutlet))this.state.trnOutlet=branches[0]?branches[0].id:null; bId=this.state.trnOutlet;
+        headSel=`<select onchange="App.state.trnOutlet=this.value;App.render_training()" style="padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">${branches.map(b=>`<option value="${b.id}" ${b.id===bId?'selected':''}>${escHtml(b.name)}${b.owner_user_id?' (mitra)':''}</option>`).join('')}</select>`;
+      } else if(CURRENT.role==='mitra'){ if(!await this.mtrEnsure()){v.innerHTML=this.mtrNoOutlet();return;} bId=this.state.mtrOutlet; headSel=this.mtrBar(); }
+      else { bId=CURRENT.branch; }
+      const [pRes,sRes]=await Promise.all([
+        sb.from('training_participants').select('id,full_name,role,branch_id,package_type,user_id').eq('branch_id',bId).order('full_name'),
+        sb.rpc('training_summary',{p_branch:bId})
+      ]);
+      if(pRes.error)throw pRes.error;
+      const parts=pRes.data||[], sum=sRes.data||{};
+      // KPI
+      const kpi=`<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-bottom:14px">
+        ${[['Peserta',sum.participants||0],['Crew certified',(sum.crew_certified||0)+' / '+(sum.crew_total||0)],['Completion',(sum.completion_pct||0)+'%'],['Akan expired ≤30h',sum.expiring_30d||0]].map(k=>`<div class="card pad"><div class="mini muted">${k[0]}</div><b style="font-size:18px">${k[1]}</b></div>`).join('')}</div>`;
+      const canManage=CURRENT.role!=='pic'||true; // pic outlet boleh kelola peserta outletnya
+      let html=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">${headSel}
+        <button class="btn btn-primary" style="width:auto;padding:9px 15px" onclick="App.trnAddParticipant('${bId}')">+ Tambah peserta</button></div>${kpi}
+        <div class="sec-title">Peserta</div>`;
+      if(!parts.length) html+=`<div class="card pad mini muted">Belum ada peserta di outlet ini.</div>`;
+      else html+=parts.map(p=>`<div class="card pad" style="margin-bottom:8px;cursor:pointer" onclick="App.trnOpenParticipant('${p.id}')">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline"><span><b>${escHtml(p.full_name)}</b> <span class="mini muted">${escHtml(p.role)}${p.package_type?' · '+escHtml(p.package_type):''}</span></span><span class="mini" style="color:var(--accent)">Detail →</span></div></div>`).join('');
+      v.innerHTML=html;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  async trnAddParticipant(bId){
+    const name=prompt('Nama peserta:'); if(!name||name.trim().length<2)return;
+    const role=prompt('Role (crew/pic/mitra/owner):','crew'); if(!role)return;
+    const pkg=prompt('Paket kemitraan (opsional, mis. SRUPUT Start/Growth/Signature):','')||null;
+    try{ const{error}=await sb.from('training_participants').insert({full_name:name.trim(),role:role.trim(),branch_id:bId,package_type:pkg}); if(error)throw error; this.toast('Peserta ditambahkan','good'); this.render_training(); }
+    catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+  async trnOpenParticipant(pid){
+    const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat peserta…');
+    try{
+      const [pRes,mRes,aRes,asRes,cRes]=await Promise.all([
+        sb.from('training_participants').select('*').eq('id',pid).single(),
+        sb.from('training_modules').select('id,code,title').eq('active',true).order('sort_order'),
+        sb.from('training_assignments').select('*').eq('participant_id',pid),
+        sb.from('training_assessments').select('*').eq('participant_id',pid).order('assessed_at',{ascending:false}),
+        sb.from('training_certificates').select('*').eq('participant_id',pid).order('issued_at',{ascending:false})
+      ]);
+      if(pRes.error)throw pRes.error;
+      const p=pRes.data, mods=mRes.data||[], asg=aRes.data||[], assess=asRes.data||[], certs=cRes.data||[];
+      const asgMap={}; asg.forEach(a=>asgMap[a.module_id]=a);
+      const canAssess=CURRENT.role==='owner'||CURRENT.role==='pic'; // frontend hint; server enforce is_central_assessor
+      const canManage=CURRENT.role!=='crew';
+      const modRows=mods.map(m=>{const a=asgMap[m.id]; const st=a?a.status:'Not Started'; const pr=a?Number(a.progress):0;
+        return `<tr><td><b>${escHtml(m.code)}</b> ${escHtml(m.title)}</td><td class="right">${pr}%</td><td class="right">${this.trnBadge(st)}</td>${canManage?`<td class="right"><select onchange="App.trnSetStatus('${pid}','${m.id}',this.value)" style="padding:5px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2);font-size:11px">${this.TRN_STATUS.map(s=>`<option ${s===st?'selected':''}>${s}</option>`).join('')}</select></td>`:''}</tr>`;
+      }).join('');
+      const assessRows=assess.length?assess.map(a=>`<div class="card pad" style="margin-bottom:6px"><div style="display:flex;justify-content:space-between"><b>${escHtml(a.assessment_type)}</b><span class="tag ${a.result==='Pass'?'ok':a.result==='Fail'?'low':'warn'}">${escHtml(a.result||'-')} · ${a.final_score||'-'}</span></div><div class="mini muted" style="margin-top:3px">Teori ${a.theory_score??'-'} · Praktik ${a.practice_score??'-'} · Attitude ${a.attitude_score??'-'} · SOP ${a.sop_score??'-'} · ${fmtDateWIB(a.assessed_at)}</div>${a.notes?`<div class="mini" style="margin-top:3px">${escHtml(a.notes)}</div>`:''}${a.result==='Fail'||a.result==='Remedial'?`<button class="btn" style="width:auto;padding:5px 10px;font-size:11px;margin-top:6px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.trnTicketRemedial('${pid}','${escHtml(p.full_name)}','${p.branch_id}')">Buat ticket remedial</button>`:''}</div>`).join(''):'<div class="mini muted">Belum ada assessment.</div>';
+      const certRows=certs.length?certs.map(c=>`<div class="card pad" style="margin-bottom:6px"><div style="display:flex;justify-content:space-between"><span><b class="mono">${escHtml(c.certificate_no||'-')}</b> · ${escHtml(c.certificate_type)}</span><span class="tag ${c.status==='Active'?'ok':'low'}">${escHtml(c.status)}</span></div><div class="mini muted" style="margin-top:3px">Terbit ${c.issued_at}${c.expired_at?' · Expired '+c.expired_at:''}</div></div>`).join(''):'<div class="mini muted">Belum ada sertifikat.</div>';
+      v.innerHTML=`<button class="btn" style="width:auto;padding:7px 14px;margin-bottom:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.render_training()">← Daftar</button>
+        <div class="card pad" style="margin-bottom:12px"><b style="font-size:16px">${escHtml(p.full_name)}</b> <span class="mini muted">${escHtml(p.role)}${p.package_type?' · '+escHtml(p.package_type):''} · ${escHtml(p.branch_id||'')}</span></div>
+        <div class="card pad" style="margin-bottom:12px"><b>Modul pelatihan</b><div style="overflow-x:auto;margin-top:8px"><table><thead><tr><th>Modul</th><th class="right">Progress</th><th class="right">Status</th>${canManage?'<th class="right">Ubah</th>':''}</tr></thead><tbody>${modRows}</tbody></table></div></div>
+        <div class="card pad" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center"><b>Assessment</b>${canAssess?`<button class="btn btn-primary" style="width:auto;padding:7px 13px;font-size:12px" onclick="App.trnAddAssessment('${pid}','${p.branch_id}')">+ Nilai</button>`:''}</div><div style="margin-top:8px">${assessRows}</div></div>
+        <div class="card pad"><div style="display:flex;justify-content:space-between;align-items:center"><b>Sertifikasi</b>${canAssess?`<button class="btn btn-primary" style="width:auto;padding:7px 13px;font-size:12px" onclick="App.trnIssueCert('${pid}')">+ Terbitkan</button>`:''}</div><div style="margin-top:8px">${certRows}</div></div>`;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  async trnSetStatus(pid,mid,status){
+    try{ const patch={participant_id:pid,module_id:mid,status,progress:status==='Completed'||status==='Certified'?100:status==='In Progress'?50:0};
+      if(status==='Completed'||status==='Certified')patch.completed_at=new Date().toISOString();
+      if(status==='In Progress')patch.started_at=new Date().toISOString();
+      const{error}=await sb.from('training_assignments').upsert(patch,{onConflict:'participant_id,module_id'}); if(error)throw error; this.toast('Status modul: '+status,'good'); }
+    catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+  async trnAddAssessment(pid,branch){
+    const type=prompt('Jenis assessment (mis. Operational Clearance / 30-day):','30-day'); if(!type)return;
+    const th=Number(prompt('Nilai Teori (0-100):','')); const pr=Number(prompt('Nilai Praktik (0-100):',''));
+    const at=Number(prompt('Nilai Attitude (0-100):','')); const sop=Number(prompt('Nilai SOP (0-100):',''));
+    if([th,pr,at,sop].some(x=>isNaN(x)||x<0||x>100)){ this.toast('Nilai harus 0-100','bad'); return; }
+    const final=Math.round((th+pr+at+sop)/4);
+    const result=final>=75?'Pass':final>=60?'Remedial':'Fail';
+    const notes=prompt('Catatan (opsional):','')||null;
+    try{ const{error}=await sb.from('training_assessments').insert({participant_id:pid,branch_id:branch,assessment_type:type,theory_score:th,practice_score:pr,attitude_score:at,sop_score:sop,final_score:final,result,notes}); if(error)throw error; this.toast('Assessment tersimpan: '+result+' ('+final+')',result==='Pass'?'good':'bad'); this.trnOpenParticipant(pid); }
+    catch(e){ this.toast((e&&e.message)||'Gagal (hanya Pusat yang boleh menilai)','bad'); }
+  },
+  async trnIssueCert(pid){
+    const type=prompt('Jenis sertifikat (Operational Clearance / Full Certification / Re-certification):','Full Certification'); if(!type)return;
+    const months=Number(prompt('Berlaku berapa bulan? (kosong=tanpa expiry)','12'));
+    let exp=null; if(!isNaN(months)&&months>0){ const d=new Date(); d.setMonth(d.getMonth()+months); exp=d.toISOString().slice(0,10); }
+    try{ const{error}=await sb.from('training_certificates').insert({participant_id:pid,certificate_type:type,expired_at:exp}); if(error)throw error; this.toast('Sertifikat diterbitkan','good'); this.trnOpenParticipant(pid); }
+    catch(e){ this.toast((e&&e.message)||'Gagal (hanya Pusat yang boleh menerbitkan)','bad'); }
+  },
+  trnTicketRemedial(pid,name,branch){
+    this._tktPrefill={branch,report_id:null,title:'[Training] Remedial: '+name,
+      desc:'Peserta '+name+' memerlukan remedial berdasarkan hasil assessment. Jadwalkan coaching ulang & re-assessment.',
+      priority:'Medium',category:'sdm'};
+    this.go('ticket');
+    setTimeout(()=>{ try{
+      if(CURRENT.role==='owner'&&document.getElementById('tkBr'))document.getElementById('tkBr').value=branch;
+      if(document.getElementById('tkCat'))document.getElementById('tkCat').value='sdm';
+      document.getElementById('tkTitle').value=this._tktPrefill.title;
+      document.getElementById('tkDesc').value=this._tktPrefill.desc;
+    }catch(e){} },150);
+  },
+  async trnRenderCrew(){
+    const v=document.getElementById('view');
+    try{
+      const pRes=await sb.from('training_participants').select('id,full_name,role,branch_id,package_type').limit(1);
+      if(pRes.error)throw pRes.error;
+      if(!pRes.data||!pRes.data.length){ v.innerHTML=`<div class="card pad"><b>Belum ada data training untuk Anda.</b><div class="mini muted" style="margin-top:6px">Hubungi Pusat/PIC untuk didaftarkan sebagai peserta SRUPUT Academy.</div></div>`; return; }
+      // crew hanya melihat dirinya (RLS), ambil detail penuh via trnOpenParticipant tanpa tombol kelola
+      this.trnOpenParticipant(pRes.data[0].id);
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+
   async render_aireport(){
     const v=document.getElementById('view');
+    try{
     let bId=null, headSel='';
     if(CURRENT.role==='owner'){
       v.innerHTML=this.loadingHTML('Memuat…');
@@ -5343,6 +5640,7 @@ const App={
       <div id="airOut"><div class="card pad mini muted">Pilih tipe lalu tekan "Buat Report". Insight dihasilkan mesin aturan dari data outlet — bukan tebakan AI. Struktur data sudah siap disambungkan ke AI (via Supabase Edge Function, tanpa API key di HTML).</div></div>
       <div class="sec-title" style="margin-top:18px">Report tersimpan</div><div id="airSaved">${this.loadingHTML('Memuat…')}</div>`;
     this._airBranch=bId; this.airLoadSaved();
+    }catch(e){ v.innerHTML=this.errHTML(e); }
   },
   async airGenerate(){
     const out=document.getElementById('airOut'); const btn=document.getElementById('airGo');
@@ -5360,14 +5658,28 @@ const App={
       if(cur.error)throw cur.error; if(!cur.data)throw{message:'Tidak ada akses ke outlet ini'};
       const rep=this.airRules(cur.data,prev.data||{},fc.data||[],type);
       rep.branch=bId; rep.type=type; rep.start=R.start; rep.end=R.end;
+      // Integrasi training (poin 11): performa turun + crew belum certified → insight coaching
+      try{
+        const ts=await sb.rpc('training_summary',{p_branch:bId});
+        if(ts.data){ const t=ts.data; const crewTot=Number(t.crew_total||0), crewCert=Number(t.crew_certified||0);
+          const g=this.airPct(Number(cur.data.omzet),Number((prev.data||{}).omzet||0));
+          if(crewTot>0 && crewCert<crewTot && g!=null && g<0){
+            rep.alerts.unshift({level:'Medium',text:'Performa outlet menurun ('+g.toFixed(1)+'%) dan '+(crewTot-crewCert)+' dari '+crewTot+' crew belum certified',action:'Outlet ini memiliki performa menurun dan terdapat crew yang belum certified. Disarankan review training dan coaching ulang.'});
+            rep.priority = rep.priority==='Low'?'Medium':rep.priority;
+          }
+          rep._training={crewTot,crewCert,completion:Number(t.completion_pct||0)};
+        }
+      }catch(e){}
       this.state.airLast=rep;
       const pcol={High:'var(--bad)',Medium:'var(--gold)',Low:'var(--good)'};
       let extra='';
       if(type==='monthly'){
         try{ const hm=await sb.rpc('health_metrics',{p_branch:bId,p_start:R.start,p_end:R.end});
-          if(hm.data&&hm.data[0]){ const he=this.healthEval(hm.data[0],null,!!cur.data.is_mitra);
-            const nb=he.dims.filter(x=>x.status==='bad').length,nw=he.dims.filter(x=>x.status==='warn').length;
-            extra=`<div class="card pad" style="margin-bottom:12px"><b>Skor kesehatan outlet</b>: <span style="font-weight:800;color:${nb?'var(--bad)':nw?'var(--gold)':'var(--good)'}">${nb?'KRITIS':nw?'PERLU PERHATIAN':'SEHAT'}</span> <span class="mini muted">(${nb} masalah · ${nw} waspada — rincian di halaman Skor Kesehatan)</span></div>`; } }catch(e){}
+          if(hm.data&&hm.data[0]){
+            const hs=this.outletHealthScore(hm.data[0], fc.data||[], rep._training?rep._training.completion:0);
+            extra=`<div class="card pad" style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;align-items:center"><b>Outlet Health Score</b><span style="font-size:22px;font-weight:800;color:${hs.band[1]}">${hs.score} · ${hs.band[0]}</span></div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${hs.parts.map(pt=>`<span class="mini" style="padding:3px 8px;background:var(--surface-2);border-radius:6px">${pt[0]} ${pt[1]} <span class="muted">(${pt[2]}%)</span></span>`).join('')}</div>
+              <div class="mini muted" style="margin-top:6px">Berbobot: Sales 25 · Margin 20 · Stok 15 · Waste 15 · Disiplin 15 · Training 10</div></div>`; } }catch(e){}
       }
       out.innerHTML=`
         <div class="card pad" style="margin-bottom:12px;border-left:4px solid ${pcol[rep.priority]}">
@@ -5378,8 +5690,7 @@ const App={
         ${rep.alerts.length?`<div class="card pad" style="margin-bottom:12px"><b>Alert</b>${rep.alerts.map(a=>`<div style="margin-top:8px;padding:9px 11px;border-left:3px solid ${pcol[a.level]};background:var(--surface-2);border-radius:0 8px 8px 0"><b class="mini" style="color:${pcol[a.level]}">${a.level}</b> · ${escHtml(a.text)}<div class="mini muted" style="margin-top:3px">→ ${escHtml(a.action)}</div></div>`).join('')}</div>`:''}
         ${rep.recs.length?`<div class="card pad" style="margin-bottom:12px"><b>Rekomendasi</b>${rep.recs.map(r=>`<div class="mini" style="margin-top:7px">• <b>[${r.priority}]</b> ${escHtml(r.text)}</div>`).join('')}</div>`:''}
         ${rep.actions.length?`<div class="card pad" style="margin-bottom:12px"><b>Action plan</b>${rep.actions.map((a,i)=>`<div class="mini" style="margin-top:7px">${i+1}. ${escHtml(a)}</div>`).join('')}</div>`:''}
-        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" style="width:auto;padding:10px 16px" onclick="App.airSave()">Simpan Report</button><button class="btn" style="width:auto;padding:10px 16px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.airCopy()">Copy Text</button></div>
-        <div class="mini" style="margin-top:10px;opacity:.65">Tombol "Buat Ticket" belum tersedia — SRUPUT OS belum punya modul ticket. Begitu modulnya ada, report tersimpan tinggal ditautkan.</div>`;
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-primary" style="width:auto;padding:10px 16px" onclick="App.airSave()">Simpan Report</button><button class="btn" style="width:auto;padding:10px 16px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.airCopy()">Copy Text</button>${(rep.priority==='High'||rep.priority==='Medium')?`<button class="btn" style="width:auto;padding:10px 16px;background:var(--bad);color:#fff" onclick="App.tktFromReport()">Buat Ticket dari Report</button>`:''}</div>`;
     }catch(e){ out.innerHTML=this.errHTML(e); }
     btn.disabled=false; btn.textContent='Buat Report';
   },
@@ -5400,8 +5711,9 @@ const App={
   async airSave(){
     const rep=this.state.airLast; if(!rep){this.toast('Buat report dulu','bad');return;}
     try{
-      const{error}=await sb.from('ai_reports').insert({branch_id:rep.branch,report_type:rep.type,period_start:rep.start,period_end:rep.end,summary:rep.summary,insights:rep.alerts,recommendations:rep.recs,priority:rep.priority});
+      const{data,error}=await sb.from('ai_reports').insert({branch_id:rep.branch,report_type:rep.type,period_start:rep.start,period_end:rep.end,summary:rep.summary,insights:rep.alerts,recommendations:rep.recs,priority:rep.priority}).select('id').single();
       if(error)throw error;
+      if(data)rep.savedId=data.id;
       this.toast('Report tersimpan','good'); this.airLoadSaved();
     }catch(e){ this.toast((e&&e.message)||'Gagal menyimpan','bad'); }
   },
