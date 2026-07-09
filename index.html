@@ -7090,8 +7090,7 @@ const App={
         const url=(document.getElementById('fuUrl').value||'').trim();
         if(!note){ this.toast('Isi tindak lanjut','warn'); return false; }
         if(!this.audUrlOk(url)){ this.toast('URL bukti harus https://','warn'); return false; }
-        const patch={followup_note:note,status:'waiting_verification'}; if(url)patch.evidence_url=url;
-        const{error}=await sb.from('audit_capa').update(patch).eq('id',capaId); if(error){this.toast(error.message,'bad');return false;}
+        const{error}=await sb.rpc('audit_capa_followup',{p_capa:capaId,p_note:note,p_url:url||null}); if(error){this.toast(error.message,'bad');return false;}
         this.toast('Tindak lanjut terkirim','ok'); this.audBranchView(); return true;
       });
   },
