@@ -6999,7 +6999,7 @@ const App={
     const prio={low:'Low',medium:'Medium',high:'High',critical:'Critical'}[f.severity]||'Medium';
     if(!confirm(`Buat ticket dari temuan "${f.title}"?\nKategori → ${this.TKT_CAT[this.AUD_CAT_TICKET[f.category_code]]||'Operasional'}, prioritas ${prio}.`))return;
     try{
-      const{data,error}=await sb.rpc('audit_finding_to_ticket',{p_finding:findingId,p_title:f.title,p_priority:prio});
+      const{data,error}=await sb.rpc('audit_finding_to_ticket',{p_finding:findingId,p_title:f.title,p_priority:prio,p_category:this.AUD_CAT_TICKET[f.category_code]||'operasional'});
       if(error)throw error;
       this.toast('Ticket dibuat: '+String(data).slice(0,8),'ok');
       this.audOpenVisit(visitId);
