@@ -6988,7 +6988,7 @@ const App={
       </div>`,async()=>{
         const url=(document.getElementById('eUrl').value||'').trim();
         if(!this.audUrlOk(url)||!url){ this.toast('URL harus https://','warn'); return false; }
-        const rec={finding_id:findingId,url,kind:document.getElementById('eKind').value,caption:document.getElementById('eCap').value||null};
+        const rec={finding_id:findingId,url,kind:document.getElementById('eKind').value,caption:document.getElementById('eCap').value||null,created_by:CURRENT.user.id};
         const{error}=await sb.from('audit_evidence').insert(rec); if(error){this.toast(error.message,'bad');return false;}
         this.toast('Bukti ditambah','ok'); this.audOpenVisit(visitId); return true;
       });
