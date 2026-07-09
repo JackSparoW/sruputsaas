@@ -336,14 +336,15 @@ const hourOfWIB=ts=>{
 
 /* role -> menu yg aktif di slice ini. 'soon' = belum tersambung (jujur, bukan demo palsu) */
 const NAV={
-  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
-  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
+  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
+  auditor:[['auditctr','◴','Audit Center',1]],
+  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['auditctr','◴','Hasil Audit',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
   crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',0],['settings','⚙','Setting Printer',1]],
   media:[['content','✦','Rekomendasi Konten',0]],
   gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
-  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
+  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Hasil Audit',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
 };
-const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet'};
+const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor'};
 
 /* ===== DATA: query nyata ke schema teruji ===== */
 /* v85: batas periode WIB eksplisit (+07:00). String tanpa offset ('YYYY-MM-DDT00:00:00')
@@ -920,7 +921,7 @@ const App={
   go(page){
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat']}[page]||[page,''];
+    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])this['render_'+page]();
   },
@@ -3412,7 +3413,7 @@ const App={
         const isSelf=p.user_id===CURRENT.user.id;
         const nameInp=`<input id="name_${p.user_id}" value="${(p.full_name||'').replace(/"/g,'&quot;')}" placeholder="(tanpa nama)" style="${fld6};width:120px">`;
         const roleSel=`<select id="role_${p.user_id}" style="${fld6}">
-          ${['owner','pic','crew','media','gudang'].map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${r}</option>`).join('')}</select>`;
+          ${['owner','pic','crew','media','gudang','auditor'].map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${r}</option>`).join('')}</select>`;
         const brSel=`<select id="br_${p.user_id}" style="${fld6}">
           <option value="">(tanpa cabang)</option>${branches.map(b=>`<option value="${b.id}" ${p.branch_id===b.id?'selected':''}>${b.name} · ${b.type==='warehouse'?'gudang':'outlet'}</option>`).join('')}</select>`;
         const delBtn=isSelf
@@ -6605,6 +6606,494 @@ const App={
         return `<div class="card pad" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><b>${fmtDateWIB(r.created_at)}</b><span style="display:flex;gap:8px;align-items:center">${r.status==='pending'?`<button class="btn" style="padding:5px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--bad);color:var(--bad)" onclick="App.doCancelRequest('${r.id}','pic')">Batalkan</button>`:''}${this.mtrBadge(r.status)}</span></div><div class="mini muted" style="margin:4px 0">${r.nota_no?('Nota: <b>'+escHtml(r.nota_no)+'</b> · '):''}${r.note?escHtml(r.note):''}</div>${r.decision_reason?`<div class="mini" style="margin:4px 0;color:${r.status==='rejected'?'var(--bad)':'var(--muted)'}"><b>${r.status==='rejected'?'Alasan ditolak Pusat':'Catatan pembatalan'}:</b> ${escHtml(r.decision_reason)}</div>`:''}<div style="border-top:1px dashed var(--line);padding-top:6px;margin-top:4px">${items||'<div class="mini">—</div>'}</div></div>`;
       }).join('');
     }catch(e){ el.innerHTML=this.errHTML(e); }
+  },
+  /* ============================================================
+     AUDIT CENTER — QA Auditor module (aditif, tidak mengubah modul lain)
+     Roles: owner (full), auditor (assigned outlets), mitra/pic (read + follow-up), crew (view tugas)
+     Backend: audit_visits/findings/evidence/capa + RPC audit_* + views latest_audit_score/audit_priority_outlets
+     ============================================================ */
+  AUD_RUBRIC:[
+    ['A','Produk & Rasa',20,['Rasa sesuai standar','Takaran sesuai SOP','Tampilan minuman sesuai','Menu dibuat sesuai resep','Tidak ada improvisasi liar']],
+    ['B','SOP Operasional',15,['Opening sesuai checklist','Closing sesuai checklist','Shift handover berjalan','Kas awal & akhir dicatat','Laporan harian lengkap']],
+    ['C','Kebersihan & Food Safety',15,['Area produksi bersih','Bahan tersimpan rapi','Es batu food grade','Alat dibersihkan','Expired date dicek','Crew cuci tangan']],
+    ['D','Stok & Inventory',15,['Stok fisik sesuai sistem','Bahan utama tidak kosong','FIFO berjalan','Waste dicatat','Pembelian lokal diinput']],
+    ['E','SRUPUT OS & Data',15,['Semua transaksi masuk sistem','Tidak ada transaksi manual','Purchase diinput','Waste diinput','Closing dilakukan','Tidak ada data mencurigakan']],
+    ['F','Pelayanan',10,['Greeting','Waktu pelayanan','Komunikasi','Penanganan komplain','Upselling']],
+    ['G','Brand & Visual',5,['Logo sesuai','Banner/menu board sesuai','Seragam digunakan','Booth rapi','Tidak ada materi visual liar']],
+    ['H','Training Crew',5,['Crew sudah training','Operational Clearance','Memahami menu','Memahami SRUPUT OS','Perlu remedial atau tidak']],
+  ],
+  AUD_CAT_TICKET:{A:'menu_resep',B:'operasional',C:'operasional',D:'stok',E:'pos_os',F:'komplain',G:'marketing',H:'sdm'},
+  AUD_SEV:['low','medium','high','critical'],
+  audScoreLevel(s){ s=Number(s); if(s>=90)return['Excellent','var(--good)']; if(s>=80)return['Healthy','var(--good)']; if(s>=70)return['Watchlist','var(--gold)']; if(s>=60)return['Risk','var(--bad)']; return['Critical','var(--bad)']; },
+  audRiskColor(r){ return ({excellent:'var(--good)',healthy:'var(--good)',watchlist:'var(--gold)',risk:'var(--bad)',critical:'var(--bad)'})[r]||'var(--muted)'; },
+  audCapaOverdue(c){ if(['verified','closed'].includes(c.status))return false; return c.due_at && new Date(c.due_at) < new Date(); },
+  audUrlOk(u){ u=(u||'').trim().toLowerCase(); if(!u)return true; if(u.startsWith('javascript:')||u.startsWith('data:')||u.startsWith('vbscript:')||u.startsWith('file:'))return false; return u.startsWith('https://'); },
+
+  /* ---------- ROUTER masuk ---------- */
+  async render_auditctr(){
+    const role=CURRENT.role;
+    if(role==='owner'||role==='auditor') return this.audHub();
+    if(role==='mitra'||role==='pic'||role==='crew') return this.audBranchView();
+    const v=document.getElementById('view'); v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Audit Center tidak tersedia untuk peran ini.</b></div>`;
+  },
+
+  /* ==========================================================
+     OWNER / AUDITOR — Hub: dashboard + list visit + jadwal
+     ========================================================== */
+  async audHub(){
+    const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat Audit Center…');
+    try{
+      const role=CURRENT.role;
+      // outlet scope: owner = semua outlet; auditor = yang ditugaskan
+      let branches=[];
+      if(role==='owner'){ branches=(await Data.branches()).filter(b=>b.type==='outlet'); }
+      else {
+        const{data:asg,error:ae}=await sb.from('auditor_assignments').select('branch_id').eq('active',true);
+        if(ae)throw ae;
+        const ids=(asg||[]).map(a=>a.branch_id);
+        branches=(await Data.branches()).filter(b=>ids.includes(b.id));
+      }
+      this._audBranches=branches;
+      const bIds=branches.map(b=>b.id);
+      const bName=id=>{const b=branches.find(x=>x.id===id);return b?b.name:id;};
+
+      // visit bulan ini (semua status) untuk metrik
+      const monStart=todayWIBStr().slice(0,7)+'-01';
+      let vq=sb.from('audit_visits').select('id,branch_id,auditor_id,visit_type,outlet_type,package,sched_status,scheduled_at,score,risk_level,status,summary,created_at,finalized_at').order('created_at',{ascending:false}).limit(200);
+      if(role!=='owner' && bIds.length) vq=vq.in('branch_id',bIds);
+      const{data:visits,error:ve}=await vq; if(ve)throw ve;
+      const vAll=visits||[];
+      const vMonth=vAll.filter(x=>x.created_at>=monStart);
+      const vFinal=vAll.filter(x=>x.status==='final');
+      const vSched=vAll.filter(x=>x.sched_status==='scheduled');
+      const vDone=vMonth.filter(x=>x.status==='final');
+      const lowScore=vFinal.filter(x=>Number(x.score)<70);
+      const avg = vFinal.length? Math.round(vFinal.reduce((s,x)=>s+Number(x.score||0),0)/vFinal.length) : null;
+
+      // CAPA overdue (join finding→branch scope)
+      let capaOver=[];
+      try{
+        const{data:capa}=await sb.from('audit_capa').select('id,status,due_at,finding_id,audit_findings!inner(branch_id,title)').neq('status','verified').neq('status','closed').limit(200);
+        capaOver=(capa||[]).filter(c=>c.due_at&&new Date(c.due_at)<new Date());
+      }catch(_){}
+
+      // AI priority outlets (rekomendasi audit)
+      let aiPri=[];
+      try{ const{data:ai}=await sb.from('audit_priority_outlets').select('branch_id,priority,ai_score,summary,period_end').in('branch_id',bIds.length?bIds:['__none__']).limit(50);
+        aiPri=(ai||[]).filter(r=>['high','tinggi','critical','urgent'].includes(String(r.priority||'').toLowerCase())); }catch(_){}
+
+      // temuan tersering (kategori) dari findings final-scope
+      let topFinding='—';
+      try{ const{data:fs}=await sb.from('audit_findings').select('category_code').limit(300);
+        const cnt={}; (fs||[]).forEach(f=>{const c=f.category_code||'?';cnt[c]=(cnt[c]||0)+1;});
+        const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+        if(top){ const r=this.AUD_RUBRIC.find(x=>x[0]===top[0]); topFinding=(r?r[1]:top[0])+' ('+top[1]+')'; }
+      }catch(_){}
+
+      // auditor performance (owner saja)
+      let perfHtml='';
+      if(role==='owner'){
+        const byAud={};
+        vFinal.forEach(x=>{ const k=x.auditor_id||'?'; (byAud[k]=byAud[k]||{n:0,sum:0}); byAud[k].n++; byAud[k].sum+=Number(x.score||0); });
+        const rows=Object.entries(byAud).map(([k,d])=>`<tr><td class="mono mini">${escHtml(k.slice(0,8))}…</td><td class="right">${d.n}</td><td class="right mono">${Math.round(d.sum/d.n)}</td></tr>`).join('');
+        perfHtml=`<div class="card pad" style="margin-bottom:14px"><b>Performa Auditor</b><table class="tbl" style="margin-top:8px"><thead><tr><th>Auditor</th><th class="right">Audit final</th><th class="right">Rata skor</th></tr></thead><tbody>${rows||'<tr><td colspan="3" class="mini muted">Belum ada audit final.</td></tr>'}</tbody></table></div>`;
+      }
+
+      const K=(lbl,val,col)=>`<div class="card pad" style="text-align:center"><div class="mini muted">${lbl}</div><div style="font-size:22px;font-weight:800;${col?'color:'+col:''}">${val}</div></div>`;
+
+      // rekomendasi audit prioritas (AI)
+      let aiHtml='';
+      if(aiPri.length){
+        aiHtml=`<div class="card pad" style="margin-bottom:14px;border-left:4px solid var(--gold)"><b>Rekomendasi Audit Prioritas (dari AI Report)</b><div style="margin-top:8px;display:grid;gap:8px">${aiPri.map(r=>`<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><span><b>${escHtml(bName(r.branch_id))}</b> <span class="tag warn">${escHtml(r.priority)}</span><div class="mini muted">${escHtml((r.summary||'').slice(0,90))}</div></span>${role!=='mitra'?`<button class="btn" style="width:auto;padding:6px 12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audOpenSchedule('${r.branch_id}')">Jadwalkan audit →</button>`:''}</span></div>`).join('')}</div></div>`;
+      }
+
+      // list visit terbaru
+      const listHtml=vAll.slice(0,40).map(x=>{
+        const lv=this.audScoreLevel(x.score||0);
+        const st = x.status==='final'?`<span class="tag ok">FINAL · ${lv[0]}</span>`
+                 : x.status==='submitted'?`<span class="tag warn">SUBMITTED · ${Number(x.score||0)}</span>`
+                 : `<span class="tag">${(x.sched_status||'draft')}</span>`;
+        return `<div class="card pad" style="margin-bottom:8px;cursor:pointer" onclick="App.audOpenVisit(${x.id})">
+          <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+            <span><b>${escHtml(bName(x.branch_id))}</b> <span class="mini muted">· ${escHtml(x.visit_type||'reguler')}${x.package?' · '+escHtml(x.package):''}</span></span>
+            <span style="display:flex;gap:6px;align-items:center">${Number(x.score)>=0&&x.score!=null?`<b class="mono" style="color:${lv[1]}">${Number(x.score)}</b>`:''}${st}</span></div>
+          <div class="mini muted" style="margin-top:3px">${x.scheduled_at?('Jadwal '+fmtDateWIB(x.scheduled_at)+' · '):''}dibuat ${fmtDateWIB(x.created_at)}</div></div>`;
+      }).join('')||`<div class="card pad mini muted">Belum ada audit visit.</div>`;
+
+      v.innerHTML=`
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+          <button class="btn btn-primary" style="width:auto;padding:9px 16px" onclick="App.audOpenSchedule()">+ Jadwalkan Audit Visit</button>
+          ${role==='auditor'?'<span class="mini muted" style="align-self:center">Menampilkan hanya outlet yang ditugaskan kepada Anda.</span>':''}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:14px">
+          ${K('Diaudit bln ini',vMonth.length)}
+          ${K('Terjadwal',vSched.length)}
+          ${K('Selesai bln ini',vDone.length,'var(--good)')}
+          ${K('Skor < 70',lowScore.length,lowScore.length?'var(--bad)':'')}
+          ${K('CAPA overdue',capaOver.length,capaOver.length?'var(--bad)':'')}
+          ${K('Rata skor',avg==null?'—':avg,avg!=null?this.audScoreLevel(avg)[1]:'')}
+        </div>
+        <div class="card pad" style="margin-bottom:14px;display:flex;gap:18px;flex-wrap:wrap">
+          <div><div class="mini muted">Temuan tersering</div><b>${topFinding}</b></div>
+          <div><div class="mini muted">Outlet risiko tinggi</div><b style="color:${lowScore.length?'var(--bad)':'var(--good)'}">${lowScore.length?[...new Set(lowScore.map(x=>bName(x.branch_id)))].join(', '):'Tidak ada'}</b></div>
+        </div>
+        ${aiHtml}
+        ${perfHtml}
+        <b style="display:block;margin:6px 0 10px">Audit Visit Terbaru</b>
+        ${listHtml}`;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+
+  /* ---------- Jadwal / buat visit ---------- */
+  audOpenSchedule(preBranch){
+    const v=document.getElementById('view');
+    const branches=this._audBranches||[];
+    if(!branches.length){ this.toast('Tidak ada outlet dalam cakupan Anda','warn'); return; }
+    const bOpts=branches.map(b=>`<option value="${b.id}" ${b.id===preBranch?'selected':''}>${escHtml(b.name)}${b.owner_user_id?' (mitra)':''}</option>`).join('');
+    const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%';
+    v.innerHTML=`<button class="btn" style="width:auto;padding:7px 14px;margin-bottom:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audHub()">← Audit Center</button>
+      <div class="card pad" style="max-width:560px"><b style="display:block;margin-bottom:12px">Jadwalkan Audit Visit</b>
+      <div style="display:grid;gap:10px">
+        <div><label class="mini" style="display:block;margin-bottom:4px">Outlet</label><select id="avBr" style="${fld}">${bOpts}</select></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:140px"><label class="mini" style="display:block;margin-bottom:4px">Tipe outlet</label><select id="avType" style="${fld}"><option value="internal">Internal</option><option value="mitra">Mitra</option></select></div>
+          <div style="flex:1;min-width:140px"><label class="mini" style="display:block;margin-bottom:4px">Paket</label><select id="avPkg" style="${fld}"><option value="Internal">Internal</option><option value="Start">Start</option><option value="Growth">Growth</option><option value="Signature">Signature</option></select></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div style="flex:1;min-width:140px"><label class="mini" style="display:block;margin-bottom:4px">Jenis audit</label><select id="avVisit" style="${fld}"><option value="reguler">Regular</option><option value="follow-up">Follow-up</option><option value="incident">Incident</option><option value="mystery_shopper">Mystery Shopper</option></select></div>
+          <div style="flex:1;min-width:140px"><label class="mini" style="display:block;margin-bottom:4px">Jadwal</label><input id="avDate" type="datetime-local" style="${fld}"></div>
+        </div>
+        <div><label class="mini" style="display:block;margin-bottom:4px">Catatan jadwal (opsional)</label><textarea id="avNote" rows="2" style="${fld};resize:vertical"></textarea></div>
+        <button class="btn btn-primary" id="avSave" onclick="App.audCreateVisit()">Buat & mulai audit</button>
+      </div></div>`;
+  },
+  async audCreateVisit(){
+    const btn=document.getElementById('avSave'); btn.disabled=true; btn.textContent='Menyimpan…';
+    try{
+      const branch=document.getElementById('avBr').value;
+      const vtype=document.getElementById('avVisit').value;
+      const dt=document.getElementById('avDate').value;
+      const{data,error}=await sb.rpc('audit_create_visit',{p_branch:branch,p_type:vtype,p_scheduled:dt?new Date(dt).toISOString():null});
+      if(error)throw error;
+      const visitId=data;
+      // set metadata tambahan (outlet_type, package, sched_note) — update langsung (RLS: auditor pemilik/owner)
+      const patch={outlet_type:document.getElementById('avType').value,package:document.getElementById('avPkg').value,sched_note:document.getElementById('avNote').value||null,sched_status:'in_progress'};
+      await sb.from('audit_visits').update(patch).eq('id',visitId);
+      this.toast('Audit visit dibuat','ok');
+      this.audOpenVisit(visitId);
+    }catch(e){ this.toast((e&&e.message)||'Gagal membuat visit','bad'); btn.disabled=false; btn.textContent='Buat & mulai audit'; }
+  },
+
+  /* ==========================================================
+     DETAIL VISIT — form skoring, findings, capa, evidence
+     ========================================================== */
+  async audOpenVisit(id){
+    const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat audit…');
+    try{
+      const{data:visit,error}=await sb.from('audit_visits').select('*').eq('id',id).single();
+      if(error)throw error;
+      this._audVisit=visit;
+      const branches=this._audBranches||await Data.branches();
+      const br=branches.find(b=>b.id===visit.branch_id);
+      const bName=br?br.name:visit.branch_id;
+      const role=CURRENT.role;
+      const isFinal=visit.status==='final';
+      const canEdit=(role==='owner'||(role==='auditor'))&&!isFinal;
+      const lv=this.audScoreLevel(visit.score||0);
+
+      // checklist items (jika sudah ada)
+      const{data:items}=await sb.from('audit_checklist_items').select('*').eq('visit_id',id).order('id');
+      const hasItems=(items||[]).length>0;
+
+      // findings + capa + evidence
+      const{data:findings}=await sb.from('audit_findings').select('*').eq('visit_id',id).order('id');
+      const fIds=(findings||[]).map(f=>f.id);
+      let capaByF={},evByF={};
+      if(fIds.length){
+        const{data:capa}=await sb.from('audit_capa').select('*').in('finding_id',fIds);
+        (capa||[]).forEach(c=>{(capaByF[c.finding_id]=capaByF[c.finding_id]||[]).push(c);});
+        const{data:ev}=await sb.from('audit_evidence').select('*').in('finding_id',fIds);
+        (ev||[]).forEach(e=>{(evByF[e.finding_id]=evByF[e.finding_id]||[]).push(e);});
+      }
+
+      // status logs (jejak perubahan status — append-only, ditulis trigger)
+      let statusLogs=[];
+      try{ const{data:sl}=await sb.from('audit_status_logs').select('field,old_status,new_status,changed_by,note,created_at').eq('audit_id',id).order('id',{ascending:true}); statusLogs=sl||[]; }catch(_){}
+
+      // ---- HEADER ----
+      let head=`<button class="btn" style="width:auto;padding:7px 14px;margin-bottom:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audHub()">← Audit Center</button>
+        <div class="card pad" style="margin-bottom:14px;border-left:4px solid ${visit.score!=null?lv[1]:'var(--line-strong)'}">
+          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
+            <div><b style="font-size:16px">${escHtml(bName)}</b> <span class="mini muted">${escHtml(visit.visit_type||'')}${visit.package?' · '+escHtml(visit.package):''}${visit.outlet_type?' · '+escHtml(visit.outlet_type):''}</span></div>
+            <div style="text-align:right">${visit.score!=null?`<div style="font-size:24px;font-weight:800;color:${lv[1]}">${Number(visit.score)} <span class="mini">${lv[0]}</span></div>`:'<span class="tag">Belum diskor</span>'}
+              <div class="mini muted">${isFinal?('FINAL · '+fmtDateWIB(visit.finalized_at)):(visit.status==='submitted'?'SUBMITTED':'DRAFT')}</div></div>
+          </div>
+          ${visit.sched_note?`<div class="mini muted" style="margin-top:6px">Catatan: ${escHtml(visit.sched_note)}</div>`:''}
+          ${!isFinal&&Number(visit.score)<70&&visit.score!=null?`<div class="mini" style="margin-top:8px;color:var(--bad)">⚠ Skor ${Number(visit.score)} — ${Number(visit.score)<60?'wajib eskalasi ke owner/pusat & audit ulang':'wajib action plan / CAPA'}.</div>`:''}
+        </div>`;
+
+      // ---- FORM SKORING 8 KATEGORI ----
+      let form='';
+      if(!hasItems && canEdit){
+        // render rubrik kosong untuk diisi
+        form=`<div class="card pad" style="margin-bottom:14px"><b>Form Audit — 8 Kategori (bobot 100)</b>
+          <div class="mini muted" style="margin:4px 0 10px">Nilai tiap item 0–1 (atau centang). Skor akhir dihitung berbobot otomatis.</div>
+          ${this.AUD_RUBRIC.map(([code,name,w,rows])=>`
+            <div style="margin-bottom:14px;border-top:1px solid var(--line);padding-top:10px">
+              <div style="display:flex;justify-content:space-between"><b>${code}. ${name}</b><span class="tag">${w}%</span></div>
+              <div style="margin-top:6px;display:grid;gap:5px">
+                ${rows.map((it,i)=>`<label style="display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px"><span>${escHtml(it)}</span>
+                  <select data-aud-cat="${code}" data-aud-i="${i}" style="padding:5px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2)"><option value="1">✓ OK (1)</option><option value="0.5">± Sebagian (0.5)</option><option value="0">✗ Tidak (0)</option><option value="na">N/A</option></select></label>`).join('')}
+              </div></div>`).join('')}
+          <button class="btn btn-primary" id="audSaveScore" onclick="App.audSaveAndScore(${id})">Simpan & hitung skor</button>
+        </div>`;
+      } else if(hasItems){
+        // ringkasan skor per kategori (read)
+        const byCat={};
+        (items||[]).forEach(it=>{const c=it.category_code||'?';(byCat[c]=byCat[c]||{got:0,max:0,w:it.weight});byCat[c].got+=Number(it.score||0);byCat[c].max+=Number(it.max_points||0);});
+        form=`<div class="card pad" style="margin-bottom:14px"><b>Skor per Kategori</b><table class="tbl" style="margin-top:8px"><thead><tr><th>Kategori</th><th class="right">Bobot</th><th class="right">Capai</th></tr></thead><tbody>
+          ${this.AUD_RUBRIC.map(([code,name,w])=>{const d=byCat[code];const pct=d&&d.max?Math.round(d.got/d.max*100):null;return `<tr><td>${code}. ${escHtml(name)}</td><td class="right mini">${w}%</td><td class="right mono" style="color:${pct==null?'var(--muted)':pct>=70?'var(--good)':'var(--bad)'}">${pct==null?'—':pct+'%'}</td></tr>`;}).join('')}
+        </tbody></table>
+        ${canEdit&&visit.status==='submitted'?`<button class="btn" style="width:auto;padding:8px 15px;margin-top:10px;background:var(--good);color:#fff" onclick="App.audFinalize(${id})">Finalkan audit (kunci)</button>`:''}
+        ${canEdit&&visit.status==='submitted'?`<button class="btn" style="width:auto;padding:8px 15px;margin-top:10px;margin-left:8px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audResetScore(${id})">Ubah nilai lagi</button>`:''}
+        </div>`;
+      }
+
+      // ---- FINDINGS ----
+      let findHtml=`<div class="card pad" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center"><b>Temuan Audit</b>${canEdit?`<button class="btn" style="width:auto;padding:6px 12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audAddFinding(${id},'${visit.branch_id}')">+ Temuan</button>`:''}</div>`;
+      if(!(findings||[]).length){ findHtml+=`<div class="mini muted" style="margin-top:8px">Belum ada temuan.</div>`; }
+      else {
+        findHtml+=(findings||[]).map(f=>{
+          const sev={low:'',medium:'warn',high:'warn',critical:'low'}[f.severity]||'';
+          const caps=capaByF[f.id]||[]; const evs=evByF[f.id]||[];
+          const rc=this.AUD_RUBRIC.find(x=>x[0]===f.category_code);
+          return `<div style="border-top:1px solid var(--line);padding:10px 0;margin-top:8px">
+            <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+              <span><b>${escHtml(f.title)}</b> <span class="tag ${sev}">${f.severity}</span> ${f.category_code?`<span class="mini muted">${rc?rc[1]:f.category_code}</span>`:''}</span>
+              <span class="tag ${f.status==='verified'||f.status==='closed'?'ok':f.status==='open'?'warn':''}">${f.status}</span></div>
+            ${f.detail?`<div class="mini" style="margin-top:4px">${escHtml(f.detail)}</div>`:''}
+            ${f.recommendation?`<div class="mini" style="margin-top:4px"><b>Rekomendasi:</b> ${escHtml(f.recommendation)}</div>`:''}
+            ${f.pic_note||f.deadline?`<div class="mini muted" style="margin-top:3px">${f.pic_note?'PIC: '+escHtml(f.pic_note):''}${f.deadline?' · deadline '+fmtDateWIB(f.deadline):''}</div>`:''}
+            ${evs.length?`<div class="mini" style="margin-top:5px">Bukti: ${evs.map(e=>`<a href="${escHtml(e.url)}" target="_blank" style="color:var(--accent)">${escHtml(e.kind||'link')}↗</a>`).join(' · ')}</div>`:''}
+            ${caps.map(c=>{const od=this.audCapaOverdue(c);return `<div style="margin-top:6px;padding:8px;background:var(--surface-2);border-radius:8px;${od?'border-left:3px solid var(--bad)':''}">
+              <div class="mini"><b>CAPA</b> <span class="tag ${c.status==='verified'||c.status==='closed'?'ok':''}">${c.status}</span>${od?' <span class="tag low">OVERDUE</span>':''}</div>
+              ${c.corrective_action?`<div class="mini" style="margin-top:3px"><b>Korektif:</b> ${escHtml(c.corrective_action)}</div>`:''}
+              ${c.root_cause?`<div class="mini muted" style="margin-top:2px">Akar: ${escHtml(c.root_cause)}</div>`:''}
+              ${c.followup_note?`<div class="mini" style="margin-top:2px;color:var(--good)">Tindak lanjut: ${escHtml(c.followup_note)}</div>`:''}
+              ${c.due_at?`<div class="mini muted">Deadline: ${fmtDateWIB(c.due_at)}</div>`:''}
+              ${canEdit&&!['verified','closed'].includes(c.status)?`<button class="btn" style="width:auto;padding:4px 10px;font-size:11px;margin-top:5px;background:var(--good);color:#fff" onclick="App.audVerifyCapa(${c.id},${id})">Verifikasi CAPA</button>`:''}
+            </div>`;}).join('')}
+            ${canEdit?`<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn" style="width:auto;padding:4px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audAddCapa(${f.id},${id})">+ CAPA</button>
+              <button class="btn" style="width:auto;padding:4px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audAddEvidence(${f.id},${id})">+ Bukti URL</button>
+              ${!f.ticket_id?`<button class="btn" style="width:auto;padding:4px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audFindingToTicket(${f.id},${id})">Buat Ticket dari Temuan</button>`:`<span class="tag ok" style="font-size:10px">Ticket dibuat</span>`}
+            </div>`:''}
+          </div>`;
+        }).join('');
+      }
+      findHtml+=`</div>`;
+
+      // ---- RIWAYAT STATUS ----
+      let logHtml='';
+      if(statusLogs.length){
+        const fieldLbl={status:'Skoring',sched_status:'Visit'};
+        const rows=statusLogs.map(l=>`<div class="mini" style="padding:4px 0;border-bottom:1px solid var(--line)"><span class="muted">${fmtDateWIB(l.created_at)}</span> · <span class="tag" style="font-size:10px">${fieldLbl[l.field]||l.field}</span> ${l.old_status?escHtml(l.old_status)+' → ':''}<b>${escHtml(l.new_status)}</b>${l.note?' · '+escHtml(l.note):''}</div>`).join('');
+        logHtml=`<div class="card pad"><b>Riwayat Status</b><div class="mini muted" style="margin:2px 0 8px">Jejak otomatis · tidak bisa diubah</div>${rows}</div>`;
+      }
+
+      v.innerHTML=head+form+findHtml+logHtml;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+
+  async audSaveAndScore(visitId){
+    const btn=document.getElementById('audSaveScore'); if(btn){btn.disabled=true;btn.textContent='Menyimpan…';}
+    try{
+      // kumpulkan nilai dari select
+      const sels=document.querySelectorAll('[data-aud-cat]');
+      const rows=[];
+      this.AUD_RUBRIC.forEach(([code,name,w,items])=>{
+        items.forEach((it,i)=>{
+          const el=document.querySelector(`[data-aud-cat="${code}"][data-aud-i="${i}"]`);
+          const val=el?el.value:'na';
+          if(val==='na') return; // N/A → tidak dihitung (max 0)
+          rows.push({visit_id:visitId,category:name,category_code:code,weight:w,item_text:it,max_points:1,score:Number(val)});
+        });
+      });
+      if(!rows.length){ this.toast('Isi minimal satu item','warn'); if(btn){btn.disabled=false;btn.textContent='Simpan & hitung skor';} return; }
+      // hapus item lama (jika re-score) lalu insert
+      await sb.from('audit_checklist_items').delete().eq('visit_id',visitId);
+      const{error:ie}=await sb.from('audit_checklist_items').insert(rows); if(ie)throw ie;
+      const{data,error}=await sb.rpc('audit_submit_score',{p_visit:visitId}); if(error)throw error;
+      this.toast('Skor: '+data,'ok');
+      this.audOpenVisit(visitId);
+    }catch(e){ this.toast((e&&e.message)||'Gagal menyimpan skor','bad'); if(btn){btn.disabled=false;btn.textContent='Simpan & hitung skor';} }
+  },
+  async audResetScore(visitId){
+    try{ await sb.from('audit_visits').update({status:'draft'}).eq('id',visitId); this.audOpenVisit(visitId); }
+    catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+  async audFinalize(visitId){
+    if(!confirm('Finalkan audit ini? Setelah final, skor & temuan terkunci dan tidak bisa diubah.'))return;
+    try{ const{error}=await sb.rpc('audit_finalize',{p_visit:visitId}); if(error)throw error; this.toast('Audit difinalkan','ok'); this.audOpenVisit(visitId); }
+    catch(e){ this.toast((e&&e.message)||'Gagal finalize','bad'); }
+  },
+
+  /* ---------- Finding / CAPA / Evidence forms (modal sederhana via prompt-card) ---------- */
+  audAddFinding(visitId,branchId){
+    const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%';
+    const catOpts=this.AUD_RUBRIC.map(r=>`<option value="${r[0]}">${r[0]}. ${r[1]}</option>`).join('');
+    const sevOpts=this.AUD_SEV.map(s=>`<option value="${s}" ${s==='medium'?'selected':''}>${s}</option>`).join('');
+    this.audModal('Tambah Temuan',`
+      <div style="display:grid;gap:10px">
+        <div style="display:flex;gap:8px"><select id="fCat" style="${fld}">${catOpts}</select><select id="fSev" style="${fld}">${sevOpts}</select></div>
+        <input id="fTitle" placeholder="Judul temuan (min 4 karakter)" style="${fld}">
+        <textarea id="fDetail" rows="2" placeholder="Deskripsi temuan" style="${fld};resize:vertical"></textarea>
+        <textarea id="fRec" rows="2" placeholder="Rekomendasi perbaikan" style="${fld};resize:vertical"></textarea>
+        <div style="display:flex;gap:8px"><input id="fPic" placeholder="PIC perbaikan" style="${fld}"><input id="fDue" type="date" style="${fld}"></div>
+      </div>`,async()=>{
+        const title=(document.getElementById('fTitle').value||'').trim();
+        if(title.length<4){ this.toast('Judul minimal 4 karakter','warn'); return false; }
+        const rec={visit_id:visitId,branch_id:branchId,category_code:document.getElementById('fCat').value,severity:document.getElementById('fSev').value,title,detail:document.getElementById('fDetail').value||null,recommendation:document.getElementById('fRec').value||null,pic_note:document.getElementById('fPic').value||null,deadline:document.getElementById('fDue').value?new Date(document.getElementById('fDue').value).toISOString():null};
+        const{error}=await sb.from('audit_findings').insert(rec); if(error){this.toast(error.message,'bad');return false;}
+        this.toast('Temuan ditambah','ok'); this.audOpenVisit(visitId); return true;
+      });
+  },
+  audAddCapa(findingId,visitId){
+    const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%';
+    this.audModal('Tambah CAPA / Action Plan',`
+      <div style="display:grid;gap:10px">
+        <textarea id="cRoot" rows="2" placeholder="Root cause (akar masalah)" style="${fld};resize:vertical"></textarea>
+        <textarea id="cCorr" rows="2" placeholder="Corrective action (perbaikan segera)" style="${fld};resize:vertical"></textarea>
+        <textarea id="cPrev" rows="2" placeholder="Preventive action (cegah berulang)" style="${fld};resize:vertical"></textarea>
+        <div style="display:flex;gap:8px"><input id="cPic" placeholder="PIC" style="${fld}"><input id="cDue" type="date" style="${fld}"></div>
+        <input id="cEv" placeholder="URL bukti (https://, opsional)" style="${fld}">
+      </div>`,async()=>{
+        const ev=(document.getElementById('cEv').value||'').trim();
+        if(!this.audUrlOk(ev)){ this.toast('URL bukti harus https://','warn'); return false; }
+        const corr=(document.getElementById('cCorr').value||'').trim();
+        if(!corr){ this.toast('Corrective action wajib diisi','warn'); return false; }
+        const rec={finding_id:findingId,action:corr,corrective_action:corr,root_cause:document.getElementById('cRoot').value||null,preventive_action:document.getElementById('cPrev').value||null,pic_note:document.getElementById('cPic').value||null,due_at:document.getElementById('cDue').value?new Date(document.getElementById('cDue').value).toISOString():null,evidence_url:ev||null,status:'open'};
+        const{error}=await sb.from('audit_capa').insert(rec); if(error){this.toast(error.message,'bad');return false;}
+        this.toast('CAPA ditambah','ok'); this.audOpenVisit(visitId); return true;
+      });
+  },
+  audAddEvidence(findingId,visitId){
+    const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%';
+    this.audModal('Tambah Bukti (URL)',`
+      <div style="display:grid;gap:10px">
+        <input id="eUrl" placeholder="https://… (foto/dokumen)" style="${fld}">
+        <select id="eKind" style="${fld}"><option value="image">Foto</option><option value="doc">Dokumen</option><option value="link">Link</option></select>
+        <input id="eCap" placeholder="Keterangan (opsional)" style="${fld}">
+        <div class="mini muted">Hanya URL https:// yang diizinkan. Struktur siap untuk Supabase Storage nanti.</div>
+      </div>`,async()=>{
+        const url=(document.getElementById('eUrl').value||'').trim();
+        if(!this.audUrlOk(url)||!url){ this.toast('URL harus https://','warn'); return false; }
+        const rec={finding_id:findingId,url,kind:document.getElementById('eKind').value,caption:document.getElementById('eCap').value||null};
+        const{error}=await sb.from('audit_evidence').insert(rec); if(error){this.toast(error.message,'bad');return false;}
+        this.toast('Bukti ditambah','ok'); this.audOpenVisit(visitId); return true;
+      });
+  },
+  async audFindingToTicket(findingId,visitId){
+    const f=(await sb.from('audit_findings').select('title,category_code,severity').eq('id',findingId).single()).data;
+    if(!f)return;
+    const prio={low:'Low',medium:'Medium',high:'High',critical:'Critical'}[f.severity]||'Medium';
+    if(!confirm(`Buat ticket dari temuan "${f.title}"?\nKategori → ${this.TKT_CAT[this.AUD_CAT_TICKET[f.category_code]]||'Operasional'}, prioritas ${prio}.`))return;
+    try{
+      const{data,error}=await sb.rpc('audit_finding_to_ticket',{p_finding:findingId,p_title:f.title,p_priority:prio});
+      if(error)throw error;
+      this.toast('Ticket dibuat: '+String(data).slice(0,8),'ok');
+      this.audOpenVisit(visitId);
+    }catch(e){ this.toast((e&&e.message)||'Gagal buat ticket','bad'); }
+  },
+  async audVerifyCapa(capaId,visitId){
+    if(!confirm('Verifikasi CAPA ini sebagai selesai?'))return;
+    try{ const{error}=await sb.from('audit_capa').update({status:'verified',verified_by:CURRENT.user,verified_at:new Date().toISOString()}).eq('id',capaId); if(error)throw error; this.toast('CAPA diverifikasi','ok'); this.audOpenVisit(visitId); }
+    catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
+  /* ---------- Modal helper (kartu overlay sederhana) ---------- */
+  audModal(title,bodyHtml,onOk){
+    const old=document.getElementById('audModalWrap'); if(old)old.remove();
+    const wrap=document.createElement('div'); wrap.id='audModalWrap';
+    wrap.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
+    wrap.innerHTML=`<div class="card pad" style="max-width:520px;width:100%;max-height:90vh;overflow:auto"><b style="display:block;margin-bottom:12px">${escHtml(title)}</b>${bodyHtml}<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-primary" id="audModalOk">Simpan</button><button class="btn" style="background:var(--surface-2);border:1px solid var(--line-strong)" onclick="document.getElementById('audModalWrap').remove()">Batal</button></div></div>`;
+    document.body.appendChild(wrap);
+    document.getElementById('audModalOk').onclick=async()=>{ const ok=await onOk(); if(ok!==false){ const w=document.getElementById('audModalWrap'); if(w)w.remove(); } };
+    wrap.onclick=(e)=>{ if(e.target===wrap)wrap.remove(); };
+  },
+
+  /* ==========================================================
+     MITRA / PIC / CREW — read-only view + follow-up CAPA
+     ========================================================== */
+  async audBranchView(){
+    const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat hasil audit outlet…');
+    try{
+      const role=CURRENT.role;
+      let branchId=null;
+      if(role==='mitra'){ if(!await this.mtrEnsure()){ v.innerHTML=this.mtrNoOutlet(); return; } branchId=this.state.mtrOutlet; }
+      else { branchId=CURRENT.branch; }
+      if(!branchId){ v.innerHTML=`<div class="card pad mini muted">Outlet tidak diketahui.</div>`; return; }
+
+      const{data:visits,error}=await sb.from('audit_visits').select('id,visit_type,package,score,risk_level,status,scheduled_at,finalized_at,created_at,summary').eq('branch_id',branchId).eq('status','final').order('finalized_at',{ascending:false}).limit(20);
+      if(error)throw error;
+      if(!(visits||[]).length){ v.innerHTML=`<div class="card pad"><b>Belum ada hasil audit final untuk outlet ini.</b><div class="mini muted" style="margin-top:4px">Hasil audit akan tampil di sini setelah auditor menyelesaikan & memfinalkan audit.</div></div>`; return; }
+
+      // ambil findings+capa dari visit terbaru untuk follow-up
+      const latest=visits[0];
+      const{data:findings}=await sb.from('audit_findings').select('id,title,severity,status,category_code,recommendation').eq('visit_id',latest.id).order('id');
+      const fIds=(findings||[]).map(f=>f.id);
+      let capaByF={};
+      if(fIds.length){ const{data:capa}=await sb.from('audit_capa').select('*').in('finding_id',fIds); (capa||[]).forEach(c=>{(capaByF[c.finding_id]=capaByF[c.finding_id]||[]).push(c);}); }
+
+      const lv=this.audScoreLevel(latest.score||0);
+      let html=`<div class="card pad" style="margin-bottom:14px;border-left:4px solid ${lv[1]}">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <b>Audit terakhir · ${fmtDateWIB(latest.finalized_at)}</b>
+          <div style="font-size:24px;font-weight:800;color:${lv[1]}">${Number(latest.score)} <span class="mini">${lv[0]}</span></div></div>
+        <div class="mini muted" style="margin-top:4px">${escHtml(latest.visit_type||'')}${latest.package?' · '+escHtml(latest.package):''}</div>
+        ${Number(latest.score)<70?`<div class="mini" style="margin-top:8px;color:var(--bad)">Outlet Anda perlu tindak lanjut. Lengkapi CAPA di bawah.</div>`:''}</div>`;
+
+      html+=`<b style="display:block;margin:6px 0 10px">Temuan & Action Plan (CAPA)</b>`;
+      if(!(findings||[]).length){ html+=`<div class="card pad mini muted">Tidak ada temuan pada audit terakhir. 👍</div>`; }
+      else {
+        html+=(findings||[]).map(f=>{
+          const sev={low:'',medium:'warn',high:'warn',critical:'low'}[f.severity]||'';
+          const caps=capaByF[f.id]||[];
+          return `<div class="card pad" style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline"><span><b>${escHtml(f.title)}</b> <span class="tag ${sev}">${f.severity}</span></span><span class="tag ${f.status==='verified'||f.status==='closed'?'ok':'warn'}">${f.status}</span></div>
+            ${f.recommendation?`<div class="mini" style="margin-top:4px"><b>Rekomendasi:</b> ${escHtml(f.recommendation)}</div>`:''}
+            ${caps.map(c=>{const od=this.audCapaOverdue(c);return `<div style="margin-top:6px;padding:8px;background:var(--surface-2);border-radius:8px;${od?'border-left:3px solid var(--bad)':''}">
+              <div class="mini"><b>CAPA</b> <span class="tag ${c.status==='verified'||c.status==='closed'?'ok':''}">${c.status}</span>${od?' <span class="tag low">OVERDUE</span>':''}${c.due_at?' · deadline '+fmtDateWIB(c.due_at):''}</div>
+              ${c.corrective_action?`<div class="mini" style="margin-top:3px"><b>Perbaikan diminta:</b> ${escHtml(c.corrective_action)}</div>`:''}
+              ${c.followup_note?`<div class="mini" style="margin-top:3px;color:var(--good)"><b>Tindak lanjut Anda:</b> ${escHtml(c.followup_note)}</div>`:''}
+              ${!['verified','closed'].includes(c.status)?`<button class="btn" style="width:auto;padding:5px 11px;font-size:11px;margin-top:6px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.audFollowupCapa(${c.id})">Isi/Update tindak lanjut</button>`:''}
+            </div>`;}).join('')||'<div class="mini muted" style="margin-top:4px">Belum ada action plan untuk temuan ini.</div>'}
+          </div>`;
+        }).join('');
+      }
+
+      // riwayat skor
+      html+=`<b style="display:block;margin:14px 0 8px">Riwayat Audit</b><div class="card pad">${visits.map(x=>{const l=this.audScoreLevel(x.score||0);return `<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--line)"><span class="mini">${fmtDateWIB(x.finalized_at)} · ${escHtml(x.visit_type||'')}</span><b class="mono" style="color:${l[1]}">${Number(x.score)} ${l[0]}</b></div>`;}).join('')}</div>`;
+
+      v.innerHTML=html;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  audFollowupCapa(capaId){
+    const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%';
+    this.audModal('Tindak Lanjut CAPA',`
+      <div style="display:grid;gap:10px">
+        <textarea id="fuNote" rows="3" placeholder="Jelaskan tindakan yang sudah dilakukan" style="${fld};resize:vertical"></textarea>
+        <input id="fuUrl" placeholder="URL bukti (https://, opsional)" style="${fld}">
+        <div class="mini muted">Status akan berubah ke "menunggu verifikasi". Skor audit tidak bisa Anda ubah.</div>
+      </div>`,async()=>{
+        const note=(document.getElementById('fuNote').value||'').trim();
+        const url=(document.getElementById('fuUrl').value||'').trim();
+        if(!note){ this.toast('Isi tindak lanjut','warn'); return false; }
+        if(!this.audUrlOk(url)){ this.toast('URL bukti harus https://','warn'); return false; }
+        const patch={followup_note:note,status:'waiting_verification'}; if(url)patch.evidence_url=url;
+        const{error}=await sb.from('audit_capa').update(patch).eq('id',capaId); if(error){this.toast(error.message,'bad');return false;}
+        this.toast('Tindak lanjut terkirim','ok'); this.audBranchView(); return true;
+      });
   },
 };
 
