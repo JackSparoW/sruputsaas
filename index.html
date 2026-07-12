@@ -3486,14 +3486,22 @@ const App={
     v.innerHTML=this.loadingHTML('Memuat daftar user…');
     try{
       const profs=await Data.allProfiles();
+      this._setProfs=profs;   // simpan utk bandingkan role lama saat Simpan (pengaman promosi owner)
       const branches=await Data.branches();
       this._setBranches=branches;
       const fld6='padding:6px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2)';
       const rows=profs.map(p=>{
         const isSelf=p.user_id===CURRENT.user.id;
         const nameInp=`<input id="name_${p.user_id}" value="${(p.full_name||'').replace(/"/g,'&quot;')}" placeholder="(tanpa nama)" style="${fld6};width:120px">`;
+        // PENTING: daftar harus mencakup SEMUA role yang dipakai sistem.
+        // Kalau role user tak ada di daftar, <select> diam-diam menampilkan opsi
+        // PERTAMA (owner) -> menekan Simpan akan MEMPROMOSIKAN user jadi owner.
+        // Itu pernah terjadi (mitra tak ada di daftar). Jadi: sertakan semua role,
+        // dan tambahkan fallback untuk role tak dikenal.
+        const ALL_ROLES=['owner','pic','crew','media','mitra','gudang','auditor'];
+        const roleList=ALL_ROLES.includes(p.role)||!p.role?ALL_ROLES:[p.role,...ALL_ROLES];
         const roleSel=`<select id="role_${p.user_id}" style="${fld6}">
-          ${['owner','pic','crew','media','gudang','auditor'].map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${r}</option>`).join('')}</select>`;
+          ${roleList.map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${ROLE_LABEL[r]||r}</option>`).join('')}</select>`;
         const brSel=`<select id="br_${p.user_id}" style="${fld6}">
           <option value="">(tanpa cabang)</option>${branches.map(b=>`<option value="${b.id}" ${p.branch_id===b.id?'selected':''}>${b.name} · ${b.type==='warehouse'?'gudang':'outlet'}</option>`).join('')}</select>`;
         const delBtn=isSelf
@@ -3687,6 +3695,13 @@ const App={
     const role=document.getElementById('role_'+userId).value;
     const branch=document.getElementById('br_'+userId).value||null;
     const name=(document.getElementById('name_'+userId).value||'').trim()||null;
+    // PENGAMAN: promosi ke OWNER = akses penuh (semua outlet, keuangan, HPP, resep).
+    // Pernah terjadi mitra tak sengaja jadi owner. Wajib konfirmasi tegas.
+    const prev=(this._setProfs||[]).find(p=>p.user_id===userId);
+    if(role==='owner' && prev && prev.role!=='owner'){
+      const who=prev.full_name||prev.email||'user ini';
+      if(!confirm('PERINGATAN: Anda akan menjadikan "'+who+'" sebagai OWNER / PUSAT.\n\nIa akan bisa melihat SELURUH outlet, seluruh keuangan, HPP internal, resep, dan mengubah role siapa pun — setara Anda.\n\nRole sebelumnya: '+prev.role+'\n\nLanjutkan?')) return;
+    }
     const fields={role,branch_id:role==='owner'?null:branch,full_name:name};
     try{
       const n=await Data.updateProfile(userId,fields);
