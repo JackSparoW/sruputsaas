@@ -858,6 +858,26 @@ const App={
     });
     // Cadangan: sebagian browser sudah memuat hash sebelum listener siap.
     if(location.hash && /type=recovery/.test(location.hash)){ this.showRecovery(); return; }
+
+    // === Tangani kembalian dari LINK EMAIL (verifikasi/konfirmasi) ===
+    // Supabase menaruh hasil di hash URL. Tanpa penanganan ini, user yang klik
+    // link email mendarat di halaman login kosong tanpa penjelasan apa pun.
+    const hash=(location.hash||'').replace(/^#/,'');
+    if(hash){
+      const hp=new URLSearchParams(hash);
+      const errDesc=hp.get('error_description')||hp.get('error');
+      if(errDesc){
+        // link kedaluwarsa / sudah dipakai / tidak sah
+        history.replaceState(null,'',location.pathname+location.search);
+        this.loginError('Link email bermasalah: '+decodeURIComponent(errDesc).replace(/\+/g,' ')+'. Minta link baru atau hubungi owner.');
+      } else if(hp.get('type')==='signup' || hp.get('type')==='email_change'){
+        // verifikasi email BERHASIL
+        history.replaceState(null,'',location.pathname+location.search);
+        const el=document.getElementById('loginErr');
+        if(el){ el.style.color='var(--good)'; el.textContent='✓ Email terverifikasi. Silakan masuk dengan email & password Anda.'; el.classList.remove('hidden'); }
+      }
+    }
+
     // pulihkan sesi bila ada
     try{
       const{data}=await sb.auth.getSession();
@@ -6852,7 +6872,10 @@ const App={
     btn.disabled=true; btn.textContent="Memproses…";
     try{
       const meta={invite_code:code}; if(name)meta.full_name=name;
-      const{data,error}=await sb.auth.signUp({email,password,options:{data:meta}});
+      // PENTING: arahkan link verifikasi email kembali ke aplikasi ini.
+      // Tanpa ini, Supabase memakai Site URL default (sering localhost) -> halaman 404.
+      const redirectTo=location.origin+location.pathname;
+      const{data,error}=await sb.auth.signUp({email,password,options:{data:meta,emailRedirectTo:redirectTo}});
       if(error)throw error;
       if(data.session){ await sb.auth.signOut(); }
       info.innerHTML="\u2713 Akun berhasil dibuat"+(data.session?"":" \u2014 cek email untuk konfirmasi")+". Kamu ditempatkan otomatis di outlet sesuai kode undangan. Lalu klik Masuk di bawah.";
