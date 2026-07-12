@@ -1099,6 +1099,46 @@ const App={
         </div>`;
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
+  // Banner notifikasi permintaan stok — tampil di dashboard.
+  // Pusat: berapa permintaan menunggu. Outlet: hasil permintaan yang baru diproses.
+  async stockReqBanner(){
+    try{
+      const{data,error}=await sb.rpc('stock_request_notif');
+      if(error||!data)return '';
+      if(data.peran==='pusat'){
+        const n=Number(data.menunggu||0);
+        if(!n)return '';
+        const list=(data.daftar||[]).slice(0,3).map(d=>`${escHtml(d.outlet||'-')} (${d.item} bahan)`).join(', ');
+        return `<div class="banner warn" style="margin-bottom:14px"><span class="i">⇄</span><div>
+          <b>${n} permintaan stok menunggu diproses.</b> ${escHtml(list)}${n>3?', …':''}
+          <button class="btn" style="width:auto;padding:5px 12px;margin-top:8px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.go('reqmitra')">→ Proses Permintaan</button>
+        </div></div>`;
+      }
+      if(data.peran==='outlet'){
+        const selesai=data.baru_selesai||[];
+        const menunggu=Number(data.menunggu||0);
+        let h='';
+        selesai.forEach(s=>{
+          if(s.status==='sent'){
+            h+=`<div class="banner ok" style="margin-bottom:10px"><span class="i">✓</span><div>
+              <b>Permintaan stok Anda sudah dikirim Pusat.</b> Nota: <b>${escHtml(s.nota||'-')}</b> (${escHtml(String(s.tanggal||''))}). Stok sudah masuk ke outlet Anda.
+            </div></div>`;
+          } else {
+            h+=`<div class="banner warn" style="margin-bottom:10px"><span class="i">✕</span><div>
+              <b>Permintaan stok Anda ditolak.</b> Alasan: ${escHtml(s.alasan||'(tak disebutkan)')} (${escHtml(String(s.tanggal||''))}).
+            </div></div>`;
+          }
+        });
+        if(menunggu){
+          h+=`<div class="banner info" style="margin-bottom:10px"><span class="i">⌛</span><div>
+            <b>${menunggu} permintaan stok Anda sedang menunggu</b> diproses Pusat.
+          </div></div>`;
+        }
+        return h;
+      }
+      return '';
+    }catch(e){ return ''; }
+  },
   async render_dashboard(){
     const v=document.getElementById('view');
     if(CURRENT.role==='crew'){ return this.render_crewDashboard(); }
@@ -1246,7 +1286,9 @@ const App={
           <button class="btn btn-primary" style="width:auto;margin:0;padding:8px 16px" onclick="App.applyDashRange()">Terapkan</button>
           ${period==='range'?`<span class="mini" style="color:var(--good)">Aktif: ${periodLabel}</span>`:''}
         </div>`:'';
+      const reqBanner=await this.stockReqBanner();
       v.innerHTML=`
+        ${reqBanner}
         ${dashPicker}
         <div class="sec-title">Ringkasan Operasional · ${periodLabel}</div>
         <div class="grid-stats">
@@ -2486,15 +2528,54 @@ const App={
     if(qtyRaw===''){this.toast('Isi jumlah yang akan ditambahkan dulu','bad');return;}
     if(isNaN(qty)||qty===0){this.toast('Isi jumlah yang akan ditambahkan (boleh negatif untuk koreksi)','bad');return;}
     const min=minRaw===''?null:Number(minRaw);
-    // WAJIB ALASAN: stok tidak boleh berubah tanpa jejak. Ini mencegah selisih
-    // fisik-vs-sistem ditutup diam-diam, dan memaksa asal-usul barang tercatat.
-    const reason=prompt('Dari mana stok ini berasal? (wajib)\n\nContoh: "kiriman dari Gudang Pusat", "beli di toko A", "koreksi salah input".\n\nUntuk pembelian resmi (dengan supplier & harga), gunakan menu Pembelian agar HPP akurat.\n\nAlasan:');
-    if(reason===null)return;
-    if(!reason.trim()){ this.toast('Dibatalkan — alasan wajib diisi','bad'); return; }
+    // Cabang yang BERPERAN SEBAGAI GUDANG (is_supply_source / warehouse) adalah tempat
+    // barang dari supplier MASUK — di sana "+ Tambah" memang jalur yang benar.
+    // Outlet biasa: barang kiriman gudang WAJIB lewat Minta Stok (agar stok gudang
+    // berkurang, HPP terhitung, nota terbit).
+    let isGudang=false;
+    try{ const bs=await Data.branches();
+      const b=bs.find(x=>x.id===branch);
+      isGudang=!!(b&&(b.is_supply_source||b.type==='warehouse'));
+    }catch(e){}
+
+    let reason;
+    if(isGudang){
+      const detail=prompt('Barang masuk ke GUDANG. Dari mana? (wajib)\n\nContoh: "beli dari supplier A", "kiriman distributor", "koreksi salah input".\n\nKeterangan:');
+      if(detail===null)return;
+      if(!detail.trim()){ this.toast('Dibatalkan — keterangan wajib diisi','bad'); return; }
+      reason='Masuk gudang — '+detail.trim();
+    } else {
+      const kat=prompt(
+        'Dari mana stok ini berasal? Ketik ANGKA:\n\n'+
+        '1 = Kiriman dari gudang Pusat\n'+
+        '2 = Beli sendiri (darurat/toko terdekat)\n'+
+        '3 = Koreksi salah input sebelumnya\n'+
+        '4 = Lainnya\n\n'+
+        'Pilihan (1-4):');
+      if(kat===null)return;
+      const k=(kat||'').trim();
+      if(k==='1'){
+        alert('Barang kiriman dari gudang TIDAK boleh ditambah manual di sini.\n\n'+
+              'Gunakan menu "Minta Stok" agar:\n'+
+              '• stok gudang ikut berkurang\n'+
+              '• HPP outlet terhitung otomatis\n'+
+              '• nota & jejak transfer terbit\n\n'+
+              'Menambah manual membuat stok gudang salah dan HPP tidak akurat.');
+        this.go('picminta');
+        return;
+      }
+      if(!['2','3','4'].includes(k)){ this.toast('Pilihan tidak dikenal — dibatalkan','bad'); return; }
+      const label={'2':'Beli sendiri (darurat)','3':'Koreksi salah input','4':'Lainnya'}[k];
+      const detail=prompt('Jelaskan singkat (wajib).\n\nContoh: "beli gula di Indomaret karena habis", "salah input 500 jadi 50".\n\nKeterangan:');
+      if(detail===null)return;
+      if(!detail.trim()){ this.toast('Dibatalkan — keterangan wajib diisi','bad'); return; }
+      reason=label+' — '+detail.trim();
+    }
+
     const btn=document.getElementById('ivAdd');btn.disabled=true;btn.textContent='…';
     try{
-      const baru=await Data.stockAdjustAudited(branch,ing,'add',qty,min,reason.trim());
-      this.toast('Ditambahkan. Stok kini '+Math.round(baru).toLocaleString('id')+' · alasan tercatat','good');
+      const baru=await Data.stockAdjustAudited(branch,ing,'add',qty,min,reason);
+      this.toast('Ditambahkan. Stok kini '+Math.round(baru).toLocaleString('id'),'good');
       this.render_inventory();
     }catch(e){ this.toast((e&&e.message)||'Gagal (cek izin/RLS)','bad'); btn.disabled=false;btn.textContent='+ Tambah'; }
   },
