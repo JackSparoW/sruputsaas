@@ -1118,6 +1118,20 @@ const App={
   },
   // Banner notifikasi permintaan stok — tampil di dashboard.
   // Pusat: berapa permintaan menunggu. Outlet: hasil permintaan yang baru diproses.
+  // Peringatan shift terbengkalai — shift tak ditutup = rekonsiliasi kas tak terjadi.
+  async staleShiftBanner(){
+    try{
+      const{data,error}=await sb.rpc('stale_shifts');
+      if(error||!data||!data.length)return '';
+      const rows=data.map(s=>`<li style="margin:3px 0"><b>${escHtml(s.cabang)}</b> — ${escHtml(s.kasir)}, dibuka ${escHtml(String(s.dibuka))} (<b>${s.umur_hari} hari lalu</b>, ${s.transaksi} transaksi)</li>`).join('');
+      return `<div class="banner warn" style="margin-bottom:14px"><span class="i">◔</span><div>
+        <b>${data.length} shift belum ditutup dari hari sebelumnya.</b>
+        Selama shift tak ditutup, <b>kas tidak pernah direkonsiliasi</b> — kita tak tahu apakah uang fisik cocok dengan penjualan.
+        <ul style="margin:6px 0 0 16px;padding:0">${rows}</ul>
+        <button class="btn" style="width:auto;padding:5px 12px;margin-top:8px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.go('shift')">→ Buka Shift Kasir</button>
+      </div></div>`;
+    }catch(e){ return ''; }
+  },
   async stockReqBanner(){
     try{
       const{data,error}=await sb.rpc('stock_request_notif');
@@ -1303,8 +1317,9 @@ const App={
           <button class="btn btn-primary" style="width:auto;margin:0;padding:8px 16px" onclick="App.applyDashRange()">Terapkan</button>
           ${period==='range'?`<span class="mini" style="color:var(--good)">Aktif: ${periodLabel}</span>`:''}
         </div>`:'';
-      const reqBanner=await this.stockReqBanner();
+      const [reqBanner,shiftBanner]=await Promise.all([this.stockReqBanner(),this.staleShiftBanner()]);
       v.innerHTML=`
+        ${shiftBanner}
         ${reqBanner}
         ${dashPicker}
         <div class="sec-title">Ringkasan Operasional · ${periodLabel}</div>
