@@ -981,6 +981,14 @@ const App={
     document.getElementById('app').classList.remove('hidden');
     document.getElementById('whoRole').textContent=ROLE_LABEL[CURRENT.role]||CURRENT.role;
     document.getElementById('whoBranch').textContent=CURRENT.branch?CURRENT.branch:'Semua cabang';
+    // Deteksi: apakah cabang PIC ini adalah GUDANG SUMBER? (menentukan menu Permintaan Stok)
+    this._picIsSupplySource=false;
+    if(CURRENT.role==='pic' && CURRENT.branch){
+      try{ const bs=await Data.branches();
+        const me=bs.find(x=>x.id===CURRENT.branch);
+        this._picIsSupplySource=!!(me&&(me.is_supply_source||me.type==='warehouse'));
+      }catch(e){}
+    }
     this.renderNav();
     const first=(NAV[CURRENT.role]||[]).find(n=>n[3])||NAV[CURRENT.role][0];
     this.go(first[0]);
@@ -995,7 +1003,16 @@ const App={
   },
 
   renderNav(){
-    document.getElementById('nav').innerHTML=(NAV[CURRENT.role]||[]).map(([id,ic,lbl,on])=>
+    let items=(NAV[CURRENT.role]||[]).slice();
+    // PIC yang cabangnya = GUDANG SUMBER: beri menu "Permintaan Stok" agar ia bisa
+    // memenuhi permintaan outlet lain sendiri (tanpa menunggu owner), tapi tetap
+    // lewat jalur resmi sehingga HPP terhitung & nota terbit.
+    if(CURRENT.role==='pic' && this._picIsSupplySource && !items.some(x=>x[0]==='reqmitra')){
+      const i=items.findIndex(x=>x[0]==='picminta');
+      const entry=['reqmitra','⇄','Permintaan Stok',1];
+      if(i>=0) items.splice(i+1,0,entry); else items.push(entry);
+    }
+    document.getElementById('nav').innerHTML=items.map(([id,ic,lbl,on])=>
       on?`<button class="navlink" data-page="${id}" onclick="App.go('${id}')"><span class="ic">${ic}</span> ${lbl}</button>`
         :`<button class="navlink soon" title="Belum tersambung"><span class="ic">${ic}</span> ${lbl} <span style="font-size:9px;margin-left:auto;opacity:.7">soon</span></button>`).join('');
   },
@@ -6372,6 +6389,14 @@ const App={
       if(grp.aman.length) html+=`<div class="sec-title">Aman</div>`+table(grp.aman);
       if(grp.diam.length) html+=`<div class="sec-title">Tidak bergerak 28 hari — kandidat arsip / cek stok mati</div>`+table(grp.diam);
       if(!rows.length) html+=`<div class="card pad mini muted">Tidak ada data bahan untuk outlet ini.</div>`;
+      // Pintas ke Minta Stok — supaya alurnya nyambung: lihat saran → langsung ajukan.
+      if(['pic','mitra'].includes(CURRENT.role) && (grp.kritis.length||grp.segera.length)){
+        const tujuan=CURRENT.role==='mitra'?'mtrminta':'picminta';
+        html+=`<div class="banner warn" style="margin-top:14px"><span class="i">⇄</span><div>
+          <b>${grp.kritis.length+grp.segera.length} bahan perlu dipesan.</b> Pakai kolom <b>"Saran pesan (7h)"</b> sebagai jumlah yang diajukan — angkanya sudah dikurangi permintaan yang masih pending, jadi tak akan dobel.
+          <button class="btn" style="width:auto;padding:6px 14px;margin-top:8px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong);font-weight:700" onclick="App.go('${tujuan}')">→ Ajukan Minta Stok</button>
+        </div></div>`;
+      }
       html+=`<div class="mini" style="margin-top:4px;opacity:.7">Metode: rata-rata pemakaian harian 28 hari kalender (resep + topping "add" + waste; request "less" tidak dikurangkan → estimasi sedikit konservatif) + stok pengaman 90% (1.28σ). "Saran pesan" sudah dikurangi permintaan pending. Prediksi buta terhadap promo, menu baru, dan cuaca — angka besar pada outlet ber-data tipis wajar tampil "90+".</div>`;
       v.innerHTML=html;
     }catch(e){ v.innerHTML=this.errHTML(e); }
@@ -6869,7 +6894,17 @@ const App={
   /* ===== OWNER: Permintaan Mitra (fulfillment + harga pasok) — aditif ===== */
   async render_reqmitra(){
     const v=document.getElementById('view');
-    if(CURRENT.role!=='owner' && CURRENT.role!=='gudang'){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner/Gudang</b></div>`; return; }
+    // Owner/gudang = Pusat. PIC yang cabangnya adalah GUDANG SUMBER juga boleh memenuhi:
+    // ia dipercaya penuh (tak perlu izin owner), TAPI tetap lewat jalur ini agar
+    // HPP outlet terhitung (moving average) & nota terbit.
+    let bolehPenuhi=(CURRENT.role==='owner'||CURRENT.role==='gudang');
+    if(!bolehPenuhi && CURRENT.role==='pic'){
+      try{ const bs=await Data.branches();
+        const me=bs.find(x=>x.id===CURRENT.branch);
+        bolehPenuhi=!!(me&&(me.is_supply_source||me.type==='warehouse'));
+      }catch(e){}
+    }
+    if(!bolehPenuhi){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner/Gudang</b></div>`; return; }
     v.innerHTML=this.loadingHTML('Memuat permintaan…');
     try{
       const branches=await Data.branches();
