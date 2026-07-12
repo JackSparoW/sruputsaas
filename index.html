@@ -337,7 +337,7 @@ const hourOfWIB=ts=>{
 
 /* role -> menu yg aktif di slice ini. 'soon' = belum tersambung (jujur, bukan demo palsu) */
 const NAV={
-  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['auditormgr','◴','Tetapkan Auditor',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
+  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['auditormgr','◴','Tetapkan Auditor',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1],['stockaudit','▤','Audit Stok',1]],
   auditor:[['auditctr','◴','Audit Center',1]],
   ai_review:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['inventory','▤','Stok & Bahan',1],['waste','✕','Waste / Buang',1],['expenses','▾','Pengeluaran',1],['purchase','⬇','Pembelian',1],['shift','◔','Shift Kasir',1],['royalty','◈','Royalti Mitra',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['audit','◴','Audit Log',1]],
   pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
@@ -1002,7 +1002,7 @@ const App={
   go(page){
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
+    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])this['render_'+page]();
   },
@@ -2185,6 +2185,60 @@ const App={
 
 
   /* ---------- INVENTORY (cloud: lihat + restock) ---------- */
+  async render_stockaudit(){
+    const v=document.getElementById('view');
+    if(!['owner','auditor'].includes(CURRENT.role)){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner / Auditor</b></div>`; return; }
+    v.innerHTML=this.loadingHTML('Memuat jejak stok…');
+    try{
+      const hari=this._saDays||30;
+      const{data,error}=await sb.rpc('stock_adjust_audit',{p_days:hari});
+      if(error)throw error;
+      const rows=data||[];
+      const tanpaAlasan=rows.filter(r=>r.alasan==='(tanpa alasan)').length;
+
+      let html=`<div class="banner ${tanpaAlasan?'warn':'info'}"><span class="i">▤</span><div>
+        Jejak setiap perubahan stok manual. <b>Stok yang sering diubah tangan = sinyal masalah</b> — entah pencatatan pembelian yang terlewat, atau kebocoran yang ditutupi.
+        ${tanpaAlasan?`<br><b>⚠ ${tanpaAlasan} penyesuaian tanpa alasan</b> (dari era sebelum aturan alasan-wajib). Mulai sekarang semua wajib beralasan.`:''}
+      </div></div>
+      <div class="card pad" style="margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <span class="mini muted">Rentang:</span>
+        ${[7,30,90].map(d=>`<button class="btn" style="width:auto;padding:6px 12px;font-size:12px;background:${hari===d?'var(--accent)':'var(--surface-2)'};color:${hari===d?'#fff':'var(--text)'};border:1px solid var(--line-strong)" onclick="App._saDays=${d};App.render_stockaudit()">${d} hari</button>`).join('')}
+        <span class="mini muted" style="margin-left:auto">${rows.length} penyesuaian</span>
+      </div>`;
+
+      if(!rows.length){ html+=`<div class="card pad mini muted">Tak ada penyesuaian stok dalam ${hari} hari terakhir.</div>`; }
+      else{
+        // ringkasan per orang
+        const byOrang={};
+        rows.forEach(r=>{ const k=r.siapa; byOrang[k]=byOrang[k]||{n:0,tanpa:0}; byOrang[k].n++; if(r.alasan==='(tanpa alasan)')byOrang[k].tanpa++; });
+        html+=`<div class="sec-title">Ringkasan per Orang</div><div class="card pad" style="margin-bottom:14px;overflow-x:auto">
+          <table><thead><tr><th>Siapa</th><th class="right">Penyesuaian</th><th class="right">Tanpa alasan</th></tr></thead><tbody>
+          ${Object.entries(byOrang).sort((a,b)=>b[1].n-a[1].n).map(([k,v])=>`<tr>
+            <td><b>${escHtml(k)}</b></td><td class="right mono">${v.n}</td>
+            <td class="right mono" style="color:${v.tanpa?'var(--bad)':'var(--good)'}">${v.tanpa}</td></tr>`).join('')}
+          </tbody></table></div>`;
+
+        html+=`<div class="sec-title">Jejak Lengkap</div><div class="card pad" style="overflow-x:auto">
+          <table><thead><tr><th>Waktu</th><th>Siapa</th><th>Outlet</th><th>Bahan</th><th class="right">Lama</th><th class="right">Baru</th><th class="right">Ubah</th><th>Alasan</th></tr></thead><tbody>`;
+        html+=rows.map(r=>{
+          const ubah=Number(r.perubahan||0);
+          const noAlasan=r.alasan==='(tanpa alasan)';
+          return `<tr>
+            <td class="mini">${new Date(r.waktu_wib).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td>
+            <td>${escHtml(r.siapa)}</td>
+            <td class="mini">${escHtml(r.outlet||'-')}</td>
+            <td class="mini">${escHtml(r.bahan||'-')}</td>
+            <td class="right mono mini">${r.stok_lama==null?'-':Math.round(r.stok_lama).toLocaleString('id')}</td>
+            <td class="right mono mini">${r.stok_baru==null?'-':Math.round(r.stok_baru).toLocaleString('id')}</td>
+            <td class="right mono" style="color:${ubah>0?'var(--good)':ubah<0?'var(--bad)':'var(--muted)'}">${ubah>0?'+':''}${Math.round(ubah).toLocaleString('id')}</td>
+            <td class="mini" style="${noAlasan?'color:var(--bad);font-weight:600':''}">${escHtml(r.alasan)}</td>
+          </tr>`;
+        }).join('');
+        html+=`</tbody></table></div>`;
+      }
+      v.innerHTML=html;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
   async render_inventory(){
     const v=document.getElementById('view');v.innerHTML=this.loadingHTML('Memuat stok…');
     try{
@@ -2432,10 +2486,15 @@ const App={
     if(qtyRaw===''){this.toast('Isi jumlah yang akan ditambahkan dulu','bad');return;}
     if(isNaN(qty)||qty===0){this.toast('Isi jumlah yang akan ditambahkan (boleh negatif untuk koreksi)','bad');return;}
     const min=minRaw===''?null:Number(minRaw);
+    // WAJIB ALASAN: stok tidak boleh berubah tanpa jejak. Ini mencegah selisih
+    // fisik-vs-sistem ditutup diam-diam, dan memaksa asal-usul barang tercatat.
+    const reason=prompt('Dari mana stok ini berasal? (wajib)\n\nContoh: "kiriman dari Gudang Pusat", "beli di toko A", "koreksi salah input".\n\nUntuk pembelian resmi (dengan supplier & harga), gunakan menu Pembelian agar HPP akurat.\n\nAlasan:');
+    if(reason===null)return;
+    if(!reason.trim()){ this.toast('Dibatalkan — alasan wajib diisi','bad'); return; }
     const btn=document.getElementById('ivAdd');btn.disabled=true;btn.textContent='…';
     try{
-      const baru=await Data.stockAdjustAudited(branch,ing,'add',qty,min);
-      this.toast('Ditambahkan. Stok kini '+Math.round(baru).toLocaleString('id'),'good');
+      const baru=await Data.stockAdjustAudited(branch,ing,'add',qty,min,reason.trim());
+      this.toast('Ditambahkan. Stok kini '+Math.round(baru).toLocaleString('id')+' · alasan tercatat','good');
       this.render_inventory();
     }catch(e){ this.toast((e&&e.message)||'Gagal (cek izin/RLS)','bad'); btn.disabled=false;btn.textContent='+ Tambah'; }
   },
