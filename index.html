@@ -343,7 +343,7 @@ const NAV={
   crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',0],['settings','⚙','Setting Printer',1]],
   media:[['content','✦','Rekomendasi Konten',0]],
   gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
-  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
+  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
 };
 const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor'};
 
@@ -981,7 +981,7 @@ const App={
   go(page){
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku']}[page]||[page,''];
+    const t={dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])this['render_'+page]();
   },
@@ -3732,7 +3732,7 @@ const App={
           const payTag=s.payment==='qris'?'<span class="tag warn">QRIS</span>':'<span class="tag ok">Cash</span>';
           const isVoid=s.status==='voided';
           const saleDateWIB=new Date(s.created_at).toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
-          const canVoid=!isVoid && ['owner','pic'].includes(CURRENT.role) && saleDateWIB===todayWIB;
+          const canVoid=!isVoid && ['owner','pic','mitra'].includes(CURRENT.role) && saleDateWIB===todayWIB;
           const voidTag=isVoid?' <span class="tag low">DIBATALKAN</span>':'';
           const rowStyle=isVoid?'opacity:.55;text-decoration:line-through':'';
           const voidBtn=canVoid?`<button class="btn" style="padding:4px 9px;background:var(--bad-soft);color:var(--bad);border:1px solid var(--bad);font-size:11px" onclick="event.stopPropagation();App.voidSale('${s.id}')">Batalkan</button>`:'';
@@ -4672,6 +4672,40 @@ const App={
   },
 
   /* ---------- DISKON (owner) ---------- */
+  async render_mtrresep(){
+    const v=document.getElementById('view');
+    if(!['mitra','pic','crew'].includes(CURRENT.role)){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Halaman untuk mitra/PIC/crew</b></div>`; return; }
+    v.innerHTML=this.loadingHTML('Memuat resep…');
+    try{
+      const{data,error}=await sb.rpc('mitra_recipes');
+      if(error)throw error;
+      const rows=data||[];
+      if(!rows.length){ v.innerHTML=`<div class="card pad mini muted">Belum ada resep.</div>`; return; }
+      // kelompokkan per menu
+      const byMenu={};
+      rows.forEach(r=>{ (byMenu[r.menu_id]=byMenu[r.menu_id]||{name:r.menu_name,price:r.menu_price,items:[]}).items.push(r); });
+      const q=(this._rsQ||'').toLowerCase();
+      let html=`<div class="banner info"><span class="i">✎</span><div>Takaran resmi tiap menu. Ikuti takaran ini persis agar rasa & kualitas seragam di semua outlet SRUPUT. Bahan bertanda <b>Pusat</b> wajib dibeli dari Pusat (tidak boleh diganti bahan lain).</div></div>
+        <div class="card pad" style="margin-bottom:14px"><input id="rsQ" placeholder="Cari menu…" value="${escHtml(this._rsQ||'')}" oninput="App._rsQ=this.value;App.render_mtrresep()" style="padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%"></div>`;
+      const list=Object.values(byMenu).filter(m=>!q||m.name.toLowerCase().includes(q));
+      if(!list.length){ html+=`<div class="card pad mini muted">Tidak ada menu cocok.</div>`; }
+      html+=list.map(m=>`
+        <div class="card pad" style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+            <b>${escHtml(m.name)}</b><span class="tag">${this.rp(m.price)}</span>
+          </div>
+          <table style="margin-top:8px"><thead><tr><th>Bahan</th><th class="right">Takaran</th><th>Sumber</th></tr></thead><tbody>
+          ${m.items.map(it=>`<tr>
+            <td>${escHtml(it.ingredient_name)}</td>
+            <td class="right mono">${Number(it.qty)} ${escHtml(it.unit||'')}</td>
+            <td>${it.from_pusat?'<span class="tag warn">Pusat</span>':'<span class="tag ok">boleh lokal</span>'}</td>
+          </tr>`).join('')}
+          </tbody></table>
+        </div>`).join('');
+      v.innerHTML=html;
+      const qi=document.getElementById('rsQ'); if(qi&&this._rsQ){ qi.focus(); qi.setSelectionRange(qi.value.length,qi.value.length); }
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
   async render_usuldiskon(){
     const v=document.getElementById('view');
     if(!['pic','mitra'].includes(CURRENT.role)){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya PIC/Mitra outlet</b></div>`; return; }
@@ -4774,8 +4808,19 @@ const App={
       // insert pivot outlet (RLS: hanya outlet milik saya + usulan pending saya)
       const pivRows=chosen.map(bid=>({discount_id:ins.id,branch_id:bid}));
       const{error:pe}=await sb.from('discount_branches').insert(pivRows);
-      if(pe){ this.toast('Usulan terkirim tapi gagal set outlet: '+pe.message,'warn'); }
-      else { this.toast('Usulan diskon terkirim ke owner','ok'); }
+      if(pe){
+        // GAGAL-AMAN: tanpa outlet, diskon akan berlaku GLOBAL (berbahaya).
+        // Batalkan usulan seluruhnya daripada membiarkan diskon bocor ke semua outlet.
+        await sb.from('discounts').delete().eq('id',ins.id);
+        throw new Error('Gagal menyimpan outlet — usulan dibatalkan agar diskon tidak berlaku di semua outlet. ('+pe.message+')');
+      }
+      // Verifikasi: pastikan outlet benar-benar tersimpan
+      const{data:chk}=await sb.from('discount_branches').select('branch_id').eq('discount_id',ins.id);
+      if(!chk||!chk.length){
+        await sb.from('discounts').delete().eq('id',ins.id);
+        throw new Error('Outlet tidak tersimpan — usulan dibatalkan demi keamanan. Coba lagi.');
+      }
+      this.toast('Usulan diskon terkirim ke owner (outlet: '+chk.map(c=>c.branch_id).join(', ')+')','ok');
       this.render_usuldiskon();
     }catch(e){ this.toast((e&&e.message)||'Gagal mengirim usulan','bad'); btn.disabled=false;btn.textContent='Ajukan ke Owner'; }
   },
@@ -4790,11 +4835,14 @@ const App={
       // Data per-outlet: daftar outlet + pivot discount_branches
       const branches=(await Data.branches()).filter(b=>b.type!=='warehouse');
       this._dBranches=branches;
-      let pivotByDisc={};
-      try{ const{data:piv}=await sb.from('discount_branches').select('discount_id,branch_id');
-        (piv||[]).forEach(p=>{(pivotByDisc[p.discount_id]=pivotByDisc[p.discount_id]||[]).push(p.branch_id);}); }catch(_){}
+      let pivotByDisc={}; let pivotError=null;
+      try{ const{data:piv,error:pvE}=await sb.from('discount_branches').select('discount_id,branch_id');
+        if(pvE) throw pvE;
+        (piv||[]).forEach(p=>{(pivotByDisc[p.discount_id]=pivotByDisc[p.discount_id]||[]).push(p.branch_id);}); }
+      catch(err){ pivotError=(err&&err.message)||'gagal memuat outlet'; }
       const bName=id=>{const b=branches.find(x=>x.id===id);return b?b.name:id;};
-      const outletsOf=did=>{const arr=pivotByDisc[did]||[]; return arr.length?arr.map(bName).join(', '):'Semua outlet';};
+      const outletsOf=did=>{ if(pivotError) return '⚠ tak terbaca';
+        const arr=pivotByDisc[did]||[]; return arr.length?arr.map(bName).join(', '):'Semua outlet';};
       const hh=await Data.getHappyHour().catch(()=>null);
       const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
       const mopt=menu.map(m=>`<option value="${m.id}">${m.name} (${this.rp(m.price)})</option>`).join('');
@@ -4989,14 +5037,18 @@ const App={
     const btn=document.getElementById('dBtn');btn.disabled=true;btn.textContent='…';
     try{
       const ins=await Data.addDiscount(rec);
-      // simpan outlet terpilih ke pivot (kosong = semua outlet, tak perlu insert)
+      // simpan outlet terpilih ke pivot (kosong = sengaja semua outlet)
       const chosen=[...document.querySelectorAll('.dBranch:checked')].map(c=>c.value);
       if(ins&&ins.id&&chosen.length){
         const pivRows=chosen.map(bid=>({discount_id:ins.id,branch_id:bid}));
         const{error:pe}=await sb.from('discount_branches').insert(pivRows);
-        if(pe){ this.toast('Diskon dibuat, tapi gagal set outlet: '+pe.message,'warn'); }
+        if(pe){
+          // GAGAL-AMAN: tanpa outlet, diskon berlaku GLOBAL. Batalkan daripada bocor.
+          await sb.from('discounts').delete().eq('id',ins.id);
+          throw new Error('Gagal menyimpan outlet — diskon dibatalkan agar tidak berlaku di semua outlet. ('+pe.message+')');
+        }
       }
-      this.toast('Diskon dibuat','good');
+      this.toast(chosen.length?('Diskon dibuat untuk '+chosen.length+' outlet'):'Diskon dibuat (semua outlet)','good');
       this.render_discount();
     }catch(e){ this.toast((e&&e.message)||'Gagal (cek izin owner)','bad'); btn.disabled=false;btn.textContent='+ Buat Diskon'; }
   },
