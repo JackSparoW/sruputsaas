@@ -339,13 +339,14 @@ const hourOfWIB=ts=>{
 const NAV={
   owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Rekomendasi Konten',0],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['auditormgr','◴','Tetapkan Auditor',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1]],
   auditor:[['auditctr','◴','Audit Center',1]],
+  ai_review:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['inventory','▤','Stok & Bahan',1],['waste','✕','Waste / Buang',1],['expenses','▾','Pengeluaran',1],['purchase','⬇','Pembelian',1],['shift','◔','Shift Kasir',1],['royalty','◈','Royalti Mitra',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['audit','◴','Audit Log',1]],
   pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Rekomendasi Konten',0],['settings','⚙','Setting Printer',1]],
   crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',0],['settings','⚙','Setting Printer',1]],
   media:[['content','✦','Rekomendasi Konten',0]],
   gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
   mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
 };
-const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor'};
+const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor',ai_review:'AI Review (baca-saja)'};
 
 /* ===== DATA: query nyata ke schema teruji ===== */
 /* v85: batas periode WIB eksplisit (+07:00). String tanpa offset ('YYYY-MM-DDT00:00:00')
@@ -2461,7 +2462,7 @@ const App={
   /* ---------- LAPORAN PENJUALAN (cloud, read-only, owner/pic) ---------- */
   async render_reports(){
     const v=document.getElementById('view');
-    if(!['owner','pic'].includes(CURRENT.role)){
+    if(!['owner','pic','ai_review'].includes(CURRENT.role)){
       v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Laporan terkunci</b><div class="mini" style="margin-top:6px">Hanya owner &amp; PIC.</div></div>`;return;
     }
     v.innerHTML=this.loadingHTML('Menyusun laporan…');
@@ -2693,7 +2694,7 @@ const App={
   /* ---------- ANALITIK LANJUTAN (owner/pic, read-only) ---------- */
   async render_analytik(){
     const v=document.getElementById('view');
-    if(!['owner','pic'].includes(CURRENT.role)){
+    if(!['owner','pic','ai_review'].includes(CURRENT.role)){
       v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner & PIC</b></div>`;return;
     }
     v.innerHTML=this.loadingHTML('Menyusun analitik…');
@@ -3498,7 +3499,7 @@ const App={
         // PERTAMA (owner) -> menekan Simpan akan MEMPROMOSIKAN user jadi owner.
         // Itu pernah terjadi (mitra tak ada di daftar). Jadi: sertakan semua role,
         // dan tambahkan fallback untuk role tak dikenal.
-        const ALL_ROLES=['owner','pic','crew','media','mitra','gudang','auditor'];
+        const ALL_ROLES=['owner','pic','crew','media','mitra','gudang','auditor','ai_review'];
         const roleList=ALL_ROLES.includes(p.role)||!p.role?ALL_ROLES:[p.role,...ALL_ROLES];
         const roleSel=`<select id="role_${p.user_id}" style="${fld6}">
           ${roleList.map(r=>`<option value="${r}" ${p.role===r?'selected':''}>${ROLE_LABEL[r]||r}</option>`).join('')}</select>`;
@@ -4216,7 +4217,7 @@ const App={
   /* ---------- PENGELUARAN ---------- */
   async render_expenses(){
     const v=document.getElementById('view');
-    if(!['owner','pic'].includes(CURRENT.role)){v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner & PIC</b></div>`;return;}
+    if(!['owner','pic','ai_review'].includes(CURRENT.role)){v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner & PIC</b></div>`;return;}
     v.innerHTML=this.loadingHTML('Memuat pengeluaran…');
     try{
       const branch=CURRENT.role==='owner'?null:CURRENT.branch;
@@ -4378,7 +4379,7 @@ const App={
   /* ---------- WASTE / BAHAN TERBUANG ---------- */
   async render_waste(){
     const v=document.getElementById('view');
-    if(!['owner','pic','crew'].includes(CURRENT.role)){v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Tidak tersedia</b></div>`;return;}
+    if(!['owner','pic','crew','ai_review'].includes(CURRENT.role)){v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Tidak tersedia</b></div>`;return;}
     v.innerHTML=this.loadingHTML('Memuat waste…');
     try{
       const branch=CURRENT.role==='owner'?null:CURRENT.branch;
@@ -4457,7 +4458,7 @@ const App={
   /* ---------- PEMBELIAN (owner / pic-gudang) ---------- */
   async render_purchase(){
     const v=document.getElementById('view');
-    if(!['owner','pic'].includes(CURRENT.role)){v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner & PIC Gudang</b></div>`;return;}
+    if(!['owner','pic','ai_review'].includes(CURRENT.role)){v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner & PIC Gudang</b></div>`;return;}
     v.innerHTML=this.loadingHTML('Memuat pembelian…');
     try{
       const allBranches=await Data.branches();
