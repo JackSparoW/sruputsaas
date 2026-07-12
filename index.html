@@ -244,7 +244,7 @@ td{padding:11px 12px;border-bottom:1px solid var(--line)}tr:last-child td{border
         <div class="field"><label>Nama</label><input id="suName" type="text" placeholder="Nama lengkap"></div>
         <div class="field"><label>Email</label><input id="suEmail" type="email" autocomplete="email" placeholder="nama@email.com"></div>
         <div class="field"><label>Password</label><input id="suPassword" type="password" autocomplete="new-password" placeholder="minimal 6 karakter"></div>
-        <div class="field"><label>Kode undangan <span style="opacity:.6;font-weight:400">(opsional)</span></label><input id="suCode" type="text" autocomplete="off" placeholder="dari owner/mitra → kosongkan jika calon mitra"></div>
+        <div class="field"><label>Kode undangan <span style="color:var(--bad);font-weight:600">(wajib)</span></label><input id="suCode" type="text" autocomplete="off" placeholder="minta kode ke owner SRUPUT Pusat"></div>
         <button class="btn btn-primary" id="signupBtn" onclick="App.signup()">Daftar</button>
         <div id="signupInfo" class="note hidden" style="color:#e0c3ae"></div>
         <div class="note">Punya kode undangan crew? Masukkan agar langsung ditempatkan di outlet. Calon mitra: kosongkan, lalu owner menetapkanmu. Sudah punya akun? <a href="#" onclick="App.showLogin();return false" style="color:#ffc299;font-weight:700">Masuk</a>.</div>
@@ -6607,6 +6607,22 @@ const App={
       this.toast('Status auditor dicabut','ok'); this.render_auditormgr();
     }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
   },
+  async mitraInvite(){
+    const b=document.getElementById('miOutlet').value;
+    const code=this.mtrGenCode();
+    const btn=document.getElementById('miBtn'); btn.disabled=true; btn.textContent='…';
+    try{
+      const{error}=await sb.from('invite_codes').insert({code,branch_id:b,role:'mitra',max_uses:1,created_by:CURRENT.user.id});
+      if(error)throw error;
+      const nb=document.getElementById('miNew');
+      if(nb)nb.innerHTML=`<div style="margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="mono" style="font-size:18px;font-weight:800;letter-spacing:.08em;color:var(--accent);background:var(--accent-soft);padding:6px 12px;border-radius:8px">${escHtml(code)}</span>
+        <button class="btn" style="background:var(--surface-2);border:1px solid var(--line-strong);padding:8px 14px;font-weight:700" onclick="navigator.clipboard&&navigator.clipboard.writeText('${code}');App.toast('Kode disalin','good')">Salin</button>
+        <span class="mini muted">Kirim ke calon mitra. Sekali pakai — ia akan otomatis jadi pemilik outlet ini.</span></div>`;
+      this.toast('Kode undangan mitra dibuat','good');
+      btn.disabled=false; btn.textContent='Buat Kode Mitra';
+    }catch(e){ this.toast((e&&e.message)||'Gagal membuat kode','bad'); btn.disabled=false; btn.textContent='Buat Kode Mitra'; }
+  },
   async render_mitramgr(){
     const v=document.getElementById('view');
     if(CURRENT.role!=='owner'){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner/Pusat</b></div>`; return; }
@@ -6623,6 +6639,21 @@ const App={
       const uopts=cand.map(p=>`<option value="${p.user_id}">${escHtml(p.full_name||p.email||p.user_id)}${p.role?(' · '+escHtml(p.role)):''}</option>`).join('');
       const oopts=outlets.map(b=>{const own=b.owner_user_id?(' · milik '+escHtml(nameOf(b.owner_user_id))):' · belum dimiliki'; return `<option value="${b.id}">${escHtml(b.name)}${own}</option>`;}).join('');
       let html=`<div class="banner info"><span class="i">◈</span><div>Jadikan user sebagai <b>mitra</b> dan tetapkan outlet miliknya. Syarat: user sudah punya akun (mendaftar); owner tak bisa dijadikan mitra; outlet gudang/sumber pasok tak bisa dimiliki mitra. Satu mitra boleh punya beberapa outlet.</div></div>`;
+
+      // ===== UNDANG MITRA BARU (kode undangan langsung ke outletnya) =====
+      const freeOutlets=outlets.filter(b=>!b.owner_user_id);
+      html+=`<div class="card pad" style="margin-bottom:16px;border:1px solid var(--accent)">
+        <b style="display:block;margin-bottom:6px">Undang Mitra Baru</b>
+        <div class="mini muted" style="margin-bottom:12px">Buat kode undangan untuk calon mitra. Saat ia mendaftar dengan kode ini, ia <b>otomatis jadi mitra</b> dan outlet tersebut <b>langsung menjadi miliknya</b>. Tanpa kode undangan, tak ada yang bisa mendaftar.</div>
+        ${freeOutlets.length?`
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+            <div style="flex:1;min-width:200px"><label class="mini" style="display:block;margin-bottom:4px">Outlet untuk mitra baru</label>
+              <select id="miOutlet" style="${fld};width:100%">${freeOutlets.map(b=>`<option value="${b.id}">${escHtml(b.name)}</option>`).join('')}</select></div>
+            <button class="btn btn-primary" style="width:auto;padding:9px 16px" id="miBtn" onclick="App.mitraInvite()">Buat Kode Mitra</button>
+          </div>
+          <div id="miNew"></div>`
+        :`<div class="mini muted">Semua outlet sudah punya pemilik. Buat outlet baru dulu di menu <b>Cabang</b>.</div>`}
+      </div>`;
       if(cand.length && outlets.length){
         html+=`<div class="card pad" style="margin-bottom:16px"><b style="display:block;margin-bottom:12px">Tetapkan mitra</b>
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
@@ -6816,13 +6847,15 @@ const App={
     const info=document.getElementById('signupInfo'); info.classList.add('hidden');
     if(!email||!password){ this.loginError("Email & password wajib diisi."); return; }
     if(password.length<6){ this.loginError("Password minimal 6 karakter."); return; }
+    // WAJIB: tanpa kode undangan dari owner, pendaftaran tidak diizinkan.
+    if(!code){ this.loginError("Kode undangan wajib diisi. Minta kode ke owner SRUPUT Pusat."); return; }
     btn.disabled=true; btn.textContent="Memproses…";
     try{
-      const meta={}; if(name)meta.full_name=name; if(code)meta.invite_code=code;
+      const meta={invite_code:code}; if(name)meta.full_name=name;
       const{data,error}=await sb.auth.signUp({email,password,options:{data:meta}});
       if(error)throw error;
       if(data.session){ await sb.auth.signOut(); }
-      info.innerHTML="\u2713 Akun berhasil dibuat"+(data.session?"":" \u2014 cek email untuk konfirmasi")+". "+(code?"Kamu ditempatkan sebagai crew di outlet. ":"Minta owner menetapkanmu sebagai mitra. ")+"Lalu klik Masuk di bawah.";
+      info.innerHTML="\u2713 Akun berhasil dibuat"+(data.session?"":" \u2014 cek email untuk konfirmasi")+". Kamu ditempatkan otomatis di outlet sesuai kode undangan. Lalu klik Masuk di bawah.";
       info.classList.remove('hidden');
       document.getElementById('suPassword').value='';
       btn.disabled=false; btn.textContent="Daftar";
