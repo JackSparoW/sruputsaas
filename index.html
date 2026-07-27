@@ -337,14 +337,14 @@ const hourOfWIB=ts=>{
 
 /* role -> menu yg aktif di slice ini. 'soon' = belum tersambung (jujur, bukan demo palsu) */
 const NAV={
-  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',0],['content','✦','Studio Konten',1],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['auditormgr','◴','Tetapkan Auditor',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1],['stockaudit','▤','Audit Stok',1],['offlinefail','⚠','Transaksi Gagal',1]],
+  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',1],['content','✦','Studio Konten',1],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['auditormgr','◴','Tetapkan Auditor',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1],['stockaudit','▤','Audit Stok',1],['produksi','⚗','Produksi',1],['offlinefail','⚠','Transaksi Gagal',1]],
   auditor:[['auditctr','◴','Audit Center',1]],
   ai_review:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['inventory','▤','Stok & Bahan',1],['waste','✕','Waste / Buang',1],['expenses','▾','Pengeluaran',1],['purchase','⬇','Pembelian',1],['shift','◔','Shift Kasir',1],['royalty','◈','Royalti Mitra',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['audit','◴','Audit Log',1]],
-  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',0],['content','✦','Studio Konten',1],['settings','⚙','Setting Printer',1]],
-  crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',0],['settings','⚙','Setting Printer',1]],
+  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['produksi','⚗','Produksi',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',1],['content','✦','Studio Konten',1],['settings','⚙','Setting Printer',1]],
+  crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',1],['settings','⚙','Setting Printer',1]],
   media:[['content','✦','Studio Konten',1]],
   gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
-  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1]],
+  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['produksi','⚗','Produksi',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1],['settings','⚙','Setting Printer',1]],
 };
 const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor',ai_review:'AI Review (baca-saja)'};
 
@@ -1019,7 +1019,7 @@ const App={
   go(page){
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:['Setting','Kelola user & role (owner)'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
+    const t={content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:[CURRENT.role==='owner'?'Setting':'Setting Printer',CURRENT.role==='owner'?'Kelola user & role (owner)':'Atur printer struk Bluetooth untuk perangkat ini'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],produksi:['Produksi','Masak bahan mentah jadi bahan olahan · pantau rendemen'],employees:['Pegawai & Gaji','Data pegawai, absensi, dan perhitungan gaji bulanan'],attend:['Absensi Saya','Absen masuk & pulang · riwayat kehadiran bulan ini'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])this['render_'+page]();
   },
@@ -2389,6 +2389,637 @@ const App={
       this.render_offlinefail();
     }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
   },
+  // Kompres foto ke <=500KB sebelum unggah. Foto HP bisa 3-5MB — tanpa ini,
+  // unggah gagal (batas server 500KB) dan kuota internet crew terbuang.
+  async _kompresFoto(file, maxKB){
+    maxKB = maxKB || 500;
+    const bacaGambar = f => new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onload=()=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=r.result; };
+      r.onerror=rej; r.readAsDataURL(f);
+    });
+    const img = await bacaGambar(file);
+    // resize: sisi terpanjang maks 900px — cukup untuk verifikasi wajah
+    let w=img.width, h=img.height, MAKS=900;
+    if(Math.max(w,h)>MAKS){ const s=MAKS/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s); }
+    const c=document.createElement('canvas'); c.width=w; c.height=h;
+    c.getContext('2d').drawImage(img,0,0,w,h);
+    // turunkan kualitas bertahap sampai <= maxKB
+    for(const q of [0.7,0.6,0.5,0.4,0.3]){
+      const blob = await new Promise(r=>c.toBlob(r,'image/jpeg',q));
+      if(blob && blob.size <= maxKB*1024) return blob;
+      if(q===0.3) return blob;   // usaha terakhir
+    }
+    return null;
+  },
+
+  async _unggahFotoAbsen(blob, jenis){
+    const tgl=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+    const path=`${CURRENT.branch}/${CURRENT.user.id}/${tgl}-${jenis}.jpg`;
+    const{error}=await sb.storage.from('absensi').upload(path, blob, {contentType:'image/jpeg', upsert:false});
+    if(error) throw error;
+    return path;
+  },
+
+  // buka kamera & kembalikan Blob terkompresi (null bila dibatalkan)
+  _ambilFoto(){
+    return new Promise(resolve=>{
+      const inp=document.createElement('input');
+      inp.type='file'; inp.accept='image/*'; inp.capture='user';
+      inp.onchange=async()=>{
+        const f=inp.files&&inp.files[0];
+        if(!f){ resolve(null); return; }
+        try{
+          const blob=await this._kompresFoto(f,500);
+          if(!blob){ this.toast('Gagal memproses foto','bad'); resolve(null); return; }
+          if(blob.size>512000){ this.toast('Foto masih terlalu besar. Coba lagi dgn pencahayaan berbeda.','bad'); resolve(null); return; }
+          resolve(blob);
+        }catch(e){ this.toast('Gagal membaca foto','bad'); resolve(null); }
+      };
+      inp.click();
+    });
+  },
+
+  // ===== ABSENSI MANDIRI (crew) =====
+  async render_attend(){
+    const v=document.getElementById('view');
+    v.innerHTML=this.loadingHTML('Memuat…');
+    try{
+      const hariIni=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+      const awalBulan=hariIni.slice(0,8)+'01';
+      const{data:rows}=await sb.from('attendance').select('*')
+        .eq('user_id',CURRENT.user.id).gte('tanggal',awalBulan).order('tanggal',{ascending:false});
+      const list=rows||[];
+      const kini=list.find(a=>a.tanggal===hariIni);
+
+      const jam=t=>t?new Date(t).toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'}):'—';
+      const hadir=list.filter(a=>['hadir','telat'].includes(a.status)).length;
+      const telat=list.filter(a=>a.status==='telat').length;
+      const alpa =list.filter(a=>a.status==='alpa').length;
+
+      let h=`<div class="card pad" style="margin-bottom:14px;text-align:center">
+        <div class="mini muted">${new Date(hariIni+'T00:00:00+07:00').toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>`;
+
+      if(!kini){
+        h+=`<div style="margin:14px 0"><b style="font-size:15px">Belum absen hari ini</b></div>
+          <button class="btn btn-primary" style="width:auto;padding:13px 34px;font-size:15px;font-weight:800" onclick="App.attClockIn()">Clock In</button>`;
+      }else if(!kini.clock_out){
+        h+=`<div style="margin:14px 0">
+            <span class="tag ok">Sudah absen masuk</span>
+            <div style="font-size:22px;font-weight:800;margin-top:6px">${jam(kini.clock_in)}</div>
+          </div>
+          <button class="btn" style="width:auto;padding:13px 34px;font-size:15px;font-weight:800;background:var(--bad);color:#fff" onclick="App.attClockOut()">Clock Out</button>`;
+      }else{
+        h+=`<div style="margin:14px 0">
+            <span class="tag ok">Selesai hari ini</span>
+            <div style="font-size:17px;font-weight:700;margin-top:6px">${jam(kini.clock_in)} — ${jam(kini.clock_out)}</div>
+          </div>`;
+      }
+      h+=`</div>`;
+
+      h+=`<div class="grid-stats" style="margin-bottom:14px">
+        ${this.stat('Hadir bulan ini',hadir+' hari','','var(--good)')}
+        ${this.stat('Telat',telat+'×','', telat?'var(--gold)':'var(--muted)')}
+        ${this.stat('Alpa',alpa+'×','', alpa?'var(--bad)':'var(--muted)')}
+      </div>`;
+
+      h+=`<div class="sec-title">Riwayat Bulan Ini</div>`;
+      if(!list.length){ h+=`<div class="card pad mini muted">Belum ada catatan absensi bulan ini.</div>`; }
+      else{
+        h+=`<div class="card pad" style="overflow-x:auto"><table>
+          <thead><tr><th>Tanggal</th><th>Masuk</th><th>Pulang</th><th>Status</th><th>Foto</th></tr></thead><tbody>`;
+        h+=list.map(a=>`<tr>
+          <td class="mini">${new Date(a.tanggal+'T00:00:00+07:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short'})}</td>
+          <td class="mini mono">${jam(a.clock_in)}</td>
+          <td class="mini mono">${jam(a.clock_out)}</td>
+          <td><span class="tag ${a.status==='hadir'?'ok':a.status==='alpa'?'':'warn'}">${a.status}</span></td>
+          <td class="mini">${a.foto_path?`<button class="btn" style="width:auto;padding:3px 9px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.attLihatFoto('${a.foto_path}')">Lihat</button>`:(a.tanpa_foto?'<span class="tag warn" style="font-size:10px">tanpa foto</span>':'—')}</td>
+        </tr>`).join('');
+        h+=`</tbody></table></div>`;
+      }
+
+      h+=`<div class="card pad mini muted" style="margin-top:12px">
+        Status <b>telat</b> atau <b>alpa</b> ditentukan oleh PIC/owner, bukan otomatis.
+        Kalau ada yang keliru, bicarakan dengan PIC outlet Anda.
+      </div>`;
+      v.innerHTML=h;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  async attClockIn(){
+    if(!CURRENT.branch){ this.toast('Cabang Anda belum diatur — hubungi owner','bad'); return; }
+    const hariIni=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+    const foto=await this._ambilFoto();
+    let path=null, tanpaFoto=false, alasan=null;
+    if(!foto){
+      if(!confirm('Foto tidak diambil.\n\nAbsen tanpa foto akan DITANDAI dan perlu diverifikasi PIC.\n\nLanjutkan tanpa foto?')) return;
+      alasan=prompt('Kenapa tanpa foto? (wajib)\n\nContoh: "kamera HP rusak", "aplikasi tidak bisa akses kamera".\n\nAlasan:');
+      if(alasan===null) return;
+      if(!alasan.trim()){ this.toast('Dibatalkan — alasan wajib diisi','bad'); return; }
+      tanpaFoto=true;
+    }
+    try{
+      if(foto) path=await this._unggahFotoAbsen(foto,'in');
+      const{error}=await sb.from('attendance').insert({
+        user_id:CURRENT.user.id, branch_id:CURRENT.branch, tanggal:hariIni,
+        clock_in:new Date().toISOString(), status:'hadir',
+        foto_path:path, tanpa_foto:tanpaFoto, alasan_no_foto:alasan?alasan.trim():null
+      });
+      if(error)throw error;
+      this.toast(tanpaFoto?'Absen tercatat TANPA foto — menunggu verifikasi PIC':'Absen masuk tercatat','good');
+      this.render_attend();
+    }catch(e){ this.toast((e&&e.message)||'Gagal absen','bad'); }
+  },
+
+  async attClockOut(){
+    const hariIni=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+    const foto=await this._ambilFoto();
+    let path=null;
+    if(!foto && !confirm('Foto tidak diambil. Lanjutkan absen pulang tanpa foto?')) return;
+    try{
+      if(foto) path=await this._unggahFotoAbsen(foto,'out');
+      const patch={clock_out:new Date().toISOString()};
+      if(path) patch.foto_out_path=path;
+      const{error}=await sb.from('attendance').update(patch)
+        .eq('user_id',CURRENT.user.id).eq('tanggal',hariIni);
+      if(error)throw error;
+      this.toast('Absen pulang tercatat','good'); this.render_attend();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
+  // tampilkan foto absensi (bucket private -> signed URL berbatas waktu)
+  async attLihatFoto(path){
+    if(!path){ this.toast('Tidak ada foto','warn'); return; }
+    try{
+      const{data,error}=await sb.storage.from('absensi').createSignedUrl(path,300); // 5 menit
+      if(error)throw error;
+      window.open(data.signedUrl,'_blank');
+    }catch(e){ this.toast('Gagal membuka foto: '+((e&&e.message)||''),'bad'); }
+  },
+
+  // ===== PRODUKSI / OLAHAN =====
+  async render_produksi(){
+    const v=document.getElementById('view');
+    if(!['owner','pic','mitra','gudang'].includes(CURRENT.role)){
+      v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Tidak tersedia</b></div>`; return;
+    }
+    v.innerHTML=this.loadingHTML('Memuat…');
+    try{
+      const isOwner=CURRENT.role==='owner';
+      const{data:items}=await sb.from('production_items').select('*').eq('aktif',true).order('nama');
+      const{data:inputs}=await sb.from('production_inputs').select('*');
+      const ings=await Data.ingredients().catch(async()=>{
+        const{data}=await sb.from('ingredients_safe').select('*'); return data||[];
+      });
+      const nmIng=id=>{const i=(ings||[]).find(x=>x.id===id);return i?i.name:id;};
+      const unIng=id=>{const i=(ings||[]).find(x=>x.id===id);return i?i.unit:'';};
+
+      // cabang tempat produksi
+      let cabang=CURRENT.branch;
+      if(isOwner){ cabang=this._prodBranch||CURRENT.branch||null; }
+
+      let h=`<div class="banner info"><span class="i">⚗</span><div>
+        Catat setiap kali memasak bahan mentah menjadi bahan olahan (mis. daun teh → liquid).
+        <b>Stok bahan mentah otomatis berkurang</b>, stok olahan bertambah, dan <b>HPP dihitung dari hasil nyata</b>.
+        <br><br>Catat <b>hasil sebenarnya</b> — bukan hasil standar. Kalau hasilnya kurang dari biasanya, sistem akan menandainya supaya bisa dicari penyebabnya.
+      </div></div>`;
+
+      if(isOwner){
+        const brs=(await Data.branches()).filter(b=>b.type!=='warehouse'||b.is_supply_source);
+        h+=`<div class="card pad" style="margin-bottom:14px">
+          <label class="mini" style="display:block;margin-bottom:4px">Cabang tempat produksi</label>
+          <select id="prodBr" onchange="App._prodBranch=this.value;App.render_produksi()"
+            style="padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%">
+            ${brs.map(b=>`<option value="${b.id}" ${cabang===b.id?'selected':''}>${escHtml(b.name)}</option>`).join('')}
+          </select></div>`;
+        if(!cabang && brs.length) cabang=brs[0].id;
+      }
+
+      if(!(items||[]).length){
+        h+=`<div class="card pad mini muted">Belum ada resep olahan.${isOwner?' Owner perlu membuatnya dulu lewat menu Menu·Resep·COGS atau hubungi pengembang.':' Hubungi owner.'}</div>`;
+        v.innerHTML=h; return;
+      }
+
+      // ===== FORM CATAT PRODUKSI =====
+      const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
+      h+=`<div class="card pad" style="margin-bottom:16px">
+        <b style="display:block;margin-bottom:10px">Catat Produksi</b>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+          <div style="flex:1;min-width:170px"><label class="mini" style="display:block;margin-bottom:4px">Olahan</label>
+            <select id="prItem" style="${fld};width:100%" onchange="App._prShowStd()">
+              ${items.map(it=>`<option value="${it.id}" data-std="${it.output_qty}" data-out="${it.output_ing}">${escHtml(it.nama)}</option>`).join('')}
+            </select></div>
+          <div><label class="mini" style="display:block;margin-bottom:4px">Berapa batch?</label>
+            <input id="prBatch" type="number" step="0.5" min="0.5" value="1" style="${fld};width:110px" oninput="App._prShowStd()"></div>
+          <div><label class="mini" style="display:block;margin-bottom:4px">Hasil sebenarnya</label>
+            <input id="prOut" type="number" min="0" placeholder="ml" style="${fld};width:130px"></div>
+        </div>
+        <div id="prStd" class="mini muted" style="margin-top:8px"></div>
+        <div style="margin-top:10px;display:flex;gap:10px;align-items:flex-end">
+          <div style="flex:1"><label class="mini" style="display:block;margin-bottom:4px">Catatan (opsional)</label>
+            <input id="prNote" placeholder="mis. api kecil, teh agak lama" style="${fld};width:100%"></div>
+          <button class="btn btn-primary" style="width:auto;padding:9px 16px" id="prBtn" onclick="App.prSimpan('${cabang||''}')">Simpan</button>
+        </div>
+      </div>`;
+
+      // ===== RIWAYAT =====
+      let q=sb.from('production_logs').select('*').order('created_at',{ascending:false}).limit(20);
+      if(cabang) q=q.eq('branch_id',cabang);
+      const{data:logs}=await q;
+
+      h+=`<div class="sec-title">Riwayat Produksi</div>`;
+      if(!(logs||[]).length){ h+=`<div class="card pad mini muted">Belum ada catatan produksi.</div>`; }
+      else{
+        const nmItem=id=>{const it=items.find(x=>x.id===id);return it?it.nama:'#'+id;};
+        h+=logs.map(l=>{
+          const r=Number(l.rendemen||0);
+          const warna=r>=95?'var(--good)':r>=85?'var(--gold)':'var(--bad)';
+          return `<div class="card pad" style="margin-bottom:8px">
+            <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+              <div><b>${escHtml(nmItem(l.item_id))}</b>
+                <div class="mini muted">${new Date(l.created_at).toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Jakarta'})} · ${escHtml(l.nama_pemasak||'-')} · ${escHtml(l.branch_id)}</div></div>
+              <div style="text-align:right">
+                <b style="color:${warna};font-size:15px">${r}%</b>
+                <div class="mini muted">rendemen</div></div>
+            </div>
+            <table style="margin-top:6px"><tbody class="mini">
+              <tr><td style="color:var(--muted);width:120px">Batch</td><td>${l.batch}×</td></tr>
+              <tr><td style="color:var(--muted)">Hasil</td><td>${Math.round(l.output_aktual).toLocaleString('id')} dari standar ${Math.round(l.output_standar).toLocaleString('id')}</td></tr>
+              <tr><td style="color:var(--muted)">HPP hasil</td><td>${l.hpp_per_unit?this.rp(l.hpp_per_unit)+' /unit':'-'}</td></tr>
+              ${l.catatan?`<tr><td style="color:var(--muted)">Catatan</td><td>${escHtml(l.catatan)}</td></tr>`:''}
+            </tbody></table>
+            ${r<85?`<div class="mini" style="color:var(--bad);margin-top:5px">⚠ Rendemen di bawah 85% — periksa takaran, api, atau kemungkinan tumpah.</div>`:''}
+          </div>`;
+        }).join('');
+      }
+      // ===== KELOLA RESEP OLAHAN (owner) =====
+      if(isOwner){
+        const nmI=id=>{const i=(ings||[]).find(x=>x.id===id);return i?i.name:id;};
+        const unI=id=>{const i=(ings||[]).find(x=>x.id===id);return i?i.unit:'';};
+        const hrgI=id=>{const i=(ings||[]).find(x=>x.id===id);return Number(i&&i.cost||0);};
+        h+=`<div class="sec-title" style="margin-top:22px">Kelola Resep Olahan</div>
+          <div class="banner info" style="margin-bottom:12px"><span class="i">⚙</span><div class="mini">
+            Ubah takaran, hasil standar, atau biaya overhead di sini. <b>HPP dihitung ulang otomatis</b> setiap kali produksi dicatat.
+            Harga bahan mentah diatur di menu <b>Menu·Resep·COGS</b>.
+          </div></div>`;
+        h+=items.map(it=>{
+          const ins=(inputs||[]).filter(x=>x.item_id===it.id);
+          const biaya=ins.reduce((a,b)=>a+Number(b.qty)*hrgI(b.ing_id),0);
+          const total=biaya+Number(it.overhead_batch||0);
+          const hpp=it.output_qty>0?total/it.output_qty:0;
+          return `<div class="card pad" style="margin-bottom:10px">
+            <b>${escHtml(it.nama)}</b>
+            <table style="margin-top:8px"><tbody class="mini">
+              ${ins.map(x=>`<tr>
+                <td style="color:var(--muted);width:135px">${escHtml(nmI(x.ing_id))}</td>
+                <td><b>${Number(x.qty)} ${escHtml(unI(x.ing_id))}</b> × ${this.rp(hrgI(x.ing_id))} = ${this.rp(Number(x.qty)*hrgI(x.ing_id))}</td></tr>`).join('')}
+              <tr><td style="color:var(--muted)">Overhead/batch</td><td>${this.rp(it.overhead_batch)}</td></tr>
+              <tr><td style="color:var(--muted)">Hasil standar</td><td><b>${Math.round(it.output_qty).toLocaleString('id')} ${escHtml(unI(it.output_ing))}</b></td></tr>
+              <tr style="border-top:1px solid var(--line-strong)">
+                <td style="color:var(--muted)"><b>HPP hasil</b></td>
+                <td><b style="color:var(--accent);font-size:14px">${this.rp(hpp)} / ${escHtml(unI(it.output_ing))}</b>
+                    <span class="mini muted">(total ${this.rp(total)} ÷ ${Math.round(it.output_qty).toLocaleString('id')})</span></td></tr>
+            </tbody></table>
+            <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+              ${ins.map(x=>`<button class="btn" style="width:auto;padding:5px 11px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.prEditTakaran(${it.id},'${x.ing_id}',${x.qty})">Ubah takaran ${escHtml(nmI(x.ing_id))}</button>`).join('')}
+              <button class="btn" style="width:auto;padding:5px 11px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.prEditHasil(${it.id},${it.output_qty})">Ubah hasil standar</button>
+              <button class="btn" style="width:auto;padding:5px 11px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.prEditOverhead(${it.id},${it.overhead_batch})">Ubah overhead</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      v.innerHTML=h;
+      this._prItems=items; this._prInputs=inputs||[]; this._prIngs=ings||[];
+      this._prShowStd();
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+
+  _prShowStd(){
+    const el=document.getElementById('prStd'); if(!el)return;
+    const sel=document.getElementById('prItem'); const b=Number(document.getElementById('prBatch').value)||0;
+    if(!sel||!sel.selectedOptions.length){el.textContent='';return;}
+    const o=sel.selectedOptions[0];
+    const std=Number(o.dataset.std||0)*b;
+    const itemId=Number(sel.value);
+    const ins=(this._prInputs||[]).filter(x=>x.item_id===itemId);
+    const nmIng=id=>{const i=(this._prIngs||[]).find(x=>x.id===id);return i?i.name:id;};
+    const unIng=id=>{const i=(this._prIngs||[]).find(x=>x.id===id);return i?i.unit:'';};
+    const bahan=ins.map(x=>`${nmIng(x.ing_id)} ${Math.round(x.qty*b).toLocaleString('id')} ${unIng(x.ing_id)}`).join(' + ');
+    el.innerHTML=`Akan memakai: <b>${bahan||'-'}</b> · hasil standar: <b>${Math.round(std).toLocaleString('id')}</b>`;
+  },
+
+  // ===== Kelola resep olahan (owner) =====
+  // Tiap perubahan menampilkan HPP LAMA vs BARU sebelum disimpan,
+  // agar kesalahan logika ketahuan sebelum memengaruhi pembukuan.
+  _prHitungHpp(itemId, ubah){
+    const it=(this._prItems||[]).find(x=>x.id===itemId); if(!it)return 0;
+    const ins=(this._prInputs||[]).filter(x=>x.item_id===itemId);
+    const hrg=id=>{const i=(this._prIngs||[]).find(x=>x.id===id);return Number(i&&i.cost||0);};
+    let bahan=0;
+    ins.forEach(x=>{
+      const q=(ubah&&ubah.ing===x.ing_id)?ubah.qty:Number(x.qty);
+      bahan+=q*hrg(x.ing_id);
+    });
+    const over=(ubah&&ubah.overhead!=null)?ubah.overhead:Number(it.overhead_batch||0);
+    const hasil=(ubah&&ubah.hasil!=null)?ubah.hasil:Number(it.output_qty||0);
+    return hasil>0?(bahan+over)/hasil:0;
+  },
+  _prKonfirmasi(itemId, ubah, label){
+    const lama=this._prHitungHpp(itemId,null);
+    const baru=this._prHitungHpp(itemId,ubah);
+    const arah=baru>lama?'NAIK':baru<lama?'TURUN':'tetap';
+    return confirm(label+'\n\nHPP hasil olahan akan '+arah+':\n'
+      +'  Sekarang : '+this.rp(lama)+'\n'
+      +'  Setelah  : '+this.rp(baru)+'\n\n'
+      +'Berlaku untuk produksi BERIKUTNYA.\nStok & HPP yang sudah ada tidak berubah.\n\nSimpan?');
+  },
+  async prEditTakaran(itemId, ingId, qtyLama){
+    const i=(this._prIngs||[]).find(x=>x.id===ingId);
+    const q=prompt('Takaran '+(i?i.name:ingId)+' per 1 batch ('+(i?i.unit:'')+'):', qtyLama);
+    if(q===null)return;
+    const n=Number(q);
+    if(isNaN(n)||n<=0){ this.toast('Angka tidak valid','bad'); return; }
+    if(!this._prKonfirmasi(itemId,{ing:ingId,qty:n},'Ubah takaran '+(i?i.name:ingId)+': '+qtyLama+' → '+n))return;
+    try{
+      const{error}=await sb.from('production_inputs').update({qty:n})
+        .eq('item_id',itemId).eq('ing_id',ingId);
+      if(error)throw error;
+      this.toast('Takaran diperbarui','good'); this.render_produksi();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+  async prEditHasil(itemId, lama){
+    const q=prompt('Hasil standar per 1 batch:\n\nIni acuan untuk menghitung rendemen.\nIsi hasil WAJAR/rata-rata, bukan hasil terbaik.', lama);
+    if(q===null)return;
+    const n=Number(q);
+    if(isNaN(n)||n<=0){ this.toast('Angka tidak valid','bad'); return; }
+    if(!this._prKonfirmasi(itemId,{hasil:n},'Ubah hasil standar: '+lama+' → '+n))return;
+    try{
+      const{error}=await sb.from('production_items').update({output_qty:n}).eq('id',itemId);
+      if(error)throw error;
+      this.toast('Hasil standar diperbarui','good'); this.render_produksi();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+  async prEditOverhead(itemId, lama){
+    const q=prompt('Biaya overhead per 1 batch (gas + listrik + tenaga):\n\nContoh: gas ~Rp1.000 + tenaga 30 menit ~Rp4.000 = Rp5.000', lama);
+    if(q===null)return;
+    const n=Number(q);
+    if(isNaN(n)||n<0){ this.toast('Angka tidak valid','bad'); return; }
+    if(!this._prKonfirmasi(itemId,{overhead:n},'Ubah overhead: '+this.rp(lama)+' → '+this.rp(n)))return;
+    try{
+      const{error}=await sb.from('production_items').update({overhead_batch:n}).eq('id',itemId);
+      if(error)throw error;
+      this.toast('Overhead diperbarui','good'); this.render_produksi();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+  async prSimpan(cabang){
+    if(!cabang){ this.toast('Cabang belum dipilih','bad'); return; }
+    const item=Number(document.getElementById('prItem').value);
+    const batch=Number(document.getElementById('prBatch').value);
+    const out=document.getElementById('prOut').value;
+    const note=(document.getElementById('prNote').value||'').trim();
+    if(!batch||batch<=0){ this.toast('Isi jumlah batch','bad'); return; }
+    if(out===''){ this.toast('Isi hasil sebenarnya (ukur dulu)','bad'); return; }
+    const outN=Number(out);
+    if(isNaN(outN)||outN<0){ this.toast('Hasil tidak valid','bad'); return; }
+    const btn=document.getElementById('prBtn'); btn.disabled=true; btn.textContent='…';
+    try{
+      const{error}=await sb.rpc('record_production',
+        {p_item:item,p_branch:cabang,p_batch:batch,p_output:outN,p_catatan:note||null});
+      if(error)throw error;
+      this.toast('Produksi tercatat · stok diperbarui','good');
+      this.render_produksi();
+    }catch(e){ this.toast((e&&e.message)||'Gagal mencatat produksi','bad'); btn.disabled=false; btn.textContent='Simpan'; }
+  },
+
+  // ===== PEGAWAI & GAJI =====
+  async render_employees(){
+    const v=document.getElementById('view');
+    if(!['owner','pic'].includes(CURRENT.role)){
+      v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner & PIC</b><div class="mini muted" style="margin-top:6px">Data gaji bersifat rahasia.</div></div>`; return;
+    }
+    const tab=this._pyTab||'pegawai';
+    const isOwner=CURRENT.role==='owner';
+    const tabBtn=(id,label)=>`<button class="btn" style="width:auto;padding:7px 15px;font-size:13px;font-weight:700;background:${tab===id?'var(--accent)':'var(--surface-2)'};color:${tab===id?'#fff':'var(--text)'};border:1px solid var(--line-strong)" onclick="App._pyTab='${id}';App.render_employees()">${label}</button>`;
+    v.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+      ${tabBtn('pegawai','Pegawai')}${tabBtn('absensi','Absensi')}${isOwner?tabBtn('gaji','Hitung Gaji'):''}
+    </div><div id="pyBody">${this.loadingHTML('Memuat…')}</div>`;
+    try{
+      if(tab==='pegawai') await this._pyPegawai();
+      else if(tab==='absensi') await this._pyAbsensi();
+      else await this._pyGaji();
+    }catch(e){ document.getElementById('pyBody').innerHTML=this.errHTML(e); }
+  },
+
+  async _pyPegawai(){
+    const el=document.getElementById('pyBody');
+    const{data,error}=await sb.from('employees')
+      .select('user_id,branch_id,jabatan,gaji_pokok,tarif_lembur_jam,uang_makan_harian,bonus_tipe,bonus_nilai,aktif');
+    if(error)throw error;
+    const profs=await Data.allProfiles();
+    const branches=await Data.branches();
+    const nm=u=>{const p=profs.find(x=>x.user_id===u);return p?(p.full_name||p.email||u):u;};
+    const bn=b=>{const x=branches.find(y=>y.id===b);return x?x.name:b;};
+    const isOwner=CURRENT.role==='owner';
+    const rows=(data||[]);
+
+    let h=`<div class="banner info"><span class="i">☻</span><div>Data gaji pegawai. <b>Rahasia</b> — hanya owner & PIC outlet terkait yang bisa melihat.</div></div>`;
+
+    if(isOwner){
+      // kandidat: user yang belum terdaftar sebagai pegawai
+      const sudah=new Set(rows.map(r=>r.user_id));
+      const cand=profs.filter(p=>!sudah.has(p.user_id) && !['mitra'].includes(p.role));
+      if(cand.length){
+        const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
+        h+=`<div class="card pad" style="margin-bottom:14px"><b style="display:block;margin-bottom:10px">Tambah Pegawai</b>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+            <div style="flex:1;min-width:180px"><label class="mini" style="display:block;margin-bottom:4px">User</label>
+              <select id="peUser" style="${fld};width:100%">${cand.map(p=>`<option value="${p.user_id}">${escHtml(p.full_name||p.email)} · ${escHtml(p.role||'')}</option>`).join('')}</select></div>
+            <div><label class="mini" style="display:block;margin-bottom:4px">Cabang</label>
+              <select id="peBranch" style="${fld}">${branches.filter(b=>b.type!=='warehouse').map(b=>`<option value="${b.id}">${escHtml(b.name)}</option>`).join('')}</select></div>
+            <button class="btn btn-primary" style="width:auto;padding:9px 16px" onclick="App.pyAddEmployee()">Tambah</button>
+          </div></div>`;
+      }
+    }
+
+    if(!rows.length){ h+=`<div class="card pad mini muted">Belum ada pegawai terdaftar.</div>`; el.innerHTML=h; return; }
+
+    h+=rows.map(r=>`<div class="card pad" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
+        <div><b>${escHtml(nm(r.user_id))}</b> ${r.aktif?'':'<span class="tag">nonaktif</span>'}
+          <div class="mini muted">${escHtml(r.jabatan||'-')} · ${escHtml(bn(r.branch_id))}</div></div>
+        <b style="font-size:16px">${this.rp(r.gaji_pokok)}</b>
+      </div>
+      <table style="margin-top:8px"><tbody class="mini">
+        <tr><td style="color:var(--muted);width:130px">Lembur/jam</td><td>${this.rp(r.tarif_lembur_jam)}</td></tr>
+        <tr><td style="color:var(--muted)">Uang makan/hari</td><td>${this.rp(r.uang_makan_harian)}</td></tr>
+        <tr><td style="color:var(--muted)">Bonus</td><td>${r.bonus_tipe==='persen_omzet'?`<b>${r.bonus_nilai}%</b> dari omzet outlet`:this.rp(r.bonus_nilai)+' (tetap)'}</td></tr>
+      </tbody></table>
+      ${isOwner?`<button class="btn" style="width:auto;padding:5px 12px;margin-top:8px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.pyEditEmployee('${r.user_id}')">Ubah Gaji</button>`:''}
+    </div>`).join('');
+    el.innerHTML=h;
+  },
+
+  async pyAddEmployee(){
+    const user=document.getElementById('peUser').value;
+    const branch=document.getElementById('peBranch').value;
+    try{
+      const{error}=await sb.from('employees').insert({user_id:user,branch_id:branch,gaji_pokok:0});
+      if(error)throw error;
+      this.toast('Pegawai ditambahkan — atur gajinya','good');
+      this.render_employees();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
+  async pyEditEmployee(uid){
+    const{data}=await sb.from('employees').select('*').eq('user_id',uid).single();
+    if(!data){this.toast('Data tak ditemukan','bad');return;}
+    const g=prompt('Gaji pokok per bulan (angka saja):', data.gaji_pokok||0); if(g===null)return;
+    const l=prompt('Tarif lembur per jam:', data.tarif_lembur_jam||0); if(l===null)return;
+    const m=prompt('Uang makan/transport per hari hadir:', data.uang_makan_harian||0); if(m===null)return;
+    const t=prompt('Jenis bonus — ketik:\n1 = nominal tetap\n2 = persen dari omzet outlet', data.bonus_tipe==='persen_omzet'?'2':'1'); if(t===null)return;
+    const tipe=(t.trim()==='2')?'persen_omzet':'nominal';
+    const n=prompt(tipe==='persen_omzet'?'Berapa PERSEN dari omzet outlet? (mis. 1 untuk 1%)':'Nominal bonus tetap per bulan:', data.bonus_nilai||0); if(n===null)return;
+    const j=prompt('Jabatan (mis. Barista, PIC Outlet):', data.jabatan||''); if(j===null)return;
+    try{
+      const{error}=await sb.from('employees').update({
+        gaji_pokok:Number(g)||0, tarif_lembur_jam:Number(l)||0, uang_makan_harian:Number(m)||0,
+        bonus_tipe:tipe, bonus_nilai:Number(n)||0, jabatan:j.trim()||null,
+        updated_at:new Date().toISOString(), updated_by:CURRENT.user.id
+      }).eq('user_id',uid);
+      if(error)throw error;
+      this.toast('Gaji diperbarui','good'); this.render_employees();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
+  async _pyAbsensi(){
+    const el=document.getElementById('pyBody');
+    const tgl=this._pyTgl||new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+    const{data:emps}=await sb.from('employees').select('user_id,branch_id,jabatan').eq('aktif',true);
+    const{data:att}=await sb.from('attendance').select('*').eq('tanggal',tgl);
+    const profs=await Data.allProfiles();
+    const nm=u=>{const p=profs.find(x=>x.user_id===u);return p?(p.full_name||p.email||u):u;};
+    const byUser={}; (att||[]).forEach(a=>byUser[a.user_id]=a);
+    const STAT=[['hadir','Hadir','var(--good)'],['telat','Telat','var(--gold)'],['izin','Izin','var(--muted)'],['sakit','Sakit','var(--muted)'],['alpa','Alpa','var(--bad)']];
+
+    let h=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+      <div><label class="mini" style="display:block;margin-bottom:4px">Tanggal</label>
+        <input type="date" id="pyDate" value="${tgl}" onchange="App._pyTgl=this.value;App.render_employees()"
+          style="padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)"></div>
+      <div class="mini muted">Potongan: telat <b>Rp5.000</b> · alpa tanpa kabar <b>Rp50.000</b></div>
+    </div>`;
+
+    if(!(emps||[]).length){ h+=`<div class="card pad mini muted">Belum ada pegawai. Tambahkan di tab Pegawai.</div>`; el.innerHTML=h; return; }
+
+    h+=(emps||[]).map(e=>{
+      const a=byUser[e.user_id]||{};
+      const cur=a.status||'';
+      return `<div class="card pad" style="margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+          <div><b>${escHtml(nm(e.user_id))}</b><div class="mini muted">${escHtml(e.jabatan||'-')} · ${escHtml(e.branch_id)}</div></div>
+          <div style="text-align:right">
+            ${cur?`<span class="tag ${cur==='hadir'?'ok':cur==='alpa'?'':'warn'}">${cur}</span>`:'<span class="mini muted">belum dicatat</span>'}
+            ${a.foto_path?`<button class="btn" style="width:auto;padding:3px 9px;font-size:11px;margin-left:5px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.attLihatFoto('${a.foto_path}')">Foto</button>`:''}
+            ${a.tanpa_foto?`<div class="mini" style="color:var(--bad);margin-top:3px">⚠ tanpa foto: ${escHtml((a.alasan_no_foto||'').slice(0,40))}</div>`:''}
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:8px">
+          ${STAT.map(([s,lbl,c])=>`<button class="btn" style="width:auto;padding:5px 11px;font-size:12px;background:${cur===s?c:'var(--surface-2)'};color:${cur===s?'#fff':'var(--text)'};border:1px solid var(--line-strong)" onclick="App.pySetAbsen('${e.user_id}','${e.branch_id}','${s}')">${lbl}</button>`).join('')}
+          <button class="btn" style="width:auto;padding:5px 11px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.pySetLembur('${e.user_id}','${e.branch_id}')">+ Lembur${a.jam_lembur?` (${a.jam_lembur}j)`:''}</button>
+        </div>
+      </div>`;
+    }).join('');
+    el.innerHTML=h;
+  },
+
+  async pySetAbsen(uid,branch,status){
+    const tgl=this._pyTgl||new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+    try{
+      const{error}=await sb.from('attendance').upsert(
+        {user_id:uid,branch_id:branch,tanggal:tgl,status,dicatat_oleh:CURRENT.user.id},
+        {onConflict:'user_id,tanggal'});
+      if(error)throw error;
+      this.render_employees();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
+  async pySetLembur(uid,branch){
+    const tgl=this._pyTgl||new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+    const j=prompt('Berapa jam lembur hari ini?','0'); if(j===null)return;
+    const jam=Number(j); if(isNaN(jam)||jam<0){this.toast('Angka tidak valid','bad');return;}
+    try{
+      const{error}=await sb.from('attendance').upsert(
+        {user_id:uid,branch_id:branch,tanggal:tgl,jam_lembur:jam,dicatat_oleh:CURRENT.user.id},
+        {onConflict:'user_id,tanggal'});
+      if(error)throw error;
+      this.toast('Lembur dicatat','good'); this.render_employees();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
+  async _pyGaji(){
+    const el=document.getElementById('pyBody');
+    const per=this._pyPeriode||new Date(Date.now()+7*3600e3).toISOString().slice(0,7);
+    const{data:runs}=await sb.from('payroll_runs').select('*').eq('periode',per+'-01');
+    const run=(runs||[])[0];
+    let items=[];
+    if(run){ const{data}=await sb.from('payroll_items').select('*').eq('run_id',run.id).order('nama'); items=data||[]; }
+    const tot=items.reduce((a,b)=>a+Number(b.total_bersih||0),0);
+
+    let h=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+      <div><label class="mini" style="display:block;margin-bottom:4px">Periode</label>
+        <input type="month" id="pyPer" value="${per}" onchange="App._pyPeriode=this.value;App.render_employees()"
+          style="padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)"></div>
+      <button class="btn btn-primary" style="width:auto;padding:9px 16px" onclick="App.pyHitung()">Hitung Gaji</button>
+      ${run&&run.status==='draft'&&items.length?`<button class="btn" style="width:auto;padding:9px 16px;background:var(--good);color:#fff;font-weight:700" onclick="App.pyFinal(${run.id})">Finalkan</button>`:''}
+      ${run?`<span class="tag ${run.status==='final'?'ok':'warn'}">${run.status}</span>`:''}
+    </div>`;
+
+    if(!items.length){
+      h+=`<div class="card pad mini muted">Belum dihitung untuk periode ini. Klik <b>Hitung Gaji</b>.
+        <div style="margin-top:6px">Pastikan absensi bulan ini sudah dicatat — gaji dihitung dari data absensi.</div></div>`;
+      el.innerHTML=h; return;
+    }
+
+    h+=`<div class="card pad" style="margin-bottom:12px;border-left:4px solid var(--accent)">
+      <b style="font-size:17px">Total gaji ${items.length} pegawai: ${this.rp(tot)}</b>
+      ${run.status==='final'?`<div class="mini muted">Difinalkan — kasbon sudah dipotong dari sisa.</div>`:'<div class="mini muted">Masih draft — bisa dihitung ulang.</div>'}
+    </div>`;
+
+    h+=items.map(i=>`<div class="card pad" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+        <div><b>${escHtml(i.nama||'-')}</b><div class="mini muted">${escHtml(i.jabatan||'-')} · ${escHtml(i.branch_id)} · hadir ${i.hari_hadir} hari</div></div>
+        <b style="font-size:17px;color:var(--good)">${this.rp(i.total_bersih)}</b>
+      </div>
+      <table style="margin-top:8px"><tbody class="mini">
+        <tr><td style="color:var(--muted);width:150px">Gaji pokok</td><td class="right mono">${this.rp(i.gaji_pokok)}</td></tr>
+        ${Number(i.nilai_lembur)?`<tr><td style="color:var(--muted)">Lembur (${i.jam_lembur} jam)</td><td class="right mono">+${this.rp(i.nilai_lembur)}</td></tr>`:''}
+        ${Number(i.bonus)?`<tr><td style="color:var(--muted)">Bonus</td><td class="right mono">+${this.rp(i.bonus)}</td></tr>`:''}
+        ${Number(i.uang_makan)?`<tr><td style="color:var(--muted)">Uang makan</td><td class="right mono">+${this.rp(i.uang_makan)}</td></tr>`:''}
+        ${i.jml_telat?`<tr><td style="color:var(--bad)">Telat ${i.jml_telat}×</td><td class="right mono" style="color:var(--bad)">−${this.rp(i.potongan_telat)}</td></tr>`:''}
+        ${i.jml_alpa?`<tr><td style="color:var(--bad)">Alpa ${i.jml_alpa}×</td><td class="right mono" style="color:var(--bad)">−${this.rp(i.potongan_alpa)}</td></tr>`:''}
+        ${Number(i.potongan_kasbon)?`<tr><td style="color:var(--bad)">Cicilan kasbon</td><td class="right mono" style="color:var(--bad)">−${this.rp(i.potongan_kasbon)}</td></tr>`:''}
+      </tbody></table>
+    </div>`).join('');
+    el.innerHTML=h;
+  },
+
+  async pyHitung(){
+    const per=this._pyPeriode||new Date(Date.now()+7*3600e3).toISOString().slice(0,7);
+    try{
+      const{error}=await sb.rpc('payroll_generate',{p_periode:per+'-15',p_branch:null});
+      if(error)throw error;
+      this.toast('Gaji dihitung','good'); this.render_employees();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
+  async pyFinal(runId){
+    if(!confirm('Finalkan gaji periode ini?\n\nSetelah final:\n• Angka terkunci (tak bisa dihitung ulang)\n• Cicilan kasbon dipotong dari sisa pinjaman\n\nPastikan semua absensi sudah benar.'))return;
+    try{
+      const{error}=await sb.rpc('payroll_finalize',{p_run:runId});
+      if(error)throw error;
+      this.toast('Gaji difinalkan','good'); this.render_employees();
+    }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
+  },
+
   async render_stockaudit(){
     const v=document.getElementById('view');
     if(!['owner','auditor'].includes(CURRENT.role)){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner / Auditor</b></div>`; return; }
@@ -3918,6 +4549,33 @@ const App={
 
         ${this._printerCardHTML(pcfg)}
 
+        <div class="sec-title">Buat Akun Baru</div>
+        <div class="card pad" style="margin-bottom:16px">
+          <div class="mini muted" style="margin-bottom:10px">
+            Untuk kasus di mana orangnya tak bisa mendaftar sendiri (mis. tak punya HP memadai).
+            Akun langsung aktif, tanpa perlu kode undangan atau konfirmasi email.
+            <b>Owner tidak bisa dibuat di sini</b> — buat sebagai crew dulu, lalu naikkan rolenya di tabel bawah.
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
+            <div style="flex:1;min-width:150px"><label class="mini" style="display:block;margin-bottom:4px">Nama</label>
+              <input id="ncName" placeholder="mis. Ira" style="${fld6};width:100%"></div>
+            <div style="flex:1;min-width:180px"><label class="mini" style="display:block;margin-bottom:4px">Email</label>
+              <input id="ncEmail" type="email" placeholder="email asli (untuk reset password)" style="${fld6};width:100%"></div>
+            <div style="flex:1;min-width:140px"><label class="mini" style="display:block;margin-bottom:4px">Password</label>
+              <input id="ncPass" type="text" placeholder="min. 8 karakter" style="${fld6};width:100%"></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-top:10px">
+            <div><label class="mini" style="display:block;margin-bottom:4px">Role</label>
+              <select id="ncRole" style="${fld6}">
+                ${['crew','pic','mitra','gudang','media','auditor'].map(r=>`<option value="${r}">${ROLE_LABEL[r]||r}</option>`).join('')}
+              </select></div>
+            <div style="flex:1;min-width:160px"><label class="mini" style="display:block;margin-bottom:4px">Cabang</label>
+              <select id="ncBranch" style="${fld6};width:100%">
+                ${branches.map(b=>`<option value="${b.id}">${escHtml(b.name)}</option>`).join('')}
+              </select></div>
+            <button class="btn btn-primary" style="width:auto;padding:9px 18px" id="ncBtn" onclick="App.ownerCreateUser()">Buat Akun</button>
+          </div>
+        </div>
         <div class="sec-title">User & Akses (${profs.length})</div>
         <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Nama</th><th>Email</th><th>Role</th><th>Cabang</th><th></th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
     }catch(e){ v.innerHTML=this.errHTML(e); }
@@ -3993,6 +4651,31 @@ const App={
       }
       this.toast((data&&data.message)||'Password direset','ok');
     }catch(e){ this.toast((e&&e.message)||'Gagal memanggil server','bad'); }
+  },
+  async ownerCreateUser(){
+    const nama=(document.getElementById('ncName').value||'').trim();
+    const email=(document.getElementById('ncEmail').value||'').trim().toLowerCase();
+    const pass=document.getElementById('ncPass').value||'';
+    const role=document.getElementById('ncRole').value;
+    const branch=document.getElementById('ncBranch').value;
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ this.toast('Email tidak valid','bad'); return; }
+    if(pass.length<8){ this.toast('Password minimal 8 karakter','bad'); return; }
+    if(/@sruput\.(id|test)$/i.test(email)
+       && !confirm('Email "'+email+'" bukan domain email nyata.\n\nAkun tetap bisa dipakai login, TAPI tidak bisa reset password sendiri lewat email.\n\nLanjutkan?')) return;
+    if(!confirm('Buat akun untuk "'+(nama||email)+'"?\n\nRole: '+role+'\nCabang: '+branch+'\n\nAkun langsung aktif. Catat passwordnya sekarang — hanya ditampilkan sekali.')) return;
+    const btn=document.getElementById('ncBtn'); btn.disabled=true; btn.textContent='Membuat…';
+    try{
+      const{data,error}=await sb.functions.invoke('owner-create-user',
+        {body:{email,password:pass,role,branch_id:branch,full_name:nama}});
+      if(error)throw error;
+      if(data&&data.error)throw new Error(data.error);
+      alert('Akun berhasil dibuat.\n\nEmail    : '+email+'\nPassword : '+pass+'\nRole     : '+role+'\n\nCatat & sampaikan ke yang bersangkutan. Minta ia segera mengganti password.');
+      this.toast('Akun dibuat','good');
+      this.render_settings();
+    }catch(e){
+      this.toast((e&&e.message)||'Gagal membuat akun','bad');
+      btn.disabled=false; btn.textContent='Buat Akun';
+    }
   },
   async saveProfile(userId){
     const role=document.getElementById('role_'+userId).value;
