@@ -344,7 +344,7 @@ const NAV={
   crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',1],['settings','⚙','Setting Printer',1]],
   media:[['content','✦','Studio Konten',1]],
   gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
-  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['produksi','⚗','Produksi',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1],['settings','⚙','Setting Printer',1]],
+  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['produksi','⚗','Produksi',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['content','✦','Studio Konten',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1],['settings','⚙','Setting Printer',1]],
 };
 const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor',ai_review:'AI Review (baca-saja)'};
 
@@ -612,8 +612,33 @@ const BTPrint={
   _speedProfile(){ const m={lambat:{chunk:120,gap:15},sedang:{chunk:200,gap:6},cepat:{chunk:240,gap:2}}; return m[this.cfg().speed]||m.sedang; },
   save(patch){ const c=Object.assign(this.cfg(),patch); try{localStorage.setItem(this.CFG_KEY,JSON.stringify(c));}catch(e){} return c; },
   bleSupported(){ return !!(navigator.bluetooth&&navigator.bluetooth.requestDevice&&window.isSecureContext); },
+  // Jelaskan PENYEBAB SEBENARNYA bila Bluetooth langsung tak tersedia.
+  // Pesan lama menyuruh "tunggu app di-hosting" — padahal sudah di-hosting,
+  // sehingga crew menunggu sesuatu yang tak akan datang.
+  bleAlasan(){
+    const ua=navigator.userAgent||'';
+    const iOS=/iPad|iPhone|iPod/.test(ua) || (navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+    if(iOS) return {sebab:'ios',
+      pesan:'iPhone/iPad TIDAK mendukung Bluetooth langsung dari browser — berlaku untuk Safari maupun Chrome di iOS. Ini batasan Apple, bukan masalah aplikasi.',
+      solusi:'Gunakan HP/tablet <b>Android</b> dengan browser <b>Chrome</b>, atau pilih metode <b>Dialog sistem</b> di bawah.'};
+    if(!window.isSecureContext) return {sebab:'http',
+      pesan:'Halaman dibuka lewat koneksi tidak aman (bukan HTTPS).',
+      solusi:'Buka lewat alamat <b>https://jacksparow.github.io/sruputsaas/</b>'};
+    if(/Firefox/i.test(ua)) return {sebab:'firefox',
+      pesan:'Firefox tidak mendukung Bluetooth dari browser.',
+      solusi:'Gunakan <b>Chrome</b> atau <b>Edge</b>.'};
+    if(!navigator.bluetooth) return {sebab:'browser',
+      pesan:'Browser ini tidak mendukung Bluetooth langsung.',
+      solusi:'Gunakan <b>Chrome</b> atau <b>Edge</b> versi terbaru di Android/PC.'};
+    return {sebab:'lain',
+      pesan:'Bluetooth langsung tidak tersedia di perangkat ini.',
+      solusi:'Coba <b>Chrome</b> di Android, atau pakai metode <b>RawBT</b> / <b>Dialog sistem</b>.'};
+  },
   async connect(){ // WAJIB dipanggil dari ketukan tombol (syarat Web Bluetooth)
-    if(!this.bleSupported()) throw new Error('Web Bluetooth tidak tersedia di halaman ini. Pakai metode RawBT, atau tunggu app di-hosting (Tahap 2).');
+    if(!this.bleSupported()){
+      const a=this.bleAlasan();
+      throw new Error(a.pesan.replace(/<[^>]+>/g,'')+' '+a.solusi.replace(/<[^>]+>/g,''));
+    }
     const dev=await navigator.bluetooth.requestDevice({acceptAllDevices:true,optionalServices:this.SERVICES});
     return this._attach(dev);
   },
@@ -1443,6 +1468,15 @@ const App={
       }));
       try{ const {data:_off}=await sb.from('outlet_menu_off').select('menu_id').eq('branch_id',branch); if(_off&&_off.length){ const _os=new Set(_off.map(r=>r.menu_id)); this.state.menu=this.state.menu.filter(m=>!_os.has(m.id)); } }catch(e){}
       this.state.recipes=await Data.recipes();
+      // MITRA diblokir dari tabel `recipes` (lindungi takaran rahasia), sehingga
+      // additional "Less sugar/No sugar" tak pernah muncul di POS mereka.
+      // Ambil peta menu→bahan (TANPA takaran) lewat RPC aman.
+      if(!this.state.recipes || !this.state.recipes.length){
+        try{
+          const{data}=await sb.rpc('menu_ingredient_map');
+          this.state.recipes=(data||[]).map(x=>({menu_id:x.menu_id,ingredient_id:x.ingredient_id,qty:0}));
+        }catch(e){}
+      }
       this.state.ingredients=await Data.ingredients();
       try{ this._hhCfg=await Data.getHappyHour(); }catch(e){ this._hhCfg=null; } // v91: utk preview happy hour di layar bayar
       // additional aktif (untuk dipilih saat transaksi)
@@ -4387,7 +4421,7 @@ const App={
     return `        <div class="sec-title">Printer Struk — Perangkat Ini</div>
         <div class="card pad" style="margin-bottom:16px">
           <div class="mini" style="color:var(--muted);margin-bottom:12px">Disimpan di perangkat ini saja — tiap tablet kasir boleh beda printer & metode. <b>Bluetooth langsung</b>: tanpa app tambahan, auto-print benar-benar otomatis (printer BLE). <b>RawBT</b>: lewat app gratis RawBT — untuk printer Bluetooth klasik/USB yang tak terjangkau Bluetooth langsung (versi gratis menambah logo kecil di akhir struk). <b>Dialog sistem</b>: cara lama. <br>Kalau struk BLE keluar <b>tersendat/pelan</b>, naikkan <b>Kecepatan kirim</b> ke "Cepat". Kalau setelah dipercepat ada <b>karakter rusak/struk kacau</b>, turunkan lagi — tiap printer beda batasnya.</div>
-          ${BTPrint.bleSupported()?'':'<div class="banner info" style="margin-bottom:10px"><span class="i">⚠</span><div class="mini">Web Bluetooth tidak tersedia di halaman ini (umumnya karena app dibuka sebagai file lokal). Opsi <b>Bluetooth langsung</b> aktif setelah app di-hosting (Tahap 2). Sementara itu pakai <b>RawBT</b>.</div></div>'}
+          ${BTPrint.bleSupported()?'':(()=>{const a=BTPrint.bleAlasan();return `<div class="banner" style="margin-bottom:10px;border-left:4px solid var(--bad);background:var(--bad-soft)"><span class="i" style="color:var(--bad)">⚠</span><div class="mini"><b style="color:var(--bad)">Bluetooth langsung tidak bisa dipakai di perangkat ini.</b><div style="margin-top:4px">${a.pesan}</div><div style="margin-top:6px"><b>Solusi:</b> ${a.solusi}</div></div></div>`;})()}
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
             <div><label class="mini" style="display:block;margin-bottom:4px">Metode cetak</label>
               <select onchange="App.printCfgSet('method',this.value)" style="padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">
@@ -4673,14 +4707,32 @@ const App={
       const el=document.getElementById('btPrnStatus'); if(el) el.textContent='Tersambung: '+name;
     }catch(e){ this.toast((e&&e.message)||'Gagal menyambung printer','bad'); }
   },
+  // Ambil identitas outlet ini (nama/alamat/telp/IG) untuk tes cetak.
+  // BUG lama: tes cetak tidak menyertakan data outlet, sehingga struk uji
+  // selalu menampilkan alamat GLOBAL — alamat outlet terlihat "tidak berubah".
+  async _outletUntukStruk(){
+    const bid=CURRENT.branch||this.state?.posBranch||null;
+    if(!bid) return {};
+    try{
+      const bl=await Data.branches();
+      const b=(bl||[]).find(x=>x.id===bid);
+      if(b) return {name:b.name||'',address:b.receipt_address||'',phone:b.receipt_phone||'',ig:b.receipt_ig||''};
+    }catch(e){}
+    try{ const c=localStorage.getItem('sruput_outlet_cfg_'+bid); if(c) return JSON.parse(c); }catch(e){}
+    return {};
+  },
   async printTest(){
-    const dummy={invoice:'TES-PRINTER',branchName:'Tes Perangkat Ini',cashier:CURRENT.name||'-',payment:'cash',
+    const o=await this._outletUntukStruk();
+    const dummy={invoice:'TES-PRINTER',branchName:o.name||'Tes Perangkat Ini',outlet:o,
+      cashier:CURRENT.name||'-',payment:'cash',
       items:[{name:'Butterscotch Latte',qty:1,price:13000},{name:'Thai Tea',qty:2,price:10000,note:'less sugar'}],
       discounts:[],total:33000,received:50000,queue:7,when:new Date()};
     await this.printReceipt(dummy,{});
   },
   async printTestKitchen(){
-    const dummy={invoice:'TES-BARISTA',branchName:'Tes Perangkat Ini',cashier:CURRENT.name||'-',queue:7,when:new Date(),
+    const o=await this._outletUntukStruk();
+    const dummy={invoice:'TES-BARISTA',branchName:o.name||'Tes Perangkat Ini',outlet:o,
+      cashier:CURRENT.name||'-',queue:7,when:new Date(),
       items:[
         {baseName:'Butterscotch Latte',name:'Butterscotch Latte',qty:1,price:13000,addPrice:3000,
          addsDetail:[{kind:'less',name:'Less Sugar'},{kind:'add',name:'Extra Shot',price:3000}],note:'sajikan panas'},
@@ -6571,9 +6623,17 @@ const App={
       const beli=(pres.data||[]).reduce((a,x)=>a+Number(x.total_cost||0),0); const pengeluaran=(eres.data||[]).reduce((a,x)=>a+Number(x.amount||0),0); const laba=omzet-cogs-pengeluaran;
       const st=(stres.data||[]).filter(x=>this._mtrIngMap[x.ingredient_id]); const low=st.filter(x=>Number(x.min_qty||0)>0 && Number(x.qty)<=Number(x.min_qty));
       const due=(rres.data||[]).reduce((a,x)=>a+Number(x.amount||0),0);
+      // Rincian metode bayar — untuk mencocokkan uang tunai di laci saat tutup shift.
+      const tunai=sal.filter(s=>s.payment==='cash');
+      const qris =sal.filter(s=>s.payment==='qris');
+      const nTunai=tunai.reduce((a,s)=>a+Number(s.total||0),0);
+      const nQris =qris.reduce((a,s)=>a+Number(s.total||0),0);
+
       let html=this.mtrBar();
       html+=`<div class="grid-stats" style="margin-bottom:16px">
         ${this.stat('Penjualan hari ini',this.rp(omzet),sal.length+' transaksi')}
+        ${this.stat('Tunai (cash)',this.rp(nTunai),tunai.length+' transaksi'+(omzet>0?' · '+Math.round(nTunai/omzet*100)+'%':''),'var(--good)')}
+        ${this.stat('QRIS',this.rp(nQris),qris.length+' transaksi'+(omzet>0?' · '+Math.round(nQris/omzet*100)+'%':''),'var(--gold)')}
         ${this.stat('Margin',marginPct+'%',omzet>0?'omzet - COGS':'belum ada penjualan',marginPct>=0?'var(--good)':'var(--bad)')}
         ${this.stat('Pembelian hari ini',this.rp(beli),'beli lokal')}
         ${this.stat('Pengeluaran hari ini',this.rp(pengeluaran),'operasional')}
@@ -7090,15 +7150,21 @@ const App={
   },
   async render_content(){
     const v=document.getElementById('view');
-    if(!['owner','pic','media'].includes(CURRENT.role)){v.innerHTML='<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner, PIC, dan Media</b></div>';return;}
+    if(!['owner','pic','media','mitra'].includes(CURRENT.role)){v.innerHTML='<div class="soon-box"><div class="ic">🔒</div><b>Tidak tersedia untuk peran ini</b></div>';return;}
     v.innerHTML=this.loadingHTML('Menyusun amunisi dari data penjualan…');
     try{
       const isPic=CURRENT.role==='pic';
+      const isMitra=CURRENT.role==='mitra';
       const canCamp=(CURRENT.role==='owner'||CURRENT.role==='media');
-      const scope=isPic?CURRENT.branch:(this._ctBranch||null);
+      // MITRA dibatasi ke outletnya sendiri — tanpa ini scope jatuh ke null
+      // (semua outlet): datanya memang tertahan RLS, tapi dropdown menampilkan
+      // outlet Pusat & mitra lain, lalu hasilnya kosong -> membingungkan.
+      const scope=(isPic||isMitra)?CURRENT.branch:(this._ctBranch||null);
       const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
       const [branchesAll,menuAll]=await Promise.all([Data.branches(),Data.menuAll()]);
-      const outlets=branchesAll.filter(b=>b.type!=='warehouse');
+      let outlets=branchesAll.filter(b=>b.type!=='warehouse');
+      if(isMitra) outlets=outlets.filter(b=>b.owner_user_id===CURRENT.user.id||b.id===CURRENT.branch);
+      if(isPic)   outlets=outlets.filter(b=>b.id===CURRENT.branch);
       this._ctOutlets=outlets;
       const bName=id=>{const b=branchesAll.find(x=>x.id===id);return b?b.name:(id||'Semua outlet');};
       const mName=id=>{const m=menuAll.find(x=>x.id===id);return m?m.name:id;};
@@ -8412,7 +8478,20 @@ const App={
       const {data,error}=await sb.from('opname_requests').select('id,branch_id,ingredient_id,counted_qty,system_qty,reason,status,requested_by,created_at').eq('status','pending').order('created_at',{ascending:true});
       if(error)throw error;
       const reqs=data||[];
-      let html=`<div class="banner info"><span class="i">◫</span><div>Opname (hitung stok fisik) dari outlet mitra. <b>Setujui</b> → stok outlet disetel ke jumlah hasil hitung (tercatat di audit). <b>Tolak</b> → tidak ada perubahan stok.</div></div>`;
+      // Peringatan bila fitur opname sedang dimatikan — tanpa ini owner cuma
+      // melihat "tidak ada opname" dan tak tahu penyebabnya.
+      let opnameAktif=true;
+      try{ const sv=await Data.getAppSetting('opname_enabled'); if(sv==='false'||sv===false) opnameAktif=false; }catch(e){}
+      let html='';
+      if(!opnameAktif){
+        html+=`<div class="banner" style="margin-bottom:14px;border-left:4px solid var(--bad);background:var(--bad-soft)">
+          <span class="i" style="color:var(--bad)">⚠</span><div>
+          <b style="color:var(--bad)">Fitur stok opname sedang NONAKTIF.</b>
+          <div class="mini" style="margin:4px 0 8px">Selama nonaktif, tombol opname hilang di semua outlet — tidak ada yang bisa mengajukan. Itu sebabnya daftar di bawah kosong.</div>
+          <button class="btn" style="width:auto;padding:6px 14px;font-size:12px;background:var(--good);color:#fff;font-weight:700" onclick="App.go('settings')">→ Aktifkan di Setting</button>
+        </div></div>`;
+      }
+      html+=`<div class="banner info"><span class="i">◫</span><div>Opname (hitung stok fisik) dari outlet mitra. <b>Setujui</b> → stok outlet disetel ke jumlah hasil hitung (tercatat di audit). <b>Tolak</b> → tidak ada perubahan stok.</div></div>`;
       html+=`<div class="sec-title">Menunggu ditinjau (${reqs.length})</div>`;
       if(!reqs.length){ html+=`<div class="card pad mini muted">Tidak ada opname menunggu.</div>`; }
       else{
