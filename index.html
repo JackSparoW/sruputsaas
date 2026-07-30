@@ -7990,6 +7990,41 @@ const App={
     }catch(e){ el.innerHTML=this.errHTML(e); }
   },
 
+  // Koreksi harga pembelian lokal — mitra boleh membetulkan sendiri dalam 24 jam,
+  // sekali saja, dengan alasan wajib. Jumlah TIDAK bisa diubah (menyangkut stok
+  // fisik → harus lewat opname). Semua tercatat & ditandai untuk Pusat.
+  async mtrKoreksiBeli(id, qty, hargaLama, namaBahan, satuan){
+    const total=qty*hargaLama;
+    const saran=Math.round(hargaLama/qty*100)/100;
+    const p=prompt(
+      'KOREKSI HARGA — '+namaBahan+'\n\n'
+      +'Jumlah   : '+qty+' '+satuan+' (tidak bisa diubah)\n'
+      +'Harga kini: '+this.rp(hargaLama)+' per '+satuan+'\n'
+      +'Total kini: '+this.rp(total)+'\n\n'
+      +'Isi harga PER '+satuan.toUpperCase()+', bukan total belanja.\n'
+      +'Bila total yang Anda bayar '+this.rp(hargaLama)+', maka harga per '+satuan+' = '+this.rp(saran)+'\n\n'
+      +'Harga baru per '+satuan+':', hargaLama);
+    if(p===null)return;
+    const n=Number(p);
+    if(isNaN(n)||n<=0){ this.toast('Harga tidak valid','bad'); return; }
+
+    const alasan=prompt('Alasan koreksi (wajib):\n\nContoh: "salah isi, tadi saya masukkan total belanja", "harga di nota berbeda".\n\nAlasan:');
+    if(alasan===null)return;
+    if(!alasan.trim()){ this.toast('Dibatalkan — alasan wajib diisi','bad'); return; }
+
+    if(!confirm('Koreksi harga '+namaBahan+':\n'
+      +'  '+this.rp(hargaLama)+' → '+this.rp(n)+' per '+satuan+'\n'
+      +'  Total: '+this.rp(total)+' → '+this.rp(qty*n)+'\n\n'
+      +'Hanya bisa dikoreksi SEKALI. Pusat akan melihat koreksi ini.\n\nLanjutkan?')) return;
+
+    try{
+      const{error}=await sb.rpc('correct_mitra_purchase',
+        {p_id:id, p_unit_price:n, p_alasan:alasan.trim()});
+      if(error)throw error;
+      this.toast('Harga dikoreksi · HPP diperbarui','good');
+      this.render_mtrlokal();
+    }catch(e){ this.toast((e&&e.message)||'Gagal mengoreksi','bad'); }
+  },
   async render_mtrlokal(){
     const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat…');
     try{
@@ -8028,11 +8063,16 @@ const App={
   async mtrLoadLokalHist(){
     const el=document.getElementById('loHist'); if(!el)return;
     try{
-      const{data,error}=await sb.from('mitra_purchases').select('created_at,ingredient_id,qty,unit_price,total_cost,supplier,status,note').eq('branch_id',this.state.mtrOutlet).order('created_at',{ascending:false}).limit(30);
+      const{data,error}=await sb.from('mitra_purchases').select('id,created_at,ingredient_id,qty,unit_price,total_cost,supplier,status,note,corrected_at,harga_awal').eq('branch_id',this.state.mtrOutlet).order('created_at',{ascending:false}).limit(30);
       if(error)throw error;
       if(!data||!data.length){ el.innerHTML=`<div class="card pad mini muted">Belum ada pembelian lokal.</div>`; return; }
-      const rows=data.map(r=>`<tr><td class="mini">${fmtDateWIB(r.created_at)}</td><td><b>${escHtml(this.mtrIngName(r.ingredient_id))}</b></td><td class="right mono">${Number(r.qty)} ${escHtml(this.mtrIngUnit(r.ingredient_id))}</td><td class="right mono">${this.rp(r.unit_price)}</td><td class="right mono">${this.rp(r.total_cost)}</td><td class="mini">${escHtml(r.supplier||'')}</td><td>${this.mtrBadge(r.status)}</td></tr>`).join('');
-      el.innerHTML=`<div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Waktu</th><th>Bahan</th><th class="right">Jumlah</th><th class="right">Harga</th><th class="right">Total</th><th>Pemasok</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+      const rows=data.map(r=>`<tr><td class="mini">${fmtDateWIB(r.created_at)}</td><td><b>${escHtml(this.mtrIngName(r.ingredient_id))}</b></td><td class="right mono">${Number(r.qty)} ${escHtml(this.mtrIngUnit(r.ingredient_id))}</td><td class="right mono">${this.rp(r.unit_price)}</td><td class="right mono">${this.rp(r.total_cost)}</td><td class="mini">${escHtml(r.supplier||'')}</td><td>${this.mtrBadge(r.status)}</td><td>${(()=>{
+        const umurJam=(Date.now()-new Date(r.created_at).getTime())/3600000;
+        if(r.corrected_at) return `<span class="mini muted" title="Sudah dikoreksi${r.harga_awal?' dari '+this.rp(r.harga_awal):''}">sudah dikoreksi</span>`;
+        if(umurJam>24) return `<span class="mini muted" title="Lewat 24 jam — minta bantuan Pusat">—</span>`;
+        return `<button class="btn" style="width:auto;padding:4px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.mtrKoreksiBeli('${r.id}',${Number(r.qty)},${Number(r.unit_price)},'${escHtml(this.mtrIngName(r.ingredient_id))}','${escHtml(this.mtrIngUnit(r.ingredient_id))}')">Koreksi harga</button>`;
+      })()}</td></tr>`).join('');
+      el.innerHTML=`<div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Waktu</th><th>Bahan</th><th class="right">Jumlah</th><th class="right">Harga</th><th class="right">Total</th><th>Pemasok</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
     }catch(e){ el.innerHTML=this.errHTML(e); }
   },
 
