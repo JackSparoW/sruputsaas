@@ -1388,14 +1388,18 @@ const App={
           <button class="btn btn-primary" style="width:auto;margin:0;padding:8px 16px" onclick="App.applyDashRange()">Terapkan</button>
           ${period==='range'?`<span class="mini" style="color:var(--good)">Aktif: ${periodLabel}</span>`:''}
         </div>`:'';
-      const [failBanner,reqBanner,shiftBanner]=await Promise.all([
-        this.offlineFailBanner(), this.stockReqBanner(), this.staleShiftBanner()
+      const [failBanner,reqBanner,shiftBanner,pelBanner]=await Promise.all([
+        this.offlineFailBanner(), this.stockReqBanner(), this.staleShiftBanner(),
+        // Papan peluang harian — untuk cabang yang sedang dilihat.
+        // Ini yang dibuka tim outlet tiap hari, jadi diletakkan di sini juga.
+        this.airPeluangHTML(CURRENT.role==='owner' ? (this.state.dashBranch||CURRENT.branch) : CURRENT.branch)
       ]);
       v.innerHTML=`
         ${failBanner}
         ${shiftBanner}
         ${reqBanner}
         ${dashPicker}
+        ${pelBanner}
         <div class="sec-title">Ringkasan Operasional · ${periodLabel}</div>
         <div class="grid-stats">
           ${this.stat('Omzet',this.rp(rev),deltaTxt,deltaColor)}
@@ -6864,7 +6868,9 @@ const App={
       const nTunai=tunai.reduce((a,s)=>a+Number(s.total||0),0);
       const nQris =qris.reduce((a,s)=>a+Number(s.total||0),0);
 
+      const pelBanner=await this.airPeluangHTML(this.state.mtrOutlet||CURRENT.branch);
       let html=this.mtrBar();
+      html+=pelBanner;
       html+=`<div class="grid-stats" style="margin-bottom:16px">
         ${this.stat('Penjualan hari ini',this.rp(omzet),sal.length+' transaksi')}
         ${this.stat('Tunai (cash)',this.rp(nTunai),tunai.length+' transaksi'+(omzet>0?' · '+Math.round(nTunai/omzet*100)+'%':''),'var(--good)')}
@@ -7928,7 +7934,6 @@ const App={
     // default rentang: 7 hari terakhir (WIB)
     if(!this.state.airTo)   this.state.airTo   = wibISODate(Date.now());
     if(!this.state.airFrom) this.state.airFrom = wibShiftDays(Date.now(),-6);
-    const _showRange = this.state.airType==='custom' ? '' : 'display:none';
     const _dfld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
     v.innerHTML=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">${headSel}
       <select id="airType" onchange="App.state.airType=this.value;App.render_aireport()" style="padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">
@@ -7936,18 +7941,143 @@ const App={
         <option value="weekly" ${this.state.airType==='weekly'?'selected':''}>Mingguan</option>
         <option value="monthly" ${this.state.airType==='monthly'?'selected':''}>Bulanan</option>
         <option value="custom" ${this.state.airType==='custom'?'selected':''}>Rentang sendiri</option></select>
-      <div id="airRange" style="${_showRange};display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div id="airRange" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;opacity:${this.state.airType==='custom'?'1':'.55'}" title="Ubah tanggal untuk memakai rentang sendiri">
         <input type="date" id="airFrom" value="${this.state.airFrom}" max="${wibISODate(Date.now())}"
-          onchange="App.state.airFrom=this.value" style="${_dfld}">
+          onchange="App.state.airFrom=this.value;App.state.airType='custom';App.render_aireport()" style="${_dfld}">
         <span class="mini muted">s/d</span>
         <input type="date" id="airTo" value="${this.state.airTo}" max="${wibISODate(Date.now())}"
-          onchange="App.state.airTo=this.value" style="${_dfld}">
+          onchange="App.state.airTo=this.value;App.state.airType='custom';App.render_aireport()" style="${_dfld}">
       </div>
       <button class="btn btn-primary" style="width:auto;padding:10px 18px" id="airGo" onclick="App.airGenerate()">Buat Report</button></div>
       <div id="airOut"><div class="card pad mini muted">Pilih tipe lalu tekan "Buat Report". Insight dihasilkan mesin aturan dari data outlet — bukan tebakan AI. Struktur data sudah siap disambungkan ke AI (via Supabase Edge Function, tanpa API key di HTML).</div></div>
       <div class="sec-title" style="margin-top:18px">Report tersimpan</div><div id="airSaved">${this.loadingHTML('Memuat…')}</div>`;
     this._airBranch=bId; this.airLoadSaved();
     }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  // ===== DIAGNOSIS PERUBAHAN OMZET =====
+  // Membedah "kenapa naik/turun", bukan sekadar berapa persen.
+  // ===== PAPAN PELUANG HARIAN =====
+  // Mengubah laporan jadi daftar kerja: apa yang bisa dilakukan tim HARI INI.
+  async airPeluangHTML(bId){
+    try{
+      const{data:d,error}=await sb.rpc('peluang_harian',{p_branch:bId});
+      if(error||!d)return '';
+      const u=d.upsell||{}, t=d.traffic||{};
+      const total=Number(d.total_potensi||0);
+      const pu=Number(u.potensi||0), pt=Number(t.potensi||0);
+      if(total<=0 && Number(d.trx||0)===0) return '';
+
+      const aksi=[];
+      if(pu>0){
+        const sisa=Number(u.sisa_transaksi_belum_topping||0);
+        const perlu=Math.max(1,Math.ceil((Number(u.target_rate)-Number(u.rate_kini))/100*Number(d.trx||0)));
+        aksi.push(`<li style="margin:5px 0">
+          <b>Tawarkan topping</b> ke ±${perlu} pelanggan berikutnya
+          <div class="mini muted">Hari ini baru ${u.rate_kini}% pakai topping (biasanya ${u.rate_biasa}%).
+          Tiap upsell menambah rata-rata <b>${this.rp(u.nilai_per_upsell)}</b>.</div>
+          <div class="mini" style="color:var(--good);font-weight:700">→ potensi ${this.rp(pu)}</div></li>`);
+      }
+      if(pt>0){
+        aksi.push(`<li style="margin:5px 0">
+          <b>Kejar ${t.tertinggal} transaksi</b> yang tertinggal
+          <div class="mini muted">Sampai jam ini biasanya ${t.trx_biasa_jam_ini} transaksi, sekarang baru ${d.trx}.
+          Coba sapa pengunjung lewat, atau posting story.</div>
+          <div class="mini" style="color:var(--good);font-weight:700">→ potensi ${this.rp(pt)}</div></li>`);
+      }
+      if(!aksi.length){
+        aksi.push(`<li style="margin:5px 0"><b>Hari ini sudah di atas rata-rata.</b>
+          <div class="mini muted">Pertahankan — dan tetap tawarkan topping ke tiap pelanggan.</div></li>`);
+      }
+
+      const target=Number(t.omzet_biasa_seharian||0);
+      const prog=target>0?Math.min(100,Math.round(Number(d.omzet||0)/target*100)):0;
+
+      return `<div class="card pad" style="margin-bottom:14px;border-left:4px solid var(--gold)">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+          <b>Peluang hari ini</b>
+          ${total>0?`<b style="font-size:17px;color:var(--good)">+${this.rp(total)}</b>`:''}
+        </div>
+        <div class="mini muted" style="margin-top:2px">Yang masih bisa dikerjakan tim sampai tutup</div>
+        ${target>0?`<div style="margin-top:10px">
+          <div class="mini" style="display:flex;justify-content:space-between">
+            <span>${this.rp(d.omzet)} dari biasanya ${this.rp(target)}</span><span>${prog}%</span></div>
+          <div style="height:7px;background:var(--surface-2);border-radius:4px;overflow:hidden;margin-top:4px">
+            <div style="height:100%;width:${prog}%;background:${prog>=100?'var(--good)':prog>=70?'var(--gold)':'var(--bad)'}"></div>
+          </div></div>`:''}
+        <ul style="margin:10px 0 0 16px;padding:0">${aksi.join('')}</ul>
+        <div class="mini muted" style="margin-top:8px">Pembanding: rata-rata hari yang sama, 4 minggu terakhir.</div>
+      </div>`;
+    }catch(e){ return ''; }
+  },
+  async airDiagnosaHTML(bId,R){
+    try{
+      const{data:d,error}=await sb.rpc('omzet_diagnosis',
+        {p_branch:bId,p_start:R.start,p_end:R.end,p_pstart:R.pstart,p_pend:R.pend});
+      if(error||!d)return '';
+      const k=d.kini||{}, l=d.lalu||{};
+      const dOmz=Number(d.delta_omzet||0), pct=d.delta_persen;
+      if(!Number(l.omzet))return '';   // tak ada pembanding
+      const naik=dOmz>=0;
+      const eT=Number(d.efek_jumlah_transaksi||0), eA=Number(d.efek_nilai_per_transaksi||0);
+      const totAbs=Math.abs(eT)+Math.abs(eA)||1;
+      const pT=Math.round(Math.abs(eT)/totAbs*100), pA=100-pT;
+
+      // kesimpulan utama — bahasa manusia, bukan istilah teknis
+      let sebab;
+      if(Math.abs(eT)>=Math.abs(eA)*1.5){
+        sebab = naik
+          ? `Terutama karena <b>jumlah pembeli bertambah</b> (${l.tx} → ${k.tx} transaksi).`
+          : `Terutama karena <b>jumlah pembeli berkurang</b> (${l.tx} → ${k.tx} transaksi). Belanja per orang relatif stabil.`;
+      }else if(Math.abs(eA)>=Math.abs(eT)*1.5){
+        sebab = naik
+          ? `Terutama karena <b>belanja per orang naik</b> (${this.rp(l.aov)} → ${this.rp(k.aov)}).`
+          : `Terutama karena <b>belanja per orang turun</b> (${this.rp(l.aov)} → ${this.rp(k.aov)}). Jumlah pembeli relatif stabil.`;
+      }else{
+        sebab = `Dua-duanya berpengaruh: jumlah pembeli ${l.tx}→${k.tx} dan belanja per orang ${this.rp(l.aov)}→${this.rp(k.aov)}.`;
+      }
+
+      // hari operasional beda → bandingkan rata-rata per hari agar adil
+      let catatanHari='';
+      if(Number(k.hari_jualan)!==Number(l.hari_jualan)){
+        catatanHari=`<div class="mini" style="margin-top:6px;color:var(--gold)">
+          ⚠ Jumlah hari jualan berbeda (${l.hari_jualan} → ${k.hari_jualan} hari).
+          Bandingkan rata-rata harian: <b>${this.rp(l.omzet_per_hari)} → ${this.rp(k.omzet_per_hari)}</b>.</div>`;
+      }
+
+      const menu=(d.menu||[]).slice(0,6);
+      const menuRows=menu.map(m=>{
+        const v=Number(m.delta||0), pos=v>=0;
+        return `<tr>
+          <td class="mini">${escHtml(m.menu||'-')}</td>
+          <td class="mini right mono" style="color:${pos?'var(--good)':'var(--bad)'}">${pos?'+':''}${this.rp(v)}</td>
+          <td class="mini right mono muted">${m.cup_lalu||0} → ${m.cup_kini||0} cup</td>
+        </tr>`;
+      }).join('');
+
+      const jam=(d.jam_sibuk||[]).slice(0,3)
+        .map(j=>`${String(j.jam).padStart(2,'0')}:00 (${this.rp(j.omzet)})`).join(' · ');
+
+      return `<div class="card pad" style="margin-bottom:14px;border-left:4px solid ${naik?'var(--good)':'var(--bad)'}">
+        <b style="display:block;margin-bottom:6px">Kenapa omzet ${naik?'naik':'turun'}?</b>
+        <div style="font-size:15px;font-weight:800;color:${naik?'var(--good)':'var(--bad)'};margin-bottom:6px">
+          ${naik?'+':''}${this.rp(dOmz)} ${pct!=null?`(${pct}%)`:''}
+        </div>
+        <div class="mini" style="margin-bottom:8px">${sebab}</div>
+        ${catatanHari}
+        <table style="margin-top:8px"><tbody class="mini">
+          <tr><td style="color:var(--muted);width:190px">Dari jumlah pembeli</td>
+              <td class="mono" style="color:${eT>=0?'var(--good)':'var(--bad)'}">${eT>=0?'+':''}${this.rp(eT)} <span class="muted">(${pT}% dari perubahan)</span></td></tr>
+          <tr><td style="color:var(--muted)">Dari belanja per orang</td>
+              <td class="mono" style="color:${eA>=0?'var(--good)':'var(--bad)'}">${eA>=0?'+':''}${this.rp(eA)} <span class="muted">(${pA}%)</span></td></tr>
+          <tr><td style="color:var(--muted)">Rata-rata per hari</td>
+              <td class="mono">${this.rp(l.omzet_per_hari)} → ${this.rp(k.omzet_per_hari)}</td></tr>
+          ${jam?`<tr><td style="color:var(--muted)">Jam paling ramai</td><td>${jam}</td></tr>`:''}
+        </tbody></table>
+        ${menuRows?`<div class="sec-title" style="margin-top:12px;font-size:12px">Menu penyumbang perubahan</div>
+          <div style="overflow-x:auto"><table><thead><tr><th>Menu</th><th class="right">Selisih omzet</th><th class="right">Cup</th></tr></thead>
+          <tbody>${menuRows}</tbody></table></div>`:''}
+      </div>`;
+    }catch(e){ return ''; }
   },
   async airGenerate(){
     const out=document.getElementById('airOut'); const btn=document.getElementById('airGo');
@@ -7995,11 +8125,14 @@ const App={
               <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${hs.parts.map(pt=>`<span class="mini" style="padding:3px 8px;background:var(--surface-2);border-radius:6px">${pt[0]} ${pt[1]} <span class="muted">(${pt[2]}%)</span></span>`).join('')}</div>
               <div class="mini muted" style="margin-top:6px">Berbobot: Sales 25 · Margin 20 · Stok 15 · Waste 15 · Disiplin 15 · Training 10</div></div>`; } }catch(e){}
       }
+      const [pelHTML,diagHTML]=await Promise.all([this.airPeluangHTML(bId),this.airDiagnosaHTML(bId,R)]);
       out.innerHTML=`
+        ${pelHTML}
         <div class="card pad" style="margin-bottom:12px;border-left:4px solid ${pcol[rep.priority]}">
           <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><b>Ringkasan · ${R.start===R.end?R.start:R.start+' → '+R.end}</b><span class="tag ${rep.priority==='High'?'low':rep.priority==='Medium'?'warn':'ok'}">Priority: ${rep.priority}</span></div>
           <div style="margin-top:6px">${escHtml(rep.summary)}</div><div class="mini muted" style="margin-top:4px">${R.label} · dibuat oleh mesin aturan (deterministik)</div></div>
         ${extra}
+        ${diagHTML}
         <div class="card pad" style="margin-bottom:12px"><b>Angka kunci</b><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:8px">${rep.key.map(k=>`<div style="padding:8px 10px;background:var(--surface-2);border-radius:8px"><div class="mini muted">${escHtml(k[0])}</div><b class="mono" style="font-size:13px">${escHtml(k[1])}</b></div>`).join('')}</div></div>
         ${rep.alerts.length?`<div class="card pad" style="margin-bottom:12px"><b>Alert</b>${rep.alerts.map(a=>`<div style="margin-top:8px;padding:9px 11px;border-left:3px solid ${pcol[a.level]};background:var(--surface-2);border-radius:0 8px 8px 0"><b class="mini" style="color:${pcol[a.level]}">${a.level}</b> · ${escHtml(a.text)}<div class="mini muted" style="margin-top:3px">→ ${escHtml(a.action)}</div></div>`).join('')}</div>`:''}
         ${rep.recs.length?`<div class="card pad" style="margin-bottom:12px"><b>Rekomendasi</b>${rep.recs.map(r=>`<div class="mini" style="margin-top:7px">• <b>[${r.priority}]</b> ${escHtml(r.text)}</div>`).join('')}</div>`:''}
