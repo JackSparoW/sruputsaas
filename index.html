@@ -7154,6 +7154,18 @@ const App={
   airRanges(type){
     const now=Date.now();
     const today=wibISODate(now);
+    // Rentang tanggal pilihan sendiri — pembanding: periode SAMA PANJANG tepat sebelumnya,
+    // supaya perbandingan adil (7 hari dibanding 7 hari, bukan 7 vs 30).
+    if(type==='custom'){
+      const a=this.state.airFrom, b=this.state.airTo;
+      if(a && b){
+        const hari=Math.max(1, Math.round((Date.parse(b+'T00:00:00+07:00')-Date.parse(a+'T00:00:00+07:00'))/86400000)+1);
+        return {start:a, end:b,
+          pstart:wibShiftDays(a+'T00:00:00+07:00', -hari),
+          pend:wibShiftDays(a+'T00:00:00+07:00', -1),
+          label:hari+' hari ('+a+' s/d '+b+') vs '+hari+' hari sebelumnya'};
+      }
+    }
     if(type==='daily') return {start:today,end:today,pstart:wibShiftDays(now,-1),pend:wibShiftDays(now,-1),label:'Hari ini vs kemarin'};
     if(type==='weekly') return {start:wibShiftDays(now,-6),end:today,pstart:wibShiftDays(now,-13),pend:wibShiftDays(now,-7),label:'7 hari vs 7 hari sebelumnya'};
     // bulan berjalan: hari-1 bulan ini (WIB) s/d hari ini
@@ -7913,11 +7925,24 @@ const App={
     }else if(CURRENT.role==='pic'){ bId=CURRENT.branch; }
     else { v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner, Mitra & PIC</b></div>`; return; }
     if(!this.state.airType)this.state.airType='daily';
+    // default rentang: 7 hari terakhir (WIB)
+    if(!this.state.airTo)   this.state.airTo   = wibISODate(Date.now());
+    if(!this.state.airFrom) this.state.airFrom = wibShiftDays(Date.now(),-6);
+    const _showRange = this.state.airType==='custom' ? '' : 'display:none';
+    const _dfld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
     v.innerHTML=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">${headSel}
-      <select id="airType" onchange="App.state.airType=this.value" style="padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">
+      <select id="airType" onchange="App.state.airType=this.value;App.render_aireport()" style="padding:9px 12px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)">
         <option value="daily" ${this.state.airType==='daily'?'selected':''}>Harian</option>
         <option value="weekly" ${this.state.airType==='weekly'?'selected':''}>Mingguan</option>
-        <option value="monthly" ${this.state.airType==='monthly'?'selected':''}>Bulanan</option></select>
+        <option value="monthly" ${this.state.airType==='monthly'?'selected':''}>Bulanan</option>
+        <option value="custom" ${this.state.airType==='custom'?'selected':''}>Rentang sendiri</option></select>
+      <div id="airRange" style="${_showRange};display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="date" id="airFrom" value="${this.state.airFrom}" max="${wibISODate(Date.now())}"
+          onchange="App.state.airFrom=this.value" style="${_dfld}">
+        <span class="mini muted">s/d</span>
+        <input type="date" id="airTo" value="${this.state.airTo}" max="${wibISODate(Date.now())}"
+          onchange="App.state.airTo=this.value" style="${_dfld}">
+      </div>
       <button class="btn btn-primary" style="width:auto;padding:10px 18px" id="airGo" onclick="App.airGenerate()">Buat Report</button></div>
       <div id="airOut"><div class="card pad mini muted">Pilih tipe lalu tekan "Buat Report". Insight dihasilkan mesin aturan dari data outlet — bukan tebakan AI. Struktur data sudah siap disambungkan ke AI (via Supabase Edge Function, tanpa API key di HTML).</div></div>
       <div class="sec-title" style="margin-top:18px">Report tersimpan</div><div id="airSaved">${this.loadingHTML('Memuat…')}</div>`;
@@ -7929,6 +7954,13 @@ const App={
     const brSel=document.getElementById('airBr'); const bId=brSel?brSel.value:this._airBranch;
     this._airBranch=bId;
     const type=document.getElementById('airType').value;
+    if(type==='custom'){
+      const a=(document.getElementById('airFrom')||{}).value, b=(document.getElementById('airTo')||{}).value;
+      if(!a||!b){ this.toast('Isi tanggal Dari dan Sampai','bad'); return; }
+      if(a>b){ this.toast('Tanggal Dari melebihi Sampai','bad'); return; }
+      if(Math.round((Date.parse(b)-Date.parse(a))/86400000)+1>120){ this.toast('Rentang maksimal 120 hari','bad'); return; }
+      this.state.airFrom=a; this.state.airTo=b;
+    }
     btn.disabled=true; btn.textContent='Menghitung…'; out.innerHTML=this.loadingHTML('Mengambil data & menjalankan aturan…');
     try{
       const R=this.airRanges(type);
