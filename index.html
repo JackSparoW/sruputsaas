@@ -5544,8 +5544,11 @@ const App={
     try{
       const branch=CURRENT.role==='owner'?null:CURRENT.branch;
       // bulan berjalan
+      const now=new Date();
       const _b=this._bulanWIB();
       const monStart=_b.start, monEnd=_b.end;
+      // tanggal hari ini dalam WIB (toISOString() saja bisa mundur 1 hari sebelum 07:00)
+      const hariIniWIB=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
       const list=await Data.expenses(branch,monStart,monEnd);
       this._expList=list;
       const totMonth=list.reduce((a,e)=>a+Number(e.amount),0);
@@ -5578,7 +5581,7 @@ const App={
           <b style="display:block;margin-bottom:12px">Tambah Pengeluaran</b>
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
             ${branchField}
-            <div><label class="mini" style="display:block;margin-bottom:4px">Tanggal</label><input id="exDate" type="date" value="${now.toISOString().slice(0,10)}" style="${fld}"></div>
+            <div><label class="mini" style="display:block;margin-bottom:4px">Tanggal</label><input id="exDate" type="date" value="${hariIniWIB}" style="${fld}"></div>
             <div><label class="mini" style="display:block;margin-bottom:4px">Kategori</label><select id="exCat" onchange="App.expenseAutofill()" style="${fld}">${catOpts}</select></div>
             <div><label class="mini" style="display:block;margin-bottom:4px">Jumlah (Rp)</label><input id="exAmount" type="number" value="0" oninput="this.dataset.auto=''" style="${fld};width:140px"><div id="exAutoHint" class="mini" style="color:var(--good);margin-top:3px;min-height:14px"></div></div>
             <div style="flex:1;min-width:140px"><label class="mini" style="display:block;margin-bottom:4px">Catatan</label><input id="exNote" placeholder="opsional" style="${fld};width:100%"></div>
