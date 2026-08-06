@@ -8009,6 +8009,66 @@ const App={
       </div>`;
     }catch(e){ return ''; }
   },
+  // ===== ANALISIS ATTACH RATE + SIMULASI =====
+  // Untuk EVALUASI periode (beda dgn Papan Peluang yang untuk aksi hari ini).
+  async airAttachHTML(bId,R){
+    try{
+      const{data:d,error}=await sb.rpc('attach_rate_analisis',
+        {p_branch:bId,p_start:R.start,p_end:R.end,p_pstart:R.pstart,p_pend:R.pend});
+      if(error||!d||!Number(d.trx))return '';
+      const rate=Number(d.rate||0), lalu=d.rate_lalu==null?null:Number(d.rate_lalu);
+      const nilai=Number(d.nilai_per_upsell||0);
+      const arah=lalu==null?null:(rate>lalu?'naik':rate<lalu?'turun':'tetap');
+      const warna=rate>=15?'var(--good)':rate>=8?'var(--gold)':'var(--bad)';
+
+      const sim=(d.simulasi||[]).map(x=>`<tr>
+        <td class="mini">Naik ke <b>${x.target}%</b></td>
+        <td class="mini right mono" style="color:var(--good)">+${this.rp(x.tambahan_periode)}</td>
+        <td class="mini right mono muted">+${this.rp(x.tambahan_per_bulan)}/bln</td></tr>`).join('');
+
+      const top=(d.topping||[]).slice(0,6).map(t=>`<tr>
+        <td class="mini">${escHtml(t.nama||'-')}</td>
+        <td class="mini right mono">${t.terjual||0}×</td>
+        <td class="mini right mono ${Number(t.terjual)?'':'muted'}">${Number(t.terjual)?this.rp(t.omzet):'belum pernah'}</td></tr>`).join('');
+
+      const menu=(d.menu||[]).slice(0,5).map(m=>`<tr>
+        <td class="mini">${escHtml(m.menu||'-')}</td>
+        <td class="mini right mono">${m.tanpa_topping||0} cup</td>
+        <td class="mini right mono" style="color:${Number(m.rate)>=10?'var(--good)':'var(--bad)'}">${m.rate}%</td></tr>`).join('');
+
+      return `<div class="card pad" style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+          <b>Upselling (topping)</b>
+          <b style="font-size:18px;color:${warna}">${rate}%
+            ${arah?`<span class="mini muted" style="font-weight:400">(${arah} dari ${lalu}%)</span>`:''}</b>
+        </div>
+        <div class="mini muted" style="margin-top:2px">
+          ${d.trx_bertopping} dari ${d.trx} transaksi pakai topping ·
+          transaksi bertopping rata-rata <b>${this.rp(nilai)}</b> lebih tinggi
+        </div>
+
+        ${nilai<=0?`<div class="mini" style="margin-top:8px;color:var(--muted)">
+          Selisih nilai belum terlihat — topping yang terjual masih terlalu sedikit untuk dihitung.</div>`:''}
+
+        ${sim?`<div class="sec-title" style="margin-top:14px;font-size:12px">Kalau attach rate naik</div>
+          <div style="overflow-x:auto"><table><thead><tr>
+            <th>Target</th><th class="right">Tambahan periode ini</th><th class="right">Setara/bulan</th>
+          </tr></thead><tbody>${sim}</tbody></table></div>
+          <div class="mini muted" style="margin-top:4px">Hitungan memakai selisih nilai transaksi outlet ini sendiri, bukan asumsi.</div>`:''}
+
+        ${menu?`<div class="sec-title" style="margin-top:14px;font-size:12px">Menu paling sering dibeli tanpa topping</div>
+          <div style="overflow-x:auto"><table><thead><tr>
+            <th>Menu</th><th class="right">Tanpa topping</th><th class="right">Attach</th>
+          </tr></thead><tbody>${menu}</tbody></table></div>
+          <div class="mini muted" style="margin-top:4px">Mulai tawarkan dari menu teratas — di situ peluang terbesarnya.</div>`:''}
+
+        ${top?`<div class="sec-title" style="margin-top:14px;font-size:12px">Topping mana yang laku</div>
+          <div style="overflow-x:auto"><table><thead><tr>
+            <th>Topping</th><th class="right">Terjual</th><th class="right">Omzet</th>
+          </tr></thead><tbody>${top}</tbody></table></div>`:''}
+      </div>`;
+    }catch(e){ return ''; }
+  },
   async airDiagnosaHTML(bId,R){
     try{
       const{data:d,error}=await sb.rpc('omzet_diagnosis',
@@ -8125,7 +8185,8 @@ const App={
               <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">${hs.parts.map(pt=>`<span class="mini" style="padding:3px 8px;background:var(--surface-2);border-radius:6px">${pt[0]} ${pt[1]} <span class="muted">(${pt[2]}%)</span></span>`).join('')}</div>
               <div class="mini muted" style="margin-top:6px">Berbobot: Sales 25 · Margin 20 · Stok 15 · Waste 15 · Disiplin 15 · Training 10</div></div>`; } }catch(e){}
       }
-      const [pelHTML,diagHTML]=await Promise.all([this.airPeluangHTML(bId),this.airDiagnosaHTML(bId,R)]);
+      const [pelHTML,diagHTML,attHTML]=await Promise.all([
+        this.airPeluangHTML(bId), this.airDiagnosaHTML(bId,R), this.airAttachHTML(bId,R)]);
       out.innerHTML=`
         ${pelHTML}
         <div class="card pad" style="margin-bottom:12px;border-left:4px solid ${pcol[rep.priority]}">
@@ -8133,6 +8194,7 @@ const App={
           <div style="margin-top:6px">${escHtml(rep.summary)}</div><div class="mini muted" style="margin-top:4px">${R.label} · dibuat oleh mesin aturan (deterministik)</div></div>
         ${extra}
         ${diagHTML}
+        ${attHTML}
         <div class="card pad" style="margin-bottom:12px"><b>Angka kunci</b><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-top:8px">${rep.key.map(k=>`<div style="padding:8px 10px;background:var(--surface-2);border-radius:8px"><div class="mini muted">${escHtml(k[0])}</div><b class="mono" style="font-size:13px">${escHtml(k[1])}</b></div>`).join('')}</div></div>
         ${rep.alerts.length?`<div class="card pad" style="margin-bottom:12px"><b>Alert</b>${rep.alerts.map(a=>`<div style="margin-top:8px;padding:9px 11px;border-left:3px solid ${pcol[a.level]};background:var(--surface-2);border-radius:0 8px 8px 0"><b class="mini" style="color:${pcol[a.level]}">${a.level}</b> · ${escHtml(a.text)}<div class="mini muted" style="margin-top:3px">→ ${escHtml(a.action)}</div></div>`).join('')}</div>`:''}
         ${rep.recs.length?`<div class="card pad" style="margin-bottom:12px"><b>Rekomendasi</b>${rep.recs.map(r=>`<div class="mini" style="margin-top:7px">• <b>[${r.priority}]</b> ${escHtml(r.text)}</div>`).join('')}</div>`:''}
