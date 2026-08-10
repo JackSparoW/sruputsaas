@@ -337,14 +337,14 @@ const hourOfWIB=ts=>{
 
 /* role -> menu yg aktif di slice ini. 'soon' = belum tersambung (jujur, bukan demo palsu) */
 const NAV={
-  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',1],['content','✦','Studio Konten',1],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['auditormgr','◴','Tetapkan Auditor',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1],['stockaudit','▤','Audit Stok',1],['produksi','⚗','Produksi',1],['offlinefail','⚠','Transaksi Gagal',1],['exreq','◇','ACC Biaya',1]],
+  owner:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['auditctr','◴','Audit Center',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1],['menu','✎','Menu·Resep·COGS',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['discount','%','Diskon',1],['additional','＋','Additional Menu',1],['bundle','◎','Promo Bundle',1],['royalty','◈','Royalti Mitra',1],['employees','☻','Pegawai & Gaji',1],['content','✦','Studio Konten',1],['branches','＋','Cabang',1],['mitramgr','◈','Tetapkan Mitra',1],['auditormgr','◴','Tetapkan Auditor',1],['reqmitra','⇄','Permintaan Stok',1],['opmitra','▫','Review Opname',1],['menuoff','▦','Menu Outlet',1],['settings','⚙','Setting',1],['audit','◴','Audit Log',1],['stockaudit','▤','Audit Stok',1],['produksi','⚗','Produksi',1],['offlinefail','⚠','Transaksi Gagal',1],['exreq','◇','ACC Biaya',1],['picreview','☆','Penilaian PIC',1]],
   auditor:[['auditctr','◴','Audit Center',1]],
   ai_review:[['dashboard','◧','Dashboard',1],['kpi','◫','KPI Outlet',1],['health','♥','Skor Kesehatan',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['inventory','▤','Stok & Bahan',1],['waste','✕','Waste / Buang',1],['expenses','▾','Pengeluaran',1],['purchase','⬇','Pembelian',1],['shift','◔','Shift Kasir',1],['royalty','◈','Royalti Mitra',1],['ticket','◈','Ticket Support',1],['training','◲','Training Dashboard',1],['audit','◴','Audit Log',1]],
-  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['produksi','⚗','Produksi',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',1],['content','✦','Studio Konten',1],['settings','⚙','Setting Printer',1],['exreq','◇','ACC Biaya',1]],
-  crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',1],['settings','⚙','Setting Printer',1],['produksi','⚗','Produksi',1],['exreq','◇','Ajukan Biaya',1]],
+  pic:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['inventory','▤','Stok & Bahan',1],['picminta','⇄','Minta Stok',1],['produksi','⚗','Produksi',1],['forecast','⌛','Prediksi Stok',1],['ticket','◈','Ticket Support',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['training','◲','Training Crew',1],['reports','▥','Laporan',1],['analytik','◈','Analitik Lanjutan',1],['history','▦','Riwayat Transaksi',1],['shift','◔','Shift Kasir',1],['expenses','▾','Pengeluaran',1],['waste','✕','Waste / Buang',1],['purchase','⬇','Pembelian',1],['employees','☻','Absen & Gaji',1],['content','✦','Studio Konten',1],['settings','⚙','Setting Printer',1],['exreq','◇','ACC Biaya',1],['picreview','☆','Penilaian PIC',1]],
+  crew:[['dashboard','◧','Dashboard',1],['pos','▦','Kasir (POS)',1],['shift','◔','Shift Kasir',1],['history','▦','Riwayat Saya',1],['waste','✕','Waste / Buang',1],['ticket','◈','Laporkan Kendala',1],['training','◲','Training Saya',1],['attend','◔','Absensi Saya',1],['settings','⚙','Setting Printer',1],['produksi','⚗','Produksi',1],['exreq','◇','Ajukan Biaya',1],['picreview','☆','Nilai PIC',1]],
   media:[['content','✦','Studio Konten',1]],
   gudang:[['dashboard','◧','Dashboard Stok',1],['inventory','▤','Stok & Bahan',1],['reqmitra','⇄','Permintaan Stok',1],['transfer','⇄','Transfer Stok',1],['transferlog','⇆','Riwayat Transfer',1]],
-  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['produksi','⚗','Produksi',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['content','✦','Studio Konten',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1],['settings','⚙','Setting Printer',1],['exreq','◇','ACC Biaya',1]],
+  mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['produksi','⚗','Produksi',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['content','✦','Studio Konten',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1],['settings','⚙','Setting Printer',1],['exreq','◇','ACC Biaya',1],['picreview','☆','Penilaian PIC',1]],
 };
 const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor',ai_review:'AI Review (baca-saja)'};
 
@@ -1060,7 +1060,7 @@ const App={
   go(page){
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:[CURRENT.role==='owner'?'Setting':'Setting Printer',CURRENT.role==='owner'?'Kelola user & role (owner)':'Atur printer struk Bluetooth untuk perangkat ini'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],exreq:[CURRENT.role==='crew'?'Ajukan Biaya':'ACC Biaya',CURRENT.role==='crew'?'Ajukan pengeluaran untuk disetujui PIC':'Setujui atau tolak pengajuan biaya dari crew'],produksi:['Produksi','Masak bahan mentah jadi bahan olahan · pantau rendemen'],employees:['Pegawai & Gaji','Data pegawai, absensi, dan perhitungan gaji bulanan'],attend:['Absensi Saya','Absen masuk & pulang · riwayat kehadiran bulan ini'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],ajukanbiaya:['Ajukan Pengeluaran','Ajukan biaya operasional · perlu persetujuan PIC'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
+    const t={content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:[CURRENT.role==='owner'?'Setting':'Setting Printer',CURRENT.role==='owner'?'Kelola user & role (owner)':'Atur printer struk Bluetooth untuk perangkat ini'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],picreview:[CURRENT.role==='crew'?'Nilai PIC':'Penilaian PIC',CURRENT.role==='crew'?'Umpan balik anonim untuk PIC outlet Anda':'Hasil penilaian dari crew · anonim'],exreq:[CURRENT.role==='crew'?'Ajukan Biaya':'ACC Biaya',CURRENT.role==='crew'?'Ajukan pengeluaran untuk disetujui PIC':'Setujui atau tolak pengajuan biaya dari crew'],produksi:['Produksi','Masak bahan mentah jadi bahan olahan · pantau rendemen'],employees:['Pegawai & Gaji','Data pegawai, absensi, dan perhitungan gaji bulanan'],attend:['Absensi Saya','Absen masuk & pulang · riwayat kehadiran bulan ini'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],ajukanbiaya:['Ajukan Pengeluaran','Ajukan biaya operasional · perlu persetujuan PIC'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Laporan otomatis dari data outlet · rule engine v1, siap disambung AI via Edge Function'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi permintaan stok mitra/PIC & atur harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])this['render_'+page]();
   },
@@ -5437,6 +5437,149 @@ const App={
     }catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
   },
   // ===== PENGAJUAN / ACC BIAYA =====
+  // ===== PENILAIAN PIC (anonim) =====
+  async render_picreview(){
+    const v=document.getElementById('view');
+    const isCrew=!['owner','pic','mitra'].includes(CURRENT.role);
+    v.innerHTML=this.loadingHTML('Memuat…');
+    try{
+      let h='';
+      if(isCrew){
+        const{data:list,error}=await sb.rpc('pic_review_status');
+        if(error)throw error;
+        const pics=list||[];
+        h+=`<div class="banner info"><span class="i">☆</span><div>
+          Penilaian ini <b>anonim</b> — PIC tidak bisa melihat siapa yang mengisi apa.
+          Hasil baru terbuka setelah minimal <b>3 orang</b> mengisi, supaya tidak bisa ditebak.
+          <div class="mini" style="margin-top:4px">Isi jujur. Tujuannya memperbaiki cara kerja tim, bukan menghukum siapa pun.</div>
+        </div></div>`;
+        if(!pics.length){
+          h+=`<div class="card pad mini muted">Tidak ada PIC di outlet Anda untuk dinilai.</div>`;
+          v.innerHTML=h; return;
+        }
+        h+=pics.map(p=>{
+          if(p.sudah_dinilai) return `<div class="card pad" style="margin-bottom:10px">
+            <b>${escHtml(p.nama)}</b>
+            <div class="mini" style="color:var(--good);margin-top:4px">✓ Sudah Anda nilai bulan ini. Terima kasih.</div></div>`;
+          const aspek=[['arahan','Kejelasan arahan','Instruksi mudah dipahami'],
+                       ['keadilan','Keadilan','Pembagian tugas & jadwal adil'],
+                       ['dukungan','Dukungan','Membantu saat ada masalah'],
+                       ['keteladanan','Keteladanan','Disiplin & jadi contoh'],
+                       ['komunikasi','Komunikasi','Menghargai & mau mendengar']];
+          return `<div class="card pad" style="margin-bottom:12px">
+            <b style="display:block;margin-bottom:10px">Nilai: ${escHtml(p.nama)}</b>
+            ${aspek.map(([k,lbl,ket])=>`<div style="margin-bottom:10px">
+              <div class="mini"><b>${lbl}</b> <span class="muted">· ${ket}</span></div>
+              <div style="display:flex;gap:5px;margin-top:4px;flex-wrap:wrap">
+                ${[1,2,3,4,5].map(n=>`<button class="btn pr-${k}-${p.pic_id}" data-v="${n}"
+                  onclick="App.prPick('${k}','${p.pic_id}',${n})"
+                  style="width:auto;padding:6px 13px;font-size:13px;background:var(--surface-2);border:1px solid var(--line-strong)">${n}</button>`).join('')}
+              </div></div>`).join('')}
+            <div style="margin-top:8px">
+              <div class="mini">Masukan (opsional)</div>
+              <textarea id="prKom-${p.pic_id}" rows="2" placeholder="Apa yang bisa diperbaiki?"
+                style="width:100%;padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);margin-top:4px"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:auto;padding:9px 18px;margin-top:10px"
+              onclick="App.prKirim('${p.pic_id}','${escHtml(p.nama)}')">Kirim Penilaian</button>
+          </div>`;
+        }).join('');
+        v.innerHTML=h; this._prNilai={};
+        return;
+      }
+
+      // ===== OWNER / PIC: ringkasan =====
+      const [sum,trend]=await Promise.all([
+        sb.rpc('pic_review_summary',{p_periode:null}),
+        sb.rpc('pic_review_trend',{p_bulan:6})
+      ]);
+      if(sum.error)throw sum.error;
+      const rows=sum.data||[];
+      const tren=trend.data||[];
+      const trenOf=id=>{const t=tren.find(x=>String(x.pic_id)===String(id));return t?(t.bulan||[]):[];};
+      h+=`<div class="banner info"><span class="i">☆</span><div>
+        Penilaian anonim dari crew — diurutkan dari skor tertinggi.
+        ${CURRENT.role==='owner'
+          ? 'Terbuka bila <b>minimal 2 orang</b> mengisi. Anda tidak pernah melihat siapa memberi nilai apa.'
+          : 'Terbuka bila <b>minimal 3 orang</b> mengisi — di bawah itu identitas penilai mudah ditebak.'}
+        ${CURRENT.role==='owner'?'':'<div class="mini" style="margin-top:4px">Anda melihat penilaian untuk diri sendiri. Komentar hanya dibaca owner.</div>'}
+      </div></div>`;
+      if(!rows.length){
+        h+=`<div class="card pad" style="text-align:center;padding:26px">
+          <div style="font-size:28px;margin-bottom:6px">—</div>
+          <b>Belum ada penilaian bulan ini</b></div>`;
+        v.innerHTML=h; return;
+      }
+      const bar=n=>{const p=n?Math.round(n/5*100):0;
+        const c=n>=4?'var(--good)':n>=3?'var(--gold)':'var(--bad)';
+        return `<div style="height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${p}%;background:${c}"></div></div>`;};
+      h+=rows.map((r,i)=>{
+        if(!r.terbuka) return `<div class="card pad" style="margin-bottom:10px">
+          <b>${escHtml(r.nama)}</b>
+          <div class="mini muted" style="margin-top:4px">Baru ${r.responden} penilaian — hasil terbuka setelah 3 orang mengisi.</div></div>`;
+        const asp=[['Kejelasan arahan',r.arahan],['Keadilan',r.keadilan],['Dukungan',r.dukungan],
+                   ['Keteladanan',r.keteladanan],['Komunikasi',r.komunikasi]];
+        const kom=(r.komentar||[]);
+        return `<div class="card pad" style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
+            <div><b>${CURRENT.role==='owner'&&r.terbuka?`<span class="mini muted">#${i+1}</span> `:''}${escHtml(r.nama)}</b>
+              <div class="mini muted">${escHtml(r.branch_id)} · ${r.responden} penilaian</div></div>
+            <b style="font-size:19px;color:${r.rata2>=4?'var(--good)':r.rata2>=3?'var(--gold)':'var(--bad)'}">${r.rata2}</b>
+          </div>
+          <div style="margin-top:10px">${asp.map(([l,n])=>`<div style="margin-bottom:7px">
+            <div class="mini" style="display:flex;justify-content:space-between"><span>${l}</span><b>${n}</b></div>
+            ${bar(Number(n))}</div>`).join('')}</div>
+          ${(()=>{const b=trenOf(r.pic_id).filter(x=>x.rata2!=null);
+            if(b.length<2)return '';
+            const last=Number(b[b.length-1].rata2), prev=Number(b[b.length-2].rata2);
+            const d=(last-prev).toFixed(2), naik=last>=prev;
+            return `<div class="sec-title" style="margin-top:12px;font-size:12px">Riwayat bulanan</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-end">
+                ${b.map(x=>`<div style="text-align:center;min-width:56px">
+                  <div style="height:${Math.max(6,Math.round(Number(x.rata2)/5*46))}px;width:100%;
+                       background:${Number(x.rata2)>=4?'var(--good)':Number(x.rata2)>=3?'var(--gold)':'var(--bad)'};
+                       border-radius:3px"></div>
+                  <div class="mini" style="margin-top:3px"><b>${x.rata2}</b></div>
+                  <div class="mini muted" style="font-size:10px">${escHtml(x.periode)}</div>
+                </div>`).join('')}
+              </div>
+              <div class="mini" style="margin-top:5px;color:${naik?'var(--good)':'var(--bad)'}">
+                ${naik?'▲':'▼'} ${naik?'+':''}${d} dari bulan sebelumnya</div>`;})()}
+          ${kom.length?`<div class="sec-title" style="margin-top:12px;font-size:12px">Masukan crew (anonim)</div>
+            ${kom.map(k=>`<div class="mini" style="padding:7px 10px;background:var(--surface-2);border-radius:8px;margin-bottom:5px">"${escHtml(k)}"</div>`).join('')}`:''}
+        </div>`;
+      }).join('');
+      v.innerHTML=h;
+    }catch(e){ v.innerHTML=this.errHTML(e); }
+  },
+  prPick(aspek,pic,nilai){
+    this._prNilai=this._prNilai||{};
+    this._prNilai[pic]=this._prNilai[pic]||{};
+    this._prNilai[pic][aspek]=nilai;
+    document.querySelectorAll('.pr-'+aspek+'-'+pic).forEach(b=>{
+      const on=Number(b.dataset.v)===nilai;
+      b.style.background=on?'var(--accent)':'var(--surface-2)';
+      b.style.color=on?'#fff':'var(--text)';
+      b.style.fontWeight=on?'800':'400';
+    });
+  },
+  async prKirim(pic,nama){
+    const n=(this._prNilai||{})[pic]||{};
+    const perlu=['arahan','keadilan','dukungan','keteladanan','komunikasi'];
+    const kurang=perlu.filter(k=>!n[k]);
+    if(kurang.length){ this.toast('Lengkapi semua '+perlu.length+' aspek dulu','bad'); return; }
+    const kom=(document.getElementById('prKom-'+pic)||{}).value||'';
+    if(!confirm('Kirim penilaian untuk '+nama+'?\n\nPenilaian ini ANONIM dan hanya bisa dikirim SEKALI bulan ini.')) return;
+    try{
+      const{error}=await sb.rpc('submit_pic_review',{
+        p_pic:pic,p_arahan:n.arahan,p_keadilan:n.keadilan,p_dukungan:n.dukungan,
+        p_keteladanan:n.keteladanan,p_komunikasi:n.komunikasi,p_komentar:kom.trim()||null});
+      if(error)throw error;
+      this.toast('Terima kasih — penilaian terkirim','good');
+      this.render_picreview();
+    }catch(e){ this.toast((e&&e.message)||'Gagal mengirim','bad'); }
+  },
   async render_exreq(){
     const v=document.getElementById('view');
     const isCrew=CURRENT.role==='crew';
@@ -5450,6 +5593,8 @@ const App={
         .order('created_at',{ascending:false}).limit(40);
       const list=rows||[];
       const pending=list.filter(r=>r.status==='pending');
+      // Kategori disimpan sebagai ID (samakan dgn tabel expenses) — petakan ke nama untuk tampilan.
+      const namaKat=v=>{const c=(cats||[]).find(x=>String(x.id)===String(v));return c?c.name:(v||'-');};
       const fld='padding:9px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
 
       let h='';
@@ -5459,11 +5604,17 @@ const App={
           <b>PIC harus menyetujui</b> sebelum masuk pembukuan.
           <div class="mini" style="margin-top:4px">Batas: Rp500.000 per pengajuan · Rp1.000.000 per hari.</div>
         </div></div>
+        ${!cats.length?`<div class="banner" style="margin-bottom:12px;border-left:4px solid var(--bad);background:var(--bad-soft)">
+          <span class="i" style="color:var(--bad)">⚠</span><div class="mini">
+          <b style="color:var(--bad)">Daftar kategori belum termuat.</b> Coba muat ulang halaman. Bila tetap kosong, hubungi owner.</div></div>`:''}
+        ${!CURRENT.branch?`<div class="banner" style="margin-bottom:12px;border-left:4px solid var(--bad);background:var(--bad-soft)">
+          <span class="i" style="color:var(--bad)">⚠</span><div class="mini">
+          <b style="color:var(--bad)">Cabang Anda belum diatur.</b> Hubungi owner sebelum mengajukan.</div></div>`:''}
         <div class="card pad" style="margin-bottom:16px">
           <b style="display:block;margin-bottom:10px">Ajukan Pengeluaran</b>
           <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
             <div><label class="mini" style="display:block;margin-bottom:4px">Kategori</label>
-              <select id="erCat" style="${fld}">${cats.map(c=>`<option value="${escHtml(c.name)}">${escHtml(c.name)}</option>`).join('')}</select></div>
+              <select id="erCat" style="${fld}">${cats.map(c=>`<option value="${escHtml(c.id)}">${escHtml(c.name)}</option>`).join('')}</select></div>
             <div><label class="mini" style="display:block;margin-bottom:4px">Jumlah (Rp)</label>
               <input id="erAmt" type="number" min="1" placeholder="50000" style="${fld};width:130px"></div>
             <div style="flex:1;min-width:180px"><label class="mini" style="display:block;margin-bottom:4px">Untuk apa? (wajib)</label>
@@ -5496,7 +5647,7 @@ const App={
         const warna=r.status==='approved'?'ok':r.status==='rejected'?'':'warn';
         return `<div class="card pad" style="margin-bottom:10px${p&&bisaAcc?';border-left:4px solid var(--gold)':''}">
           <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline">
-            <div><b>${escHtml(r.category)}</b>
+            <div><b>${escHtml(namaKat(r.category))}</b>
               <div class="mini muted">${escHtml(r.requester_name||'-')} · ${escHtml(String(r.spent_on))} · ${escHtml(r.branch_id)}</div></div>
             <div style="text-align:right">
               <b style="font-size:16px">${this.rp(r.amount)}</b>
@@ -5514,9 +5665,12 @@ const App={
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
   async erAjukan(){
-    const cat=document.getElementById('erCat').value;
+    const catEl=document.getElementById('erCat');
+    const cat=catEl?catEl.value:'';
     const amt=Number(document.getElementById('erAmt').value);
     const note=(document.getElementById('erNote').value||'').trim();
+    if(!CURRENT.branch){ this.toast('Cabang Anda belum diatur — hubungi owner','bad'); return; }
+    if(!cat){ this.toast('Pilih kategori dulu','bad'); return; }
     if(!amt||amt<=0){ this.toast('Isi jumlah','bad'); return; }
     if(!note){ this.toast('Isi untuk apa uangnya dipakai','bad'); return; }
     const btn=document.getElementById('erBtn'); btn.disabled=true; btn.textContent='…';
