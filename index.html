@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="sruput-build" content="2026-10-20-pos-production-r2">
+<meta name="sruput-build" content="2026-10-21-stock58-r3">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SRUPUT OS v2.0 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -268,7 +268,7 @@ td{padding:11px 12px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <div class="topbar">
       <div><h2 id="pageTitle">Dashboard</h2><div class="sub" id="pageSub"></div></div>
       <div class="grow"></div>
-      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">20.10.2026 · R2</span>
+      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">21.10.2026 · R3</span>
       <span class="badge alert hidden" id="alertBadge"></span>
     </div>
     <div class="content" id="view"></div>
@@ -710,16 +710,21 @@ const BTPrint={
     }catch(e){}
     return false;
   },
-  async write(bytes){
-    if(!this._chr) throw new Error('Printer belum tersambung');
-    const prof=this._speedProfile();                 // v1.4: kecepatan kirim bisa diatur per perangkat
-    const CHUNK=prof.chunk, GAP=prof.gap, useNR=!!this._chr.properties.writeWithoutResponse;
-    for(let i=0;i<bytes.length;i+=CHUNK){
-      const part=bytes.slice(i,i+CHUNK);
-      if(useNR) await this._chr.writeValueWithoutResponse(part);
-      else await this._chr.writeValue(part);
-      if(GAP>0) await new Promise(r=>setTimeout(r,GAP)); // jeda buffer (makin kecil makin cepat)
-    }
+  async write(bytes,options){
+    const chr=this._chr;if(!chr)throw new Error('Printer belum tersambung');
+    const payload=new Uint8Array(bytes),guard=options?.guard;
+    const task=async()=>{
+      const prof=this._speedProfile(),useNR=!!chr.properties.writeWithoutResponse;
+      for(let i=0;i<payload.length;i+=prof.chunk){
+        if(this._chr!==chr)throw new Error('Printer berubah. Pilih kembali printer yang benar.');
+        if(guard&&!guard())throw new Error('Sesi berubah; pengiriman cetak dihentikan.');
+        const part=payload.slice(i,i+prof.chunk);
+        if(useNR)await chr.writeValueWithoutResponse(part);else await chr.writeValue(part);
+        if(prof.gap>0)await new Promise(r=>setTimeout(r,prof.gap));
+      }
+    };
+    const pending=(this._writeTail||Promise.resolve()).catch(()=>{}).then(task);
+    this._writeTail=pending.catch(()=>{});return pending;
   },
   printRawBT(bytes){
     let bin=''; for(let i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]);
@@ -9061,7 +9066,7 @@ const App={
   /* Surat barang: pembacaan langsung dengan RLS; mencetak tidak mengubah stok/status. */
   stockRequestPrintButton(r){
     if(!['pending','sent'].includes(r.status))return '';
-    return `<button class="btn" style="width:auto;padding:8px 12px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.printStockRequest(${jsArg(r.id)},this)">Cetak ${r.status==='sent'?'surat jalan':'permintaan'}</button>`;
+    return `<span style="display:inline-flex;gap:6px;flex-wrap:wrap"><button class="btn btn-primary" style="width:auto;padding:8px 12px" onclick="App.printStockRequest(${jsArg(r.id)},this,'58')">Cetak ${r.status==='sent'?'surat jalan':'permintaan'} 58 mm</button><button class="btn" style="width:auto;padding:8px 10px;border:1px solid var(--line-strong)" onclick="App.printStockRequest(${jsArg(r.id)},this)">A4</button></span>`;
   },
   async _stockRequestDocument(id){
     const {data:r,error}=await sb.from('stock_requests').select('id,branch_id,status,note,nota_no,created_at,verified_at,verified_by').eq('id',id).single();
@@ -9093,7 +9098,50 @@ const App={
     const source=r.status==='pending'?branches.find(b=>b.is_supply_source):null;
     return {request:r,items:lines,destination,source,printedBy:CURRENT.name||'Petugas SRUPUT',printedAt:new Date().toISOString()};
   },
-  stockRequestDocumentHTML(d){
+  _stock58Info(d){
+    const r=d?.request;if(!r||!['pending','sent'].includes(r.status)||!d.items?.length)throw new Error('Dokumen stok belum lengkap atau tidak dapat dicetak.');
+    return {sent:r.status==='sent',number:r.status==='sent'?(r.nota_no||r.id):('REQ-'+r.id),title:r.status==='sent'?'SURAT JALAN STOK':'PERMINTAAN STOK',source:d.source?.name||'Pusat / Gudang SRUPUT'};
+  },
+  _stock58Date(value){return value&&Number.isFinite(Date.parse(value))?new Date(value).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short',timeZone:'Asia/Jakarta'})+' WIB':'Belum tercatat';},
+  _stock58Qty(value){const n=Number(value);if(!Number.isFinite(n)||n<=0)throw new Error('Jumlah barang tidak valid.');return n.toLocaleString('id-ID',{maximumFractionDigits:8});},
+  stockRequest58HTML(d){
+    const info=this._stock58Info(d),r=d.request;
+    const rows=d.items.map((it,n)=>`<section class="stock58-item"><b>${n+1}. ${escHtml(it.name)}</b><div>${info.sent?'Dikirim':'Diminta'}: <b>${escHtml(this._stock58Qty(it.qty))} ${escHtml(it.unit)}</b></div><div>Diterima: ______________</div></section>`).join('');
+    return `<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escHtml(info.title+' · '+info.number)}</title><style id="stock58PageRule">@page{size:58mm 297mm;margin:0}</style><style>
+      *{box-sizing:border-box}html,body{margin:0;padding:0;color:#000;background:#eee;font:11px Arial,Helvetica,sans-serif;line-height:1.4}.stock58-paper{width:58mm;padding:3mm 5mm;background:#fff;margin:14px auto;overflow-wrap:anywhere;word-break:normal}.stock58-center{text-align:center}.stock58-brand{font-size:17px;font-weight:800;letter-spacing:1px}h1{font-size:12px;margin:4px 0}.stock58-rule{border:0;border-top:1px dashed #000;margin:8px 0}.stock58-meta>div{margin:4px 0}.stock58-ref{font-size:9px;overflow-wrap:anywhere}.stock58-item{border-bottom:1px dashed #000;padding:7px 0;break-inside:avoid;page-break-inside:avoid}.stock58-item b{overflow-wrap:anywhere}.stock58-note{white-space:pre-wrap;margin-top:8px;overflow-wrap:anywhere}.stock58-warning{border:1px solid #000;padding:5px;margin:7px 0;font-size:10px}.stock58-sign{margin-top:12px;text-align:center;break-inside:avoid;page-break-inside:avoid}.stock58-space{height:18mm}.stock58-signline{border-top:1px solid #000;padding-top:4px}.stock58-date{text-align:left;margin-top:5px}.stock58-footer{font-size:9px;margin-top:12px;padding-top:8px;border-top:1px dashed #000;overflow-wrap:anywhere}.stock58-toolbar{max-width:390px;margin:12px auto;padding:12px;background:#fff;font:13px Arial,sans-serif}.stock58-toolbar button{padding:10px 14px;background:#5a0c02;border:0;border-radius:6px;color:#fff;cursor:pointer;margin-bottom:7px}@media print{html,body{width:58mm;background:#fff}.stock58-paper{margin:0}.stock58-toolbar{display:none}}
+      </style></head><body><div class="stock58-toolbar"><button type="button" id="stockPrintNow">Cetak 58 mm / Simpan PDF</button><div>Pilih printer dan ukuran kertas 58 mm, skala 100%, margin tanpa, serta matikan header/footer browser.</div></div><main class="stock58-paper" id="stock58Sheet"><header class="stock58-center"><div class="stock58-brand">SRUPUT</div><h1>${info.title}</h1><b>${info.sent?'DIKIRIM':'MENUNGGU PEMENUHAN'}</b></header><hr class="stock58-rule"><section class="stock58-meta"><div><b>${info.sent?'Nota':'No. permintaan'}</b><br><span class="stock58-ref">${escHtml(info.number)}</span></div><div>Diajukan: ${escHtml(this._stock58Date(r.created_at))}</div>${info.sent?`<div>Dikirim: ${escHtml(this._stock58Date(r.verified_at))}</div>`:''}<div><b>Pengirim:</b><br>${escHtml(info.source)}</div><div><b>Penerima / Outlet:</b><br>${escHtml(d.destination.name)}</div>${d.destination.receipt_address?`<div>${escHtml(d.destination.receipt_address)}</div>`:''}</section>${info.sent?'':`<div class="stock58-warning">Untuk persiapan barang. Belum menjadi bukti pengiriman atau penerimaan.</div>`}<hr class="stock58-rule">${rows}<div style="margin-top:7px">${d.items.length} baris barang.<br>Jumlah diterima diisi saat diperiksa, sesuai satuan barang.</div>${r.note?`<div class="stock58-note"><b>Catatan:</b><br>${escHtml(r.note)}</div>`:''}<hr class="stock58-rule"><div class="stock58-ref">Serah terima: ${escHtml(info.number)}</div><div style="margin-top:6px">Tempat / tanggal:<br>________________________</div><section class="stock58-sign"><b>Pengirim / Gudang</b><div class="stock58-space"></div><div class="stock58-signline">Nama jelas & tanda tangan</div><div class="stock58-date">Tanggal: _______________</div></section><section class="stock58-sign"><b>Penerima / Outlet</b><div class="stock58-space"></div><div class="stock58-signline">Nama jelas & tanda tangan</div><div class="stock58-date">Tanggal: _______________</div></section><footer class="stock58-footer">Dicetak: ${escHtml(this._stock58Date(d.printedAt))}<br>Petugas: ${escHtml(d.printedBy)}<div class="stock58-ref">ID: ${escHtml(r.id)}</div><div style="margin-top:5px">${info.sent?'Tanda tangan setelah pemeriksaan fisik. Status dikirim belum menyatakan barang diterima.':'Cetakan tidak mengubah stok atau status permintaan.'}</div></footer></main></body></html>`;
+  },
+  stockRequest58Escpos(d){
+    const info=this._stock58Info(d),r=d.request,lines=[],cols=32;
+    const wrap=value=>{const text=BTPrint.ascii(String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,''));for(let part of text.split('\n')){while(part.length>cols){let at=part.lastIndexOf(' ',cols);if(at<8)at=cols;lines.push(part.slice(0,at));part=part.slice(at).trimStart();}lines.push(part);}};
+    const rule=()=>wrap('-'.repeat(cols));
+    wrap('SRUPUT');wrap(info.title);wrap(info.sent?'DIKIRIM':'MENUNGGU PEMENUHAN');rule();
+    wrap((info.sent?'Nota: ':'No: ')+info.number);wrap('Diajukan: '+this._stock58Date(r.created_at));if(info.sent)wrap('Dikirim: '+this._stock58Date(r.verified_at));
+    wrap('Pengirim: '+info.source);wrap('Penerima / Outlet:');wrap(d.destination.name);if(d.destination.receipt_address)wrap(d.destination.receipt_address);
+    if(!info.sent){rule();wrap('Untuk persiapan barang. Belum menjadi bukti pengiriman atau penerimaan.');}rule();
+    d.items.forEach((it,n)=>{wrap((n+1)+'. '+it.name);wrap((info.sent?'Dikirim: ':'Diminta: ')+this._stock58Qty(it.qty)+' '+it.unit);wrap('Diterima: ______________');rule();});
+    wrap(d.items.length+' baris barang.');wrap('Jumlah diterima diisi saat periksa sesuai satuan barang.');if(r.note){rule();wrap('Catatan:');wrap(r.note);}rule();wrap('Serah terima: '+info.number);wrap('Tempat / tanggal:');wrap('________________________');wrap('');
+    for(const label of ['Pengirim / Gudang','Penerima / Outlet']){wrap(label);for(let i=0;i<6;i++)wrap('');wrap('________________________');wrap('Nama jelas & tanda tangan');wrap('Tanggal: _______________');wrap('');}
+    rule();wrap('Dicetak: '+this._stock58Date(d.printedAt));wrap('Petugas: '+d.printedBy);wrap('ID: '+r.id);wrap(info.sent?'Tanda tangan setelah pemeriksaan fisik. Status dikirim belum menyatakan barang diterima.':'Cetakan tidak mengubah stok atau status permintaan.');
+    const out=[27,64,27,77,0,29,33,0,27,97,1,27,69,1],enc=new TextEncoder();
+    lines.forEach((line,n)=>{for(const x of enc.encode(line))out.push(x);out.push(10);if(n===0)out.push(27,69,0,27,97,0);});out.push(10,10,10,10);return new Uint8Array(out);
+  },
+  _stockRequestFit58(w){
+    const sheet=w.document.getElementById('stock58Sheet'),rule=w.document.getElementById('stock58PageRule');if(!sheet||!rule)return;
+    const px=sheet.getBoundingClientRect?.().height||sheet.scrollHeight||800;
+    const mm=Math.min(1200,Math.max(80,Math.ceil(px*25.4/96+2)));rule.textContent='@page{size:58mm '+mm+'mm;margin:0}';
+  },
+  _stockRequestRawBT(d,active){
+    const bytes=this.stockRequest58Escpos(d);let sent=false;
+    this.audModal('Cetak stok 58 mm melalui RawBT','<div class="mini">Struk 58 mm sudah disiapkan. Tekan Kirim ke RawBT, lalu pilih printer 58 mm di RawBT. Periksa hasil cetak sebelum mengirim ulang.</div>',()=>{
+      if(sent)return false;if(!active())return true;
+      const btn=document.getElementById('audModalOk');if(btn)btn.disabled=true;
+      try{BTPrint.printRawBT(bytes);sent=true;this.toast('Dokumen diteruskan ke RawBT. Periksa hasil cetak.','good');return true;}catch(e){if(btn)btn.disabled=false;this.toast(e.message||'RawBT tidak dapat dibuka.','bad');return false;}
+    });const b=document.getElementById('audModalOk');if(b)b.textContent='Kirim ke RawBT';
+  },
+
+  stockRequestDocumentHTML(d,paper='a4'){
+    if(paper==='58')return this.stockRequest58HTML(d);
     const r=d.request,sent=r.status==='sent',title=sent?'SURAT JALAN BARANG':'SURAT PERMINTAAN BARANG';
     const dt=value=>{if(!value||!Number.isFinite(Date.parse(value)))return '—';return new Date(value).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Jakarta'})+' WIB';};
     const qty=n=>Number(n).toLocaleString('id-ID',{maximumFractionDigits:8});
@@ -9113,25 +9161,35 @@ const App={
       <footer>Dicetak oleh ${escHtml(d.printedBy)} · ${escHtml(dt(d.printedAt))}<div class="footer-note">${sent?'Tanda tangan dan jumlah diterima diisi setelah barang diperiksa. Status sistem “dikirim” belum menyatakan barang diterima secara fisik.':'Cetakan ini tidak mengubah stok atau status permintaan. Gunakan surat jalan setelah gudang menekan Penuhi.'}</div></footer>
     </main></body></html>`;
   },
-  async printStockRequest(id,button){
+  async printStockRequest(id,button,paper='a4'){
     if(!CURRENT.user||!['owner','gudang','pic','mitra'].includes(CURRENT.role)){this.toast('Akun ini tidak dapat mencetak surat barang.','bad');return;}
-    if(this._stockPrintOp){this.toast('Dokumen sedang disiapkan.','bad');return;}
+    if(!['a4','58'].includes(paper)){this.toast('Ukuran cetak tidak dikenal.','bad');return;}
+    if(this._stockPrintOp){this.toast('Dokumen sedang disiapkan atau dikirim.','bad');return;}
     const sameSession=this._sessionGuard(),role=CURRENT.role,branch=CURRENT.branch,outlet=this.state.mtrOutlet;
-    let w;try{w=window.open('','_blank','width=920,height=780');}catch(e){}
-    if(!w){this.toast('Jendela cetak diblokir. Izinkan popup lalu klik Cetak kembali.','bad');return;}
-    const op={};this._stockPrintOp=op;const original=button?button.textContent:'';
+    const method=paper==='58'?BTPrint.cfg().method:'dialog',direct=paper==='58'&&['ble','rawbt'].includes(method);
     const active=()=>sameSession()&&CURRENT.role===role&&CURRENT.branch===branch&&this.state.mtrOutlet===outlet;
+    let w;if(!direct){try{w=window.open('','_blank','width='+(paper==='58'?440:920)+',height=780');}catch(e){}if(!w){this.toast('Jendela cetak diblokir. Izinkan popup lalu klik Cetak kembali.','bad');return;}}
+    const op={};this._stockPrintOp=op;const original=button?button.textContent:'';let sending=false;
     if(button){button.disabled=true;button.textContent='Menyiapkan…';}
     try{
-      w.opener=null;w.document.open();w.document.write('<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>Menyiapkan surat barang</title></head><body><p>Menyiapkan surat barang…</p></body></html>');w.document.close();
+      // Keep the original click activation for the BLE device picker.
+      if(method==='ble'&&direct&&!(BTPrint._chr&&BTPrint._dev?.gatt?.connected))await BTPrint.connect();
+      if(!active())return;
+      if(w){w.opener=null;w.document.open();w.document.write('<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>Menyiapkan surat barang</title></head><body><p>Menyiapkan surat barang…</p></body></html>');w.document.close();}
       const d=await this._stockRequestDocument(id);
-      if(!active()||w.closed){if(!w.closed)w.close();return;}
-      w.document.open();w.document.write(this.stockRequestDocumentHTML(d));w.document.close();
-      const print=()=>{if(w.closed)return;if(!active()){w.close();return;}try{w.focus();w.print();}catch(e){if(active())this.toast('Klik Cetak / Simpan PDF pada dokumen yang terbuka.','bad');}};
+      if(!active()||w?.closed){if(w&&!w.closed)w.close();return;}
+      if(direct&&method==='ble'){
+        const bytes=this.stockRequest58Escpos(d);sending=true;if(button)button.textContent='Mengirim ke printer…';
+        await BTPrint.write(bytes,{guard:active});if(active())this.toast('Struk stok 58 mm terkirim. Periksa hasil cetak.','good');return;
+      }
+      if(direct&&method==='rawbt'){this._stockRequestRawBT(d,active);return;}
+      w.document.open();w.document.write(this.stockRequestDocumentHTML(d,paper));w.document.close();
+      let attempted=false;
+      const print=()=>{if(w.closed)return;if(!active()){w.close();return;}try{attempted=true;if(paper==='58')this._stockRequestFit58(w);w.focus();w.print();}catch(e){if(active())this.toast('Klik tombol Cetak pada dokumen yang terbuka.','bad');}};
+      if(paper==='58')w.onbeforeprint=()=>this._stockRequestFit58(w);
       const printButton=w.document.getElementById('stockPrintNow');if(printButton)printButton.onclick=print;
-      // Tidak menutup pratinjau saat dialog dibatalkan; tombol tetap bisa dipakai.
-      w.setTimeout(print,250);
-    }catch(e){if(w&&!w.closed)w.close();if(active())this.toast((e&&e.message)||'Gagal menyiapkan surat barang.','bad');}
+      w.setTimeout(()=>{if(!attempted)print();},250);
+    }catch(e){if(w&&!w.closed)w.close();if(active())this.toast((e?.message||'Gagal menyiapkan surat barang.')+(sending?' Pengiriman belum dapat dipastikan. Periksa kertas sebelum mencetak ulang.':''),'bad');}
     finally{if(this._stockPrintOp===op){delete this._stockPrintOp;if(button){button.disabled=false;button.textContent=original;}}}
   },
   async loadStockRequestSent(page=0){
@@ -9203,7 +9261,7 @@ const App={
         }).join('');
       }
 
-      html+=`<div class="sec-title" style="margin-top:24px">Riwayat pengiriman · cetak surat jalan</div><p class="mini muted">Setelah Penuhi berhasil, cetak surat jalan di sini. Tersedia kolom jumlah diterima serta tanda tangan pengirim dan penerima.</p><div id="stockSentHistory">${this.loadingHTML('Memuat surat jalan…')}</div>`;
+      html+=`<div class="sec-title" style="margin-top:24px">Riwayat pengiriman · cetak surat jalan</div><p class="mini muted">Setelah Penuhi berhasil, cetak surat jalan di sini. Cetak 58 mm mengikuti metode printer pada Setting / Akun & Printer. Pilih A4 untuk lembar besar. Keduanya memiliki kolom jumlah diterima serta tanda tangan pengirim dan penerima.</p><div id="stockSentHistory">${this.loadingHTML('Memuat surat jalan…')}</div>`;
       html+=`<div class="sec-title" style="margin-top:24px">Harga pasok (Pusat → mitra)</div>
         <div class="banner info"><span class="i">▦</span><div>${CURRENT.role==='owner'?`Harga jual Pusat ke mitra per satuan. Isi/ubah lalu simpan — dipakai saat memenuhi permintaan & sebagai basis biaya mitra. Centang "Beli lokal" agar mitra boleh membeli bahan itu sendiri. <b>Kemasan</b>: permintaan wajib kelipatan angka ini (kosong = bebas) — sistem menolak otomatis di server.`:`Daftar harga pasok (hanya baca). Perubahan harga & izin beli lokal hanya bisa dilakukan oleh Owner.`}</div></div>
         <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Bahan</th><th>Satuan</th><th style="text-align:center">Beli lokal</th><th class="right">Kemasan (kelipatan)</th><th class="right">Harga pasok (Rp)</th></tr></thead><tbody>
