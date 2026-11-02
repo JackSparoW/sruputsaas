@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="sruput-build" content="2026-10-21-stock58-r3">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="sruput-build" content="2026-11-02-workflow-v1.6.5">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>SRUPUT OS v2.0 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -224,6 +224,87 @@ td{padding:11px 12px;border-bottom:1px solid var(--line)}tr:last-child td{border
 @keyframes sp{to{transform:rotate(360deg)}}
 .soon-box{display:grid;place-items:center;padding:60px 20px;text-align:center;color:var(--muted)}.soon-box .ic{font-size:40px;margin-bottom:10px;opacity:.5}
 </style>
+<style id="sruput-order-css">/* 1.6.3: natural document flow prevents the order list collapsing behind checkout. */
+.pos{height:auto;grid-template-columns:minmax(0,1fr) minmax(340px,400px);align-items:start;gap:20px}
+.pos>*{min-width:0}
+.pos .cart{max-height:none;height:auto;min-width:0;overflow:visible;display:block}
+.pos .cart-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px;border-bottom:1px solid var(--line)}
+.pos .cart-head h3{font-size:20px;line-height:1.4}
+.pos .cart-sub{font-size:13px;max-width:42%;text-align:right;overflow-wrap:anywhere}
+.pos .cart-items{display:block;flex:none;overflow:visible;padding:0 16px;min-height:100px}
+.pos .ci2{padding:16px 0;display:grid;gap:12px}
+.pos .ci2:last-child{border-bottom:0}
+.pos .ci2-top{display:block}
+.pos .ci2-nm{font-size:16px;line-height:1.45;overflow-wrap:anywhere}
+.pos .ci2-up{font:13px/1.5 system-ui,sans-serif;color:var(--muted);margin-top:3px}
+.pos .ci2-adds{font-size:13px;line-height:1.5;margin-top:4px;overflow-wrap:anywhere}
+.pos .ci2-ctrl{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.pos .stepper{padding:2px;gap:4px;flex:none}
+.pos .stepper .sbtn{width:44px;height:44px;font-size:22px;touch-action:manipulation}
+.pos .stepper .sqn{min-width:24px;font:700 16px/1.2 system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.pos .ci2-lp{min-width:0;overflow-wrap:anywhere;font:700 17px/1.4 system-ui,sans-serif;font-variant-numeric:tabular-nums;color:var(--ink)}
+.order-item-caption{display:block;font-size:11px;font-weight:500;color:var(--muted)}
+.pos .ci2-note{margin:0;min-height:44px;font:400 16px/1.4 system-ui,sans-serif;padding:10px 12px}
+.pos .cart-foot{padding:0 16px 18px;border-top:1px solid var(--line)}
+.pos .cart-foot h4{margin:0 0 12px;font:700 14px/1.4 system-ui,sans-serif;color:var(--ink)}
+.pos #loyaltyPos{padding:16px 0!important;margin:0!important}
+.pos #loyaltyPos>div:first-child{display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+.pos #loyaltyPos .btn{width:100%!important;min-height:44px;padding:10px 8px;font-size:13px;line-height:1.45;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2)}
+.pos #posMemberRegister{grid-column:1/-1;background:transparent!important;box-shadow:none;color:var(--accent);border-style:dashed!important}
+.pos #loyaltyPos .mini{font-size:12px;line-height:1.5;margin-top:8px}
+.pos #pointsSelected{background:var(--good-soft);border-radius:8px;padding:10px;overflow-wrap:anywhere}
+.pos #pointsSelected .btn{margin-top:8px;background:var(--surface)!important}
+.order-employee{padding:14px 0;border-bottom:1px solid var(--line)}
+.order-employee summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:14px;font-weight:600;gap:8px}
+.order-employee summary::before{content:'+';font-size:20px;color:var(--accent)}
+.order-employee[open] summary::before{content:'−'}
+.order-totals{padding:18px 0 4px}
+.pos .line{gap:12px;font-size:14px;line-height:1.5;margin-bottom:8px}
+.pos .line>span:first-child{min-width:0;overflow-wrap:anywhere}
+.pos .line .mono{white-space:nowrap;flex:none}
+.pos .sum-total{align-items:center;gap:12px;margin:10px 0 6px;padding-top:14px}
+.pos .sum-amt{font:800 clamp(24px,2.3vw,32px)/1.35 system-ui,sans-serif;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+.order-payment{padding:16px 0 6px;border-top:1px solid var(--line)}
+.pos .pay-grid{gap:10px;margin:0 0 14px}
+.pos .pay-card{min-height:60px;flex-direction:row;justify-content:center;gap:10px;padding:12px;font-size:15px;touch-action:manipulation}
+.pos .pay-card .pay-lb{font-size:15px}
+.pos .pay-card.sel{box-shadow:inset 0 0 0 1px var(--accent)}
+.pos .pay-card.qris.sel{box-shadow:inset 0 0 0 1px var(--gold)}
+.pos #cashReceived{min-height:48px;font-size:16px}
+.pos .payBtn-big{min-height:54px;margin-top:8px;white-space:normal;line-height:1.4;touch-action:manipulation}
+.order-shortcuts{position:sticky;top:0;z-index:4;display:flex;gap:8px;align-items:center;padding:10px 0;margin-bottom:12px;background:var(--bg);flex-wrap:wrap}
+.order-shortcuts button{min-height:44px;padding:10px 14px;border:1px solid var(--line-strong);background:var(--surface);border-radius:10px;font-size:13px;font-weight:700;touch-action:manipulation}
+.order-shortcuts button:last-child{margin-left:auto;background:var(--accent);color:white;border-color:var(--accent)}
+.pos-nav-toggle{display:none}
+.sruput-pos .pos .cart,.sruput-pos .order-payment,.sruput-pos #menuGrid{scroll-margin-top:80px}
+.sruput-pos #appModal input,.sruput-pos #appModal select{font-size:16px}
+.sruput-pos button:focus-visible,.sruput-pos input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:1100px) and (min-width:821px){.sruput-pos #app{grid-template-columns:190px minmax(0,1fr)}.sruput-pos .side{padding-left:8px;padding-right:8px}.sruput-pos .content{padding:16px}.pos{grid-template-columns:minmax(0,1fr) 340px;gap:14px}.pos .menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+@media(max-width:959px){.pos{grid-template-columns:minmax(0,1fr);height:auto}.pos .menu-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}.order-shortcuts button{flex:1;padding:10px 8px}.order-shortcuts button:last-child{margin-left:0}.pos .cart{width:100%}}
+@media(max-width:820px){
+ .sruput-pos .side{padding:8px 14px;height:auto;min-height:54px;display:block;position:relative}
+ .sruput-pos .side .brand2{padding:0;align-items:center;min-height:40px;gap:8px}
+ .sruput-pos .side .brand2 .mark{font-size:24px}
+ .sruput-pos .pos-nav-toggle{display:block;margin-left:auto;min-height:44px;padding:8px 14px;border:1px solid #a65943;border-radius:9px;color:#fff;font-size:14px}
+ .sruput-pos:not(.pos-nav-open) .side #nav,.sruput-pos:not(.pos-nav-open) .side .who{display:none}
+ .sruput-pos.pos-nav-open .side #nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin-top:10px}
+ .sruput-pos.pos-nav-open .side .who{margin-top:8px}
+ .sruput-pos .side .navlink{min-height:44px;font-size:13px;overflow-wrap:anywhere}
+ .sruput-pos .main{height:auto;overflow:visible}
+ .sruput-pos .topbar{padding:12px 14px;gap:8px}
+ .sruput-pos .topbar h2{font-size:19px}
+ .sruput-pos .content{padding:14px 12px max(22px,env(safe-area-inset-bottom))}
+ .sruput-pos .order-shortcuts{top:var(--pos-topbar-h,70px)}
+ .sruput-pos .pos .cart,.sruput-pos .order-payment,.sruput-pos #menuGrid{scroll-margin-top:calc(var(--pos-topbar-h,70px) + 76px)}
+ .pos .cart-head{padding:16px}.pos .cart-head h3{font-size:19px}
+}
+@media(max-width:380px){.pos .menu-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.pos .menu-item{padding:10px}.pos .menu-item .nm{font-size:13px;overflow-wrap:anywhere}.order-shortcuts button{font-size:12px}.pos .cart-foot{padding-left:12px;padding-right:12px}.pos .cart-items{padding-left:12px;padding-right:12px}}
+@media(prefers-reduced-motion:reduce){.sruput-pos *{scroll-behavior:auto}}
+</style>
+<style>.wf-tabs{display:flex;gap:7px;overflow-x:auto;padding:12px 0;scrollbar-width:thin}.wf-tabs .btn{white-space:nowrap;width:auto;flex-shrink:0}.wf-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.wf-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin-bottom:16px}.wf-fields label{display:flex;flex-direction:column;gap:6px;font-size:13px}.wf-fields input,.wf-fields select,.wf-fields textarea,.wf-row input,.wf-row select{width:100%;padding:10px;border:1px solid var(--line-strong);border-radius:9px;color:var(--ink);background:var(--surface-2);font:inherit;min-width:0}.wf-fields .wf-check{flex-direction:row;align-items:center}.wf-check input{width:auto;min-width:18px;height:18px}.wf-form,.wf-record{margin-bottom:14px}.wf-record p{margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}.wf-record .btn{width:auto;margin:5px}.wf-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:14px}.wf-stats b{font-size:19px}.wf-record small{overflow-wrap:anywhere}@media(max-width:600px){.wf-fields{grid-template-columns:1fr}.wf-row>label{flex:1;min-width:130px}.wf-record .btn{min-height:44px}}
+
+.wf-employee-dialog{width:min(720px,94vw);max-height:90vh;margin:auto;border:1px solid var(--line-strong);border-radius:18px;background:var(--surface);color:var(--ink);overflow:auto;box-shadow:var(--shadow)}.wf-employee-dialog::backdrop{background:rgba(0,0,0,.5)}
+</style>
 </head>
 <body>
 
@@ -268,7 +349,7 @@ td{padding:11px 12px;border-bottom:1px solid var(--line)}tr:last-child td{border
     <div class="topbar">
       <div><h2 id="pageTitle">Dashboard</h2><div class="sub" id="pageSub"></div></div>
       <div class="grow"></div>
-      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">21.10.2026 · R3</span>
+      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">02.11.2026 · WF1.6.5</span>
       <span class="badge alert hidden" id="alertBadge"></span>
     </div>
     <div class="content" id="view"></div>
@@ -357,7 +438,7 @@ const NAV={
   mitra:[['mtrhome','◧','Ringkasan',1],['pos','▦','Kasir',1],['onlinepos','▦','Kasir Online',1],['shift','◔','Shift',1],['mtrstok','▤','Stok Outlet',1],['produksi','⚗','Produksi',1],['mtrhpp','◎','HPP Produk',1],['forecast','⌛','Prediksi Stok',1],['anomali','⚑','Deteksi Anomali',1],['aireport','✦','AI Report',1],['content','✦','Studio Konten',1],['auditctr','◴','Hasil Audit',1],['usuldiskon','%','Usul Diskon',1],['history','▦','Riwayat Transaksi',1],['mtrresep','✎','Lihat Resep',1],['ticket','◈','Ticket Support',1],['training','◲','Training',1],['mtrminta','⇄','Minta Stok',1],['mtrlokal','▦','Beli Lokal',1],['mtrexpense','▾','Pengeluaran',1],['mtrwaste','✕','Waste',1],['mtropname','◫','Opname',1],['mtrroyalti','◈','Royalti',1],['mtrcrew','◔','Crew',1],['settings','⚙','Akun & Printer',1],['exreq','◇','ACC Biaya',1],['picreview','☆','Penilaian PIC',1]],
 };
 for(const role of ['auditor','media','gudang','ai_review'])if(!NAV[role].some(n=>n[0]==='settings'))NAV[role].push(['settings','⚙','Akun & Printer',1]);
-const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Cabang',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor',ai_review:'AI Review (baca-saja)'};
+const ROLE_LABEL={owner:'Owner / Pusat',pic:'PIC Pusat / PIC Mitra',crew:'Crew Store',media:'Media / Konten',mitra:'Mitra Outlet',gudang:'Gudang Pusat',auditor:'QA Auditor',ai_review:'AI Review (baca-saja)'};
 
 /* ===== DATA: query nyata ke schema teruji ===== */
 /* v85: batas periode WIB eksplisit (+07:00). String tanpa offset ('YYYY-MM-DDT00:00:00')
@@ -512,7 +593,7 @@ const Data={
   async shifts(branch){let q=sb.from("shifts").select("*").order("opened_at",{ascending:false}).limit(100);if(branch)q=q.eq("branch_id",branch);const{data,error}=await q;if(error)throw error;return data;},
   async shiftSalesSummary(shiftId){ return this._pages(()=>sb.from('sales').select('id,payment,total').eq('shift_id',shiftId).eq('status','active').order('id')); },
   async salesForShift(shiftId){ return this._pages(()=>sb.from('sales').select('id,invoice_no,total,payment,status,created_at,voided_by,voided_at,void_reason').eq('shift_id',shiftId).order('created_at').order('id')); },
-  async recordSale(branch,cart,payment,employeeId,clientId,soldAt){
+  async recordSale(branch,cart,payment,employeeId,clientId,soldAt,loyaltyTicket,pointsTicket){
     if(!CURRENT.user)throw new Error('Sesi berakhir. Masuk kembali dengan akun kasir asal.');
     if(!branch||!clientId||!Array.isArray(cart)||!cart.length)throw new Error('Cabang, keranjang, dan ID transaksi wajib tersedia.');
     if(!['cash','qris'].includes(payment))throw new Error('Metode pembayaran tidak valid.');
@@ -524,17 +605,21 @@ const Data={
     const args={p_branch:branch,p_items:items,p_payment:payment,p_client_id:clientId};
     if(employeeId)args.p_employee=employeeId;
     if(soldAt){if(!Number.isFinite(Date.parse(soldAt)))throw new Error('Waktu transaksi tidak valid.');args.p_sold_at=soldAt;}
-    const{data,error}=await sb.rpc('sruput_record_sale_v3',args);
+    if(pointsTicket){if(employeeId)throw Error('Member tidak digabung diskon pegawai.');args.p_points_ticket=pointsTicket;}else if(loyaltyTicket){if(employeeId)throw Error('Voucher/member tidak ditumpuk diskon pegawai.');args.p_ticket=loyaltyTicket;}
+    const{data,error}=await sb.rpc(pointsTicket?'sruput_record_sale_points':loyaltyTicket?'sruput_record_sale_loyalty':'sruput_record_sale_v3',args);
+    if(pointsTicket&&error&&['PGRST202','42883'].includes(error.code))throw Error('Sistem poin belum aktif. Transaksi dihentikan.');
+    if(loyaltyTicket&&error&&['PGRST202','42883'].includes(error.code))throw Error('Voucher/member belum terpasang di server. Transaksi dihentikan.');
     if(error&&(error.code==='PGRST202'||/could not find the function/i.test(error.message||'')))throw new Error('Transaksi bundle per outlet belum terpasang. Transaksi dihentikan; pasang 05_bundle_per_outlet.sql terlebih dahulu.');
     if(error)throw error;
     if(data==null||data===''){const e=new Error('Respons transaksi belum dapat dipastikan. ID yang sama disimpan untuk rekonsiliasi.');e.code='SALE_UNCERTAIN';throw e;}
-    let invoice=null,serverTotal=null,receiptError=null;
-    try{const r=await sb.from('sales').select('invoice_no,total').eq('id',data).single();
+    let invoice=null,serverTotal=null,receiptError=null,serverStatus=null;
+    try{const r=await sb.from('sales').select('invoice_no,total,status').eq('id',data).single();
       if(r.error)throw r.error;
       if(!r.data||r.data.total==null||!Number.isFinite(Number(r.data.total))||Number(r.data.total)<0)throw new Error('Total server tidak tersedia.');
-      invoice=r.data.invoice_no;serverTotal=Number(r.data.total);
+      invoice=r.data.invoice_no;serverTotal=Number(r.data.total);serverStatus=r.data.status;
     }catch(e){receiptError=(e&&e.message)||'Detail struk belum tersedia.';}
-    return {saleId:data,invoice,serverTotal,receiptError};
+    let pointsInfo=null;if(pointsTicket){try{const pr=await sb.rpc('sruput_member_points',{p_action:'sale_result',p_data:{sale_id:data}});if(pr.error)throw pr.error;pointsInfo=pr.data;}catch(e){receiptError=receiptError||'Ringkasan poin belum dapat dibaca; periksa riwayat.';}}
+    return {saleId:data,invoice,serverTotal,receiptError,pointsInfo,voided:pointsInfo?.reversed===true||serverStatus==='voided'};
   },
 
 async bundleRequests(pendingOnly=false){
@@ -598,7 +683,7 @@ const OfflineQueue = {
     const existing=this.get(entry.clientId);
     if(existing){
       if(existing.status==='committed')throw new Error('ID transaksi ini sudah tersimpan di server.');
-      const payload=e=>JSON.stringify([e.branch,e.cart,e.payment,e.employeeId||null]);
+      const payload=e=>JSON.stringify([e.branch,e.cart,e.payment,e.employeeId||null,e.loyaltyTicket||null,e.pointsTicket||null]);
       if(payload(existing)!==payload(entry))throw new Error('ID transaksi sama memiliki isi berbeda. Lakukan rekonsiliasi.');
       this.update(entry.clientId,{status:'pending',error:null});return this.count();
     }
@@ -845,6 +930,7 @@ const BTPrint={
       line(lr('Tunai',rp(d.received)));
       line(lr('Kembali',rp(Number(d.received)-Number(d.total))));
     }
+    if(d.points){hr();line(lr('Poin didapat',String(d.points.earned)));line(lr('Poin dipakai',String(d.points.spent)));line(lr('Saldo poin',String(d.points.balance)));}
     /* ---- NOMOR ANTRIAN (besar, center) ---- */
     if(d.queue!=null){
       blank(); hr();
@@ -975,7 +1061,7 @@ const App={
       if(!sameSession()||!CURRENT.user||CURRENT.user.id!==entry.creatorId)throw new Error('Akun kasir asal wajib login untuk mengirim transaksi ini.');
       const current=OfflineQueue.get(entry.clientId);if(!current)throw new Error('Jurnal lokal tidak ditemukan; periksa Riwayat.');
       if(current.status==='committed')return current.result;
-      const r=await Data.recordSale(current.branch,current.cart,current.payment,current.employeeId||null,current.clientId,current.soldAt||current.queuedAt);
+      const r=await Data.recordSale(current.branch,current.cart,current.payment,current.employeeId||null,current.clientId,current.soldAt||current.queuedAt,current.loyaltyTicket||null,current.pointsTicket||null);
       try{OfflineQueue.committed(current.clientId,r,current.creatorId);}catch(e){r.queueWarning=e.message;}
       return r;
     };
@@ -1176,7 +1262,7 @@ const App={
     const old=document.getElementById('view');if(old&&old.cloneNode&&old.replaceWith){const fresh=old.cloneNode(false);old.replaceWith(fresh);}
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={onlinepos:['Kasir Online','ShopeeFood · GrabFood · GoFood · harga aplikasi dan estimasi penerimaan'],content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:[CURRENT.role==='owner'?'Setting':'Akun & Printer',CURRENT.role==='owner'?'Kelola user & role (owner)':'Atur printer struk Bluetooth untuk perangkat ini'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],picreview:[CURRENT.role==='crew'?'Nilai PIC':'Penilaian PIC',CURRENT.role==='crew'?'Umpan balik anonim untuk PIC outlet Anda':'Hasil penilaian dari crew · anonim'],exreq:[CURRENT.role==='crew'?'Ajukan Biaya':'ACC Biaya',CURRENT.role==='crew'?'Ajukan pengeluaran untuk disetujui PIC':'Setujui atau tolak pengajuan biaya dari crew'],produksi:['Produksi','Masak bahan mentah jadi bahan olahan · pantau rendemen'],employees:['Pegawai & Gaji','Data pegawai, absensi, dan perhitungan gaji bulanan'],attend:['Absensi Saya','Absen masuk & pulang · riwayat kehadiran bulan ini'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],ajukanbiaya:['Ajukan Pengeluaran','Ajukan biaya operasional · perlu persetujuan PIC'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Penjualan · bahan terpakai · rekomendasi stok · ide konten per outlet'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi stok · cetak permintaan & surat jalan · harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
+    const t={vouchers:['Voucher','Kelola kode promo'],members:['Member','Database pelanggan dan benefit member'],loyalty:['Voucher & Member','Atur kampanye voucher dan benefit member'],onlinepos:['Kasir Online','ShopeeFood · GrabFood · GoFood · harga aplikasi dan estimasi penerimaan'],content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:[CURRENT.role==='owner'?'Setting':'Akun & Printer',CURRENT.role==='owner'?'Kelola user & role (owner)':'Atur printer struk Bluetooth untuk perangkat ini'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],picreview:[CURRENT.role==='crew'?'Nilai PIC':'Penilaian PIC',CURRENT.role==='crew'?'Umpan balik anonim untuk PIC outlet Anda':'Hasil penilaian dari crew · anonim'],exreq:[CURRENT.role==='crew'?'Ajukan Biaya':'ACC Biaya',CURRENT.role==='crew'?'Ajukan pengeluaran untuk disetujui PIC':'Setujui atau tolak pengajuan biaya dari crew'],produksi:['Produksi','Masak bahan mentah jadi bahan olahan · pantau rendemen'],employees:['Pegawai & Gaji','Data pegawai, absensi, dan perhitungan gaji bulanan'],attend:['Absensi Saya','Absen masuk & pulang · riwayat kehadiran bulan ini'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],ajukanbiaya:['Ajukan Pengeluaran','Ajukan biaya operasional · perlu persetujuan PIC'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Penjualan · bahan terpakai · rekomendasi stok · ide konten per outlet'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi stok · cetak permintaan & surat jalan · harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])return this['render_'+page]();
   },
@@ -1721,7 +1807,7 @@ const App={
         <div style="display:flex;justify-content:flex-end;margin-bottom:8px"><span id="connBadge" style="display:inline-block;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700">● Online</span></div>
         <div class="banner info" style="background:var(--good-soft);border-color:var(--good);color:#1f4d33"><span class="i">◔</span><div>Shift <b>terbuka</b> di ${escHtml(bname)}. Transaksi terikat ke shift ini. Tutup shift di menu <b>Shift Kasir</b> saat selesai.</div></div>
         <div class="pos"><div class="menu-grid" id="menuGrid"></div>
-        <div class="cart"><div class="cart-head"><h3 id="cartHead">Pesanan</h3><span class="cart-sub">${escHtml(bname)}</span></div><div class="cart-items" id="cartItems"></div><div class="cart-foot" id="cartFoot"></div></div></div>`;
+        <section class="cart" aria-label="Pesanan aktif"><div class="cart-head"><h3 id="cartHead">Pesanan</h3><span class="cart-sub">${escHtml(bname)}</span></div><div class="cart-items" id="cartItems" aria-label="Daftar item pesanan"></div><div class="cart-foot" id="cartFoot"></div></section></div>`;
       this.renderMenu();this.renderCart();
       this._initOfflineSync(); // pasang listener koneksi & badge
       this._updateConnBadge();
@@ -1967,16 +2053,11 @@ const App={
     const _hd=document.getElementById('cartHead');
     if(!this.state.cart.length){ci.innerHTML='<div class="cart-empty2"><div class="ce-ic">\ud83e\uddfe</div><div class="ce-t">Keranjang kosong</div><div class="ce-s">Ketuk produk untuk menambahkan.</div></div>';cf.innerHTML='';if(_hd)_hd.textContent='Pesanan';return;}
     if(_hd){const _n=this.state.cart.reduce((a,c)=>a+c.qty,0);_hd.textContent='Pesanan \u00b7 '+_n+' item';}
-    ci.innerHTML=this.state.cart.map((c,idx)=>`<div class="ci2">
-      <div class="ci2-top">
-        <div class="ci2-info"><div class="ci2-nm">${escHtml(c.baseName||c.name)}</div>${(c.addsDetail&&c.addsDetail.length)?`<div class="ci2-adds">${c.addsDetail.map(a=>`${escHtml(a.kind==='add'?'+':'−')} ${escHtml(a.name)}`).join(' · ')}</div>`:''}<div class="ci2-up">${this.rp(c.price)}</div></div>
-        <div class="ci2-ctrl">
-          <div class="stepper"><button class="sbtn" onclick="App.chg(${jsArg(c.key)},-1)">\u2212</button><span class="sqn">${c.qty}</span><button class="sbtn" onclick="App.chg(${jsArg(c.key)},1)">+</button></div>
-          <div class="ci2-lp">${this.rp(c.price*c.qty)}</div>
-        </div>
-      </div>
-      <input class="ci2-note" value="${escHtml(c.note||'')}" onchange="App.setCartNote(${jsArg(c.key)},this.value)" placeholder="catatan (mis. extra panas)">
-    </div>`).join('');
+    ci.innerHTML=this.state.cart.map((c,idx)=>`<article class="ci2">
+      <div class="ci2-top"><div class="ci2-info"><div class="ci2-nm">${escHtml(c.baseName||c.name)}</div>${(c.addsDetail&&c.addsDetail.length)?`<div class="ci2-adds">${c.addsDetail.map(a=>`${escHtml(a.kind==='add'?'+':'−')} ${escHtml(a.name)}`).join(' · ')}</div>`:''}<div class="ci2-up">${this.rp(c.price)} / item</div></div></div>
+      <div class="ci2-ctrl"><div class="stepper" role="group" aria-label="Jumlah ${escHtml(c.baseName||c.name)}"><button class="sbtn" aria-label="Kurangi ${escHtml(c.baseName||c.name)}" onclick="App.chg(${jsArg(c.key)},-1)">−</button><span class="sqn" aria-live="polite">${c.qty}</span><button class="sbtn" aria-label="Tambah ${escHtml(c.baseName||c.name)}" onclick="App.chg(${jsArg(c.key)},1)">+</button></div><div class="ci2-lp"><span class="order-item-caption">Jumlah harga</span>${this.rp(c.price*c.qty)}</div></div>
+      <input class="ci2-note" aria-label="Catatan ${escHtml(c.baseName||c.name)}" value="${escHtml(c.note||'')}" onchange="App.setCartNote(${jsArg(c.key)},this.value)" placeholder="Catatan, mis. less sugar">
+    </article>`).join('');
     const total=this.state.cart.reduce((a,c)=>a+c.price*c.qty,0);
     // v91: promo terbaik = bundle ATAU happy hour (tak menumpuk, tak saat diskon pegawai)
     const usingEmp=this.state.empSel && !this.state.empUsedToday;
@@ -1997,21 +2078,22 @@ const App={
     const promoLine=promo?`<div class="line" style="color:var(--good)"><span>${escHtml(promo.label)}</span><span class="mono">− ${this.rp(saving)}</span></div>`:'';
     const bundleWarn=this._bundleErr?`<div class="mini" style="color:var(--bad);margin:4px 0">⚠ Promo belum bisa dicek (koneksi). Pastikan jaringan sebelum menagih.</div>`:''; // v1.6
     cf.innerHTML=`
-      ${promo?`<div class="line"><span>Subtotal</span><span class="mono">${this.rp(total)}</span></div>${promoLine}`:''}
+
       ${bundleWarn}
-      ${empPicker}
+      ${empPicker?`<details class="order-employee" ${usingEmp?'open':''}><summary>Diskon pegawai</summary>${empPicker}</details>`:''}
       ${((this._bundlePreview||this._happySaving())&&usingEmp?'<div class="mini" style="color:var(--muted);margin-bottom:6px">Catatan: diskon pegawai dipilih, jadi promo bundle/happy hour tidak diterapkan (tak menumpuk).</div>':'')}
-      <div class="pay-grid">
+      <section class="order-totals" aria-label="Ringkasan tagihan"><h4>Ringkasan</h4><div class="line"><span>Subtotal</span><span class="mono">${this.rp(total)}</span></div>${promoLine}<div class="sum-total"><span>Total bayar</span><span class="sum-amt">${this.rp(grandTotal)}</span></div></section>
+      <section class="order-payment" aria-label="Pembayaran"><h4>Pembayaran</h4><div class="pay-grid">
         <button class="pay-card ${escHtml(this.state.pay==='cash'?'sel':'')}" onclick="App.setPay('cash')"><div class="pay-ic">\ud83d\udcb5</div><div class="pay-lb">Tunai</div></button>
         <button class="pay-card qris ${escHtml(this.state.pay==='qris'?'sel':'')}" onclick="App.setPay('qris')"><div class="pay-ic">\u25a6</div><div class="pay-lb">QRIS</div></button>
       </div>
       ${(this.state.pay==='qris'?'<div class="mini" style="margin-bottom:8px">\u26a0 QRIS belum integrasi merchant — tercatat sbg metode saja.</div>':'')}
       ${this.state.pay==='cash'?`<div style="margin-bottom:10px">
         <label class="mini" style="display:block;margin-bottom:4px">Uang diterima (opsional, untuk hitung kembalian)</label>
-        <input id="cashReceived" type="number" inputmode="numeric" value="${this.state.cashReceived}" oninput="App.setCashReceived(this.value)" placeholder="mis. 50000" style="width:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2)">
+        <input id="cashReceived" type="number" inputmode="numeric" value="${this.state.cashReceived}" oninput="App.setCashReceived(this.value)" aria-label="Uang tunai diterima" placeholder="Masukkan nominal tunai" style="width:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:10px;background:var(--surface-2)">
         <div id="changeBox" class="mini" style="margin-top:6px">${this._changeHTML(grandTotal)}</div>
       </div>`:''}
-      <div class="sum-total"><span>Total</span><span class="sum-amt">${this.rp(grandTotal)}</span></div>
+      </section>
       <button class="btn btn-primary payBtn-big" id="payBtn" onclick="App.checkout()">Bayar \u00b7 ${this.rp(grandTotal)}</button>`;
   },
   /* v91: hitung PERKIRAAN potongan Happy Hour "Beli N" di sisi klien, agar kasir
@@ -2111,6 +2193,7 @@ const App={
   },
   async checkout(){
     if(this._checkoutBusy||this._empPreviewBusy)return;
+    if(this._loyalty&&(!navigator.onLine||Date.parse(this._loyalty.expires)<=Date.now())){this.toast('Promo perlu diperiksa ulang secara online sebelum dibayar.','bad');return;}
     if(!CURRENT.user||!this.state.posBranch||!this.state.shiftId||!this.state.cart.length){this.toast('Akun, outlet, shift terbuka, dan keranjang wajib tersedia.','bad');return;}
     const sameSession=this._sessionGuard(),op={};this._checkoutOp=op;const active=()=>sameSession()&&this._checkoutOp===op;
     this._checkoutBusy=true;this._bundleToken=(this._bundleToken||0)+1;
@@ -2132,20 +2215,21 @@ const App={
       const rawRecv=this.state.cashReceived,recv=payment==='cash'&&rawRecv!==''&&rawRecv!=null?Number(rawRecv):null;
       if(recv!=null&&(!Number.isFinite(recv)||recv<total))throw new Error('Uang diterima tidak valid atau kurang dari total.');
       if(!this.state.cartClientId)this.state.cartClientId=newClientId();
-      entry={clientId:this.state.cartClientId,creatorId:uid,shiftId:this.state.shiftId,soldAt:new Date().toISOString(),branch,cart,payment,employeeId:emp,total};
+      entry={clientId:this.state.cartClientId,creatorId:uid,shiftId:this.state.shiftId,soldAt:new Date().toISOString(),branch,cart,payment,employeeId:emp,total,loyaltyTicket:promo?.kind==='loyalty'?this._loyalty.ticket:null,pointsTicket:this._points?.ticket||null};
       // Write-ahead: bila tab tertutup atau respons RPC hilang, ID/payload tetap tersedia.
       OfflineQueue.add(entry);journaled=true;
       const r=await this._submitQueued(entry);recorded=true;
       if(!active())return;
+      if(r.voided){this._clearCart();this.renderCart();this.toast('Transaksi ini sudah dibatalkan. Periksa Riwayat; jangan ulangi pembayaran.','bad');return;}
       const verified=r.serverTotal!=null&&Number.isFinite(Number(r.serverTotal));
       const finalTotal=verified?Number(r.serverTotal):total;
-      const discounts=promo?[{label:promo.kind==='bundle'?'Paket '+promo.bp.o_name:'Happy Hour',amount:promo.amount}]:[];
+      const discounts=promo?[{label:['loyalty','points'].includes(promo.kind)?promo.label:promo.kind==='bundle'?'Paket '+promo.bp.o_name:'Happy Hour',amount:promo.amount}]:[];
       let changeMsg=recv==null?'':recv>=finalTotal?' · Kembalian '+this.rp(recv-finalTotal):' · uang diterima KURANG dari total server';
-      this._lastReceipt={invoice:r.invoice||'-',saleId:r.saleId,branchName:this._branchName(branch),cashier:CURRENT.name||'-',payment,items:cart,rawTotal,total:finalTotal,discounts,received:recv,queue:this._queueNo(r.invoice),outlet:this._posOutlet||null,when:new Date(entry.soldAt),totalPending:!verified,pricesChanged:finalTotal!==total};
-      this.state.cart=[];this.state.empSel='';this.state.cashReceived='';this._bundlePreview=null;this.state.cartClientId=null;
+      this._lastReceipt={invoice:r.invoice||'-',saleId:r.saleId,branchName:this._branchName(branch),cashier:CURRENT.name||'-',payment,items:cart,rawTotal,total:finalTotal,discounts,points:r.pointsInfo||null,received:recv,queue:this._queueNo(r.invoice),outlet:this._posOutlet||null,when:new Date(entry.soldAt),totalPending:!verified,pricesChanged:finalTotal!==total};
+      this._points=null;this._loyalty=null;this.state.cart=[];this.state.empSel='';this.state.cashReceived='';this._bundlePreview=null;this.state.cartClientId=null;
       if(!verified)this.toast('Penjualan tercatat. Total/struk server belum terbaca; periksa Riwayat sebelum menyelesaikan pembayaran.','bad');
       else if(finalTotal!==total)this.toast('Tercatat. Total server '+this.rp(finalTotal)+' berbeda dari perkiraan '+this.rp(total)+changeMsg,'bad');
-      else this.toast('Tercatat'+(r.invoice?' · '+r.invoice:'')+changeMsg,'good');
+      else this.toast('Tercatat'+(r.invoice?' · '+r.invoice:'')+changeMsg+(r.pointsInfo?' · Poin +'+r.pointsInfo.earned+' / −'+r.pointsInfo.spent+' · saldo '+r.pointsInfo.balance:''),'good');
       if(r.queueWarning)this.toast('Penjualan tercatat; antrean perangkat perlu rekonsiliasi. Jangan buat transaksi pengganti.','bad');
       // Tahap tampilan tidak boleh masuk kembali ke jalur gagal/transaksi offline.
       try{
@@ -2321,6 +2405,7 @@ const App={
       ${disc}
       <div class="r" style="font-size:${tpx}px;font-weight:700;margin-top:2px"><span>TOTAL</span><span>${rp(d.total)}</span></div>
       ${pay}
+      ${d.points?`<div class="sm">Poin didapat: ${esc(d.points.earned)} · dipakai: ${esc(d.points.spent)}<br>Saldo poin: ${esc(d.points.balance)}</div>`:''}
       ${d.queue!=null?`${HR}<div class="c sm">Nomor Antrian</div><div class="c" style="font-size:${qpx}px;font-weight:800">#${d.queue}</div>`:''}
       ${HR}
       ${rc.footer1?`<div class="c sm">${esc(rc.footer1)}</div>`:''}
@@ -2395,6 +2480,7 @@ const App={
       ${d.queue!=null?`<div class="sx-queue">Antrian <b>#${d.queue}</b></div>`:''}
       <div class="sx-items">${itemsHtml}${discHtml}</div>
       <div class="sx-total"><span>Total</span><span>${this.rp(d.total)}</span></div>
+      ${d.points?`<div class="sx-change">Poin +${esc(d.points.earned)} / −${esc(d.points.spent)} · Saldo poin ${esc(d.points.balance)}</div>`:''}
       ${changeMsg?`<div class="sx-change">${changeMsg.replace(' \u00b7 ','')}</div>`:''}
       <div class="sx-btns">
         <button class="btn btn-primary" style="width:100%" onclick="App.printReceipt()">\ud83d\udda8 Cetak Struk</button>
@@ -2956,7 +3042,7 @@ const App={
 
     if(!rows.length){h+=`<div class="card pad mini muted">Belum ada pegawai terdaftar. Akun login perlu ditambahkan sebagai pegawai sebelum masuk perhitungan gaji.</div>`;el.innerHTML=h;const select=document.getElementById('peUser');if(select)this.employeeCandidateChange(select.value);return;}
 
-    h+=rows.map(r=>`<div class="card pad" style="margin-bottom:10px">
+    h+=rows.map(r=>`<div class="card pad" data-employee-id="${escHtml(r.user_id)}" style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline">
         <div><b>${escHtml(nm(r.user_id))}</b> ${r.aktif?'':'<span class="tag">nonaktif</span>'}
           <div class="mini muted">${escHtml(r.jabatan||'-')} · ${escHtml(bn(r.branch_id))}</div></div>
@@ -3001,7 +3087,7 @@ const App={
     const t=prompt('Jenis bonus — ketik:\n1 = nominal tetap\n2 = persen dari omzet outlet', data.bonus_tipe==='persen_omzet'?'2':'1'); if(t===null)return;
     const tipe=(t.trim()==='2')?'persen_omzet':'nominal';
     const n=prompt(tipe==='persen_omzet'?'Berapa PERSEN dari omzet outlet? (mis. 1 untuk 1%)':'Nominal bonus tetap per bulan:', data.bonus_nilai||0); if(n===null)return;
-    const j=prompt('Jabatan (mis. Barista, PIC Outlet):', data.jabatan||''); if(j===null)return;
+    const j=prompt('Jabatan (mis. Barista, PIC Pusat / PIC Mitra):', data.jabatan||''); if(j===null)return;
     try{
       const{error}=await sb.from('employees').update({
         gaji_pokok:Number(g)||0, tarif_lembur_jam:Number(l)||0, uang_makan_harian:Number(m)||0,
@@ -3774,7 +3860,7 @@ const App={
       const profMap={};
       allProfiles.forEach(p=>{profMap[p.user_id]=p.full_name||p.email||p.user_id.slice(0,8);});
 
-      const activeSales=allSales.filter(s=>s.status!=='voided');
+      const activeSales=allSales.filter(s=>s.status==='active');
       const voidedSales=allSales.filter(s=>s.status==='voided');
       const saleIds=activeSales.map(s=>s.id);
       const items=saleIds.length?await Data.saleItems(saleIds):[];
@@ -3860,7 +3946,7 @@ const App={
       const cogsSnapshot=activeSales.reduce((a,s)=>a+Number(s.cogs||0),0);
       const cogsRekon=marginRows.reduce((a,r)=>a+r.totalHpp,0);
       const cogsDrift=cogsSnapshot>0?Math.round((cogsRekon-cogsSnapshot)/cogsSnapshot*100):0;
-      const marginNote=`<div class="mini" style="margin-top:8px;color:var(--muted)">HPP di tabel ini memakai <b>resep & harga bahan saat ini</b> (bukan historis), belum termasuk topping/additional. Pembanding: HPP tercatat periode ini (snapshot saat jual) <b>${this.rp(cogsSnapshot)}</b> vs rekonstruksi <b>${this.rp(cogsRekon)}</b>${cogsSnapshot>0?` — selisih <b style="color:${escHtml(Math.abs(cogsDrift)>5?'var(--bad)':'var(--good)')}">${escHtml(cogsDrift>0?'+':'')}${cogsDrift}%</b>. Selisih besar = harga bahan/resep sudah berubah sejak transaksi terjadi.`:'.'}</div>`;
+      const marginNote=`<div class="mini" style="margin-top:8px;color:var(--muted)">Omzet dan margin per item di tabel ini belum mengurangi potongan transaksi (voucher/member/bundle/happy hour). HPP di tabel ini memakai <b>resep & harga bahan saat ini</b> (bukan historis), belum termasuk topping/additional. Pembanding: HPP tercatat periode ini (snapshot saat jual) <b>${this.rp(cogsSnapshot)}</b> vs rekonstruksi <b>${this.rp(cogsRekon)}</b>${cogsSnapshot>0?` — selisih <b style="color:${escHtml(Math.abs(cogsDrift)>5?'var(--bad)':'var(--good)')}">${escHtml(cogsDrift>0?'+':'')}${cogsDrift}%</b>. Selisih besar = harga bahan/resep sudah berubah sejak transaksi terjadi.`:'.'}</div>`;
 
       const marginTableRows=marginRows.map(({m,d,hpp,totalHpp,profit,marginPct,marginColor,barW})=>`<tr>
         <td><b>${escHtml(m.name)}</b><div class="mini muted">${escHtml(m.category||'')}</div></td>
@@ -3877,6 +3963,7 @@ const App={
       /* ===== 4. VOID & DISKON ===== */
       const totalVoidRev=voidedSales.reduce((a,s)=>a+Number(s.total),0);
       const bundleDiscTotal=activeSales.reduce((a,s)=>a+Number(s.bundle_discount||0),0);
+      const loyaltyDiscTotal=activeSales.reduce((a,s)=>a+Number(s.loyalty_discount||0),0);
 
       // hitung diskon per item dari selisih harga normal vs unit_price
       let itemDiscTotal=0;
@@ -3953,7 +4040,8 @@ const App={
           ${this.stat('Transaksi dibatalkan',voidedSales.length+' nota',voidedSales.length>0?'Rp'+Math.round(totalVoidRev).toLocaleString('id-ID')+' pendapatan hangus':'Tidak ada void',voidedSales.length>0?'var(--bad)':'var(--good)')}
           ${this.stat('Diskon item',this.rp(itemDiscTotal),'selisih harga normal vs jual',itemDiscTotal>0?'var(--gold)':'')}
           ${this.stat('Diskon bundle',this.rp(bundleDiscTotal),'dari promo paket',bundleDiscTotal>0?'var(--gold)':'')}
-          ${this.stat('Total diskon diberikan',this.rp(itemDiscTotal+bundleDiscTotal),'semua jenis diskon')}
+          ${this.stat('Diskon voucher/member',this.rp(loyaltyDiscTotal),'klaim promo tercatat')}
+          ${this.stat('Total diskon diberikan',this.rp(itemDiscTotal+bundleDiscTotal+loyaltyDiscTotal),'semua jenis diskon')}
         </div>
         <div class="card pad" style="margin-bottom:16px;overflow-x:auto">
           <b style="display:block;margin-bottom:10px">Rincian Transaksi Void${escHtml(voidedSales.length>20?' (20 terbaru)':'')}</b>
@@ -4957,6 +5045,9 @@ const App={
           Cabang:s.branch_id,
           Pembayaran:s.payment,
           Total:Number(s.total),
+          'Diskon Voucher/Member':Number(s.loyalty_discount||0),
+          'Diskon Bundle/Happy Hour':Number(s.bundle_discount||0),
+          Status:s.status||'active',
           Kanal:this._onlineLabel(s.channel||'outlet'),
           'ID Pesanan Online':s.online_order_ref||'',
           'Biaya Platform':Number(s.online_detail?.platform_fee||0),
@@ -5031,8 +5122,8 @@ const App={
         }).join('');
         return `<div style="padding:3px 0"><div style="display:flex;justify-content:space-between"><span>${it.qty}× ${escHtml(nm)}${discTag}${noteTxt}</span>${priceCol}</div>${addLines}</div>`;
       }).join('');
-      const sr=await sb.from('sales').select('online_detail').eq('id',saleId).single();
-      box.innerHTML=lines+(sr.data?.online_detail?this._onlineFinanceHTML(sr.data.online_detail):'');
+      const sr=await sb.from('sales').select('online_detail,loyalty_discount,bundle_discount,total,status').eq('id',saleId).single();
+      box.innerHTML=lines+(Number(sr.data?.bundle_discount)>0?`<div>Potongan bundle/happy hour: − ${this.rp(sr.data.bundle_discount)}</div>`:'')+(Number(sr.data?.loyalty_discount)>0?`<div>Potongan voucher/member: − ${this.rp(sr.data.loyalty_discount)}</div>`:'')+(sr.data?`<div><b>Total transaksi: ${this.rp(sr.data.total)}</b> · ${escHtml(sr.data.status||'')}</div>`:'')+(sr.data?.online_detail?this._onlineFinanceHTML(sr.data.online_detail):'');
     }catch(e){ box.innerHTML='Gagal memuat detail: '+((e&&e.message)||''); }
   },
 
@@ -6763,12 +6854,11 @@ const App={
       const monthLabel=new Date(y,m-1,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
       const branches=await Data.branches();
       const mitraOutlets=branches.filter(b=>b.owner_user_id);
-      const PKG_MIN={Start:{min:300000,label:'Rp300.000/bln'},Growth:{min:750000,label:'Rp750.000/bln'},Signature:{min:750000,label:'Rp750.000–1.000.000/bln'}};
-      this._pkgMin=PKG_MIN;
       const [rsRes,rcRes]=await Promise.all([
         sb.from('royalty_settings').select('branch_id,percent,active'),
         sb.from('royalty_charges').select('id,branch_id,period_start,period_end,net_sales,percent,amount,status,payment_note').eq('period_start',pStart).eq('period_end',pEnd)
       ]);
+      if(rsRes.error)throw rsRes.error;if(rcRes.error)throw rcRes.error;
       const rsmap={}; (rsRes.data||[]).forEach(x=>{ if(x.active) rsmap[x.branch_id]=Number(x.percent); });
       const rcmap={}; (rcRes.data||[]).forEach(x=>{ rcmap[x.branch_id]=x; });
       const sales=(await Data.salesRange(null,monStartISO,monEndISO)).filter(s=>s.status==='active');
@@ -6780,6 +6870,17 @@ const App={
         html+=`<div class="soon-box"><div class="ic">◈</div><b>Belum ada outlet mitra</b><div class="mini">Tetapkan outlet ke mitra dulu (menu Tetapkan Mitra).</div></div>`;
         v.innerHTML=html; return;
       }
+      const isOwner=CURRENT.role==='owner';
+      html+=`<div class="sec-title">Atur minimum royalti per outlet</div>
+        <div class="banner info"><span class="i">◈</span><div>Owner menentukan nominal sendiri untuk setiap outlet. Isi <b>0 untuk tanpa minimum</b>; kosong berarti belum diatur. Nominal tidak diisi otomatis saat mengganti paket. Minimum berlaku untuk periode yang dimulai setelah 3 bulan dari tanggal gabung. Tagihan memakai nilai yang lebih besar antara tarif × omzet dan minimum aktif.</div></div>`;
+      html+=mitraOutlets.map(o=>`<div class="card pad" style="margin-bottom:12px">
+        <b>${escHtml(o.name)}</b><div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:10px">
+        <div><label for="pkg_${escHtml(o.id)}" class="mini">Paket</label><select id="pkg_${escHtml(o.id)}" ${isOwner?'':'disabled'} style="display:block;${fld}"><option value="">Belum diatur</option>${['Start','Growth','Signature'].map(pk=>`<option value="${pk}" ${o.package_type===pk?'selected':''}>${pk}</option>`).join('')}</select></div>
+        <div><label for="join_${escHtml(o.id)}" class="mini">Tanggal gabung</label><input id="join_${escHtml(o.id)}" type="date" value="${escHtml(o.join_date||'')}" ${isOwner?'':'disabled'} style="display:block;${fld}"></div>
+        <div><label for="min_${escHtml(o.id)}" class="mini">Minimum royalti (Rp/bulan)</label><input id="min_${escHtml(o.id)}" type="number" step="1" min="0" max="9007199254740991" value="${o.min_royalty!=null?Number(o.min_royalty):''}" placeholder="Masukkan nominal sendiri" ${isOwner?'':'disabled'} style="display:block;width:230px;max-width:100%;${fld}"></div>
+        ${isOwner?`<button class="btn btn-primary" id="minSave_${escHtml(o.id)}" style="width:auto" onclick="App.doSavePackageMin(${jsArg(o.id)})">Simpan minimum outlet</button>`:''}</div>
+        <div class="mini muted" style="margin-top:10px">Pengaturan tersimpan: <b>${o.min_royalty==null?'belum diatur':Number(o.min_royalty)===0?'tanpa minimum (Rp0)':this.rp(o.min_royalty)+'/bulan'}</b>. Tagihan yang sudah terbit tetap; tagihan belum lunas dapat dihitung ulang melalui Terbitkan ulang. Tagihan lunas terkunci.</div>
+        </div>`).join('');
       html+=`<div class="sec-title">Tagihan per outlet mitra · ${monthLabel}</div>`;
       html+=mitraOutlets.map(o=>{
         const pct=rsmap[o.id];
@@ -6788,7 +6889,10 @@ const App={
         const marginPct=previewNet>0?Math.round((previewNet-(cogsM[o.id]||0))/previewNet*100):0;
         const net=charge?Number(charge.net_sales):previewNet;
         const usedPct=charge?Number(charge.percent):pct;
-        const amt=charge?Number(charge.amount):(pct!=null?Math.round(previewNet*pct/100):null);
+        const percentAmount=pct!=null?Math.round((previewNet*pct/100+Number.EPSILON)*100)/100:null;
+        const minActive=this.royaltyMinimumActive(o.join_date,pStart);
+        const previewAmount=percentAmount==null?null:Math.max(percentAmount,minActive&&o.min_royalty!=null?Number(o.min_royalty):0);
+        const amt=charge?Number(charge.amount):previewAmount;
         let badge;
         if(charge){ badge=charge.status==='paid'?'<span class="tag ok">Lunas</span>':'<span class="tag warn">Belum bayar</span>'; }
         else { badge='<span class="tag" style="background:var(--surface-2);color:var(--muted);border:1px solid var(--line)">Belum terbit</span>'; }
@@ -6798,13 +6902,11 @@ const App={
         const pkg=o.package_type, join=o.join_date, minR=o.min_royalty!=null?Number(o.min_royalty):null;
         let minInfo='';
         if(o.owner_user_id){
-          if(!pkg||!join){ minInfo=`<div class="mini" style="color:var(--gold);margin-top:4px">Paket/tanggal gabung belum diatur — minimum royalti tidak berlaku. Atur di bawah.</div>`; }
+          if(!join){ minInfo=`<div class="mini" style="color:var(--gold);margin-top:4px">Tanggal gabung belum diatur — minimum royalti belum berlaku. Atur di atas.</div>`; }
           else {
-            const joinD=new Date(join+'T00:00:00+07:00'); const active3=new Date(joinD); active3.setMonth(active3.getMonth()+3);
-            const minActive=new Date(pStart+'T00:00:00+07:00')>=active3;
-            const pctAmt=pct!=null?Math.round(previewNet*pct/100):null;
-            const willUseMin=minActive&&minR!=null&&pctAmt!=null&&minR>pctAmt;
-            minInfo=`<div class="mini muted" style="margin-top:4px">Paket <b>${escHtml(pkg)}</b> · gabung ${join} · minimum ${minR!=null?this.rp(minR):'—'} ${(minActive?'<span class="tag ok" style="font-size:10px">aktif</span>':'<span class="tag" style="font-size:10px;background:var(--surface-2)">belum (masa 3 bln)</span>')}${(willUseMin?' → <b style="color:var(--accent)">tagihan pakai minimum</b>':'')}</div>`;
+            const pctAmt=percentAmount;
+            const willUseMin=!charge&&minActive&&minR!=null&&pctAmt!=null&&minR>pctAmt;
+            minInfo=`<div class="mini muted" style="margin-top:4px">Paket <b>${escHtml(pkg||'belum diatur')}</b> · gabung ${join} · minimum ${minR!=null?this.rp(minR):'—'} ${(minActive?'<span class="tag ok" style="font-size:10px">aktif</span>':'<span class="tag" style="font-size:10px;background:var(--surface-2)">belum (masa 3 bln)</span>')}${(willUseMin?' → <b style="color:var(--accent)">tagihan pakai minimum</b>':'')}</div>`;
           }
         }
         return `<div class="card pad" style="margin-bottom:12px">
@@ -6822,37 +6924,36 @@ const App={
         <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Outlet mitra</th><th class="right">Tarif (%)</th></tr></thead><tbody>
         ${mitraOutlets.map(o=>`<tr><td><b>${escHtml(o.name)}</b></td><td class="right"><input id="rs_${escHtml(o.id)}" type="number" step="0.1" min="0" max="100" value="${rsmap[o.id]!=null?rsmap[o.id]:''}" placeholder="—" style="width:110px;text-align:right;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"></td></tr>`).join('')}
         </tbody></table><button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" id="rsSaveBtn" onclick="App.doSaveRoyaltySettings()">Simpan tarif</button></div>
-        <div class="sec-title" style="margin-top:24px">Paket & minimum royalti</div>
-        <div class="banner info"><span class="i">◈</span><div>Minimum royalti per paket, berlaku <b>setelah bulan ke-3</b> sejak tanggal gabung (dihitung dari tanggal Perjanjian Kemitraan). Tagihan = <b>yang lebih besar</b> antara persen×omzet dan minimum. Rekomendasi: Start ${escHtml(this._pkgMin.Start.label)}, Growth ${escHtml(this._pkgMin.Growth.label)}, Signature ${escHtml(this._pkgMin.Signature.label)}. <b>Tanggal gabung wajib cocok dengan dokumen kemitraan.</b></div></div>
-        <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Outlet mitra</th><th>Paket</th><th>Tanggal gabung</th><th class="right">Minimum (Rp/bln)</th></tr></thead><tbody>
-        ${mitraOutlets.map(o=>`<tr><td><b>${escHtml(o.name)}</b></td>
-          <td><select id="pkg_${escHtml(o.id)}" onchange="App.trnSuggestMin(${jsArg(escHtml(o.id))},this.value)" style="padding:6px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2)"><option value="">—</option>${['Start','Growth','Signature'].map(pk=>`<option value="${pk}" ${escHtml(o.package_type===pk?'selected':'')}>${pk}</option>`).join('')}</select></td>
-          <td><input id="join_${escHtml(o.id)}" type="date" value="${o.join_date||''}" style="padding:6px 8px;border:1px solid var(--line-strong);border-radius:7px;background:var(--surface-2)"></td>
-          <td class="right"><input id="min_${escHtml(o.id)}" type="number" step="1000" min="0" value="${o.min_royalty!=null?Number(o.min_royalty):''}" placeholder="—" style="width:130px;text-align:right;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"></td></tr>`).join('')}
-        </tbody></table><button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" onclick="App.doSavePackageMin()">Simpan paket & minimum</button></div>`;
+`;
       v.innerHTML=html;
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
   switchRoyaltyMonth(mn){ this._royaltyMonth=mn; this.render_royalty(); },
-  trnSuggestMin(id,pkg){
-    const el=document.getElementById('min_'+id); if(!el||el.value)return;
-    const map={Start:300000,Growth:750000,Signature:850000};
-    if(map[pkg])el.value=map[pkg];
+  royaltyMinimumActive(join,periodStart){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(join||'')||!/^\d{4}-\d{2}-\d{2}$/.test(periodStart||''))return false;
+    const [y,m,d]=join.split('-').map(Number),target=new Date(Date.UTC(y,m-1+3,1));
+    const last=new Date(Date.UTC(target.getUTCFullYear(),target.getUTCMonth()+1,0)).getUTCDate();
+    target.setUTCDate(Math.min(d,last));
+    return periodStart>=target.toISOString().slice(0,10);
   },
-  async doSavePackageMin(){
+  async doSavePackageMin(id){
+    if(CURRENT.role!=='owner'){this.toast('Hanya owner yang dapat mengubah minimum royalti.','bad');return;}
+    if(!id)return;
+    const btn=document.getElementById('minSave_'+id);if(btn?.disabled)return;
     try{
-      const outlets=[...document.querySelectorAll('[id^="pkg_"]')].map(el=>el.id.slice(4));
-      for(const id of outlets){
-        const pkg=document.getElementById('pkg_'+id).value||null;
-        const join=document.getElementById('join_'+id).value||null;
-        const minV=document.getElementById('min_'+id).value.trim();
-        const min=minV===''?null:Number(minV);
-        if(min!=null&&(!Number.isFinite(min)||min<0)){ this.toast('Minimum tidak valid','bad'); return; }
-        const{error}=await sb.from('branches').update({package_type:pkg,join_date:join,min_royalty:min}).eq('id',id);
-        if(error)throw error;
-      }
-      this.toast('Paket & minimum tersimpan','good'); this.render_royalty();
-    }catch(e){ this.toast((e&&e.message)||'Gagal menyimpan','bad'); }
+      const pkg=document.getElementById('pkg_'+id).value||null;
+      const joinEl=document.getElementById('join_'+id),join=joinEl.value||null;
+      const raw=document.getElementById('min_'+id).value.trim();
+      const min=raw===''?null:Number(raw);
+      if(min!=null&&(!Number.isSafeInteger(min)||min<0))throw Error('Minimum harus berupa rupiah bulat, minimal 0.');
+      if(min>0&&!join)throw Error('Isi tanggal gabung agar minimum dapat berlaku setelah 3 bulan.');
+      if(!joinEl.checkValidity())throw Error('Tanggal gabung tidak valid.');
+      if(btn){btn.disabled=true;btn.textContent='Menyimpan…';}
+      const{data,error}=await sb.from('branches').update({package_type:pkg,join_date:join,min_royalty:min}).eq('id',id).select('id').single();
+      if(error)throw error;if(!data)throw Error('Pengaturan tidak tersimpan. Periksa izin owner dan outlet.');
+      this.toast('Minimum royalti outlet tersimpan.','good');await this.render_royalty();
+    }catch(e){this.toast((e&&e.message)||'Gagal menyimpan minimum royalti.','bad');}
+    finally{if(btn){btn.disabled=false;btn.textContent='Simpan minimum outlet';}}
   },
   async doIssueRoyalty(branch,pStart,pEnd,btn){
     if(!confirm('Terbitkan tagihan royalti untuk periode ini? Tagihan akan tersimpan & muncul di aplikasi mitra.'))return;
@@ -9991,7 +10092,7 @@ const App={
   },
   async audVerifyCapa(capaId,visitId){
     if(!confirm('Verifikasi CAPA ini sebagai selesai?'))return;
-    try{ const{error}=await sb.from('audit_capa').update({status:'verified',verified_by:CURRENT.user,verified_at:new Date().toISOString()}).eq('id',capaId); if(error)throw error; this.toast('CAPA diverifikasi','ok'); this.audOpenVisit(visitId); }
+    try{ const{error}=await sb.from('audit_capa').update({status:'verified',verified_by:CURRENT.user.id,verified_at:new Date().toISOString()}).eq('id',capaId); if(error)throw error; this.toast('CAPA diverifikasi','ok'); this.audOpenVisit(visitId); }
     catch(e){ this.toast((e&&e.message)||'Gagal','bad'); }
   },
 
@@ -10194,6 +10295,286 @@ window.addEventListener('DOMContentLoaded',()=>{ App.boot(); });
 for(const name of ["requestOutletBundle","reviewOutletBundle","cancelOutletBundle","updateMenu","deleteMenu","setIngredientActive","voidSale","setBranchRoyaltyExempt","upsertBundle","setBundleActive","deleteBundle","upsertStock","adjustStock","stockAdjustAudited","addIngredient","updateIngredient","addMenu","upsertRecipe","deleteRecipeItem","upsertExpenseCategory","setExpenseCategoryActive","deleteExpenseCategory","setExpenseDefault","addExpense","deleteExpense","recordWaste","recordPurchase","updatePurchase","deletePurchase","addDiscount","addAdditional","addAdditionalItem","deleteAdditional","toggleAdditional","saveHappyHour","toggleDiscount","deleteDiscount","saveEmpDiscount","setAppSetting","transferStock","addBranchRow","updateBranch","seedStockForBranch","seedIngredientAllBranches","updateProfile","deleteProfile","deleteBranch","openShift","closeShift","recordCashWithdrawal","recordSale"]){const fn=Data[name];Data[name]=function(...args){if(CURRENT.role==='ai_review')throw new Error('Akun AI Review hanya dapat membaca data.');return fn.apply(this,args);};}
 for(const name of ["_submitQueued","_flushQueue","resolveOfflineFail","attClockIn","attClockOut","prEditHarga","prEditTakaran","prEditHasil","prEditOverhead","prSimpan","pyAddEmployee","pyEditEmployee","pySetAbsen","pySetLembur","pyHitung","pyFinal","saveIngredient","archiveIngredient","activateIngredient","addIngredientUI","stockAdd","stockSet","saveRecipeItem","delRecipeItem","saveMenu","toggleMenu","delMenu","addMenu","addRecipe","doTransfer","revokeUser","delBranch","toggleBranchExempt","doSetSupplySource","forceDeleteIngredient","doRejectRequest","doCancelRequest","saveBranch","addBranch","saveReceiptCfg","toggleOpnameFeature","toggleAutoPrint","saveProfile","voidSale","doOpenShift","doCashWithdrawal","doCloseShift","ajukanBiaya","reviewBiaya","prKirim","erAjukan","erReview","addExpCategory","removeExpCategory","saveExpDefault","addExpense","delExpense","doWaste","saveEditPurchase","delPurchase","doPurchase","saveAdditional","toggleAdd","delAdd","submitUsulDiskon","submitOutletBundle","reviewOutletBundle","cancelOutletBundle","saveEmpDisc","toggleHappyProduct","saveHappyHour","addDiscount","discApprove","toggleDisc","delDisc","saveBundle","toggleBundle","removeBundle","doSavePackageMin","doIssueRoyalty","doVerifyRoyalty","doSaveRoyaltySettings","tktCreate","tktSendMsg","tktUpdateStatus","tktClose","tktSetWaitingPusat","trnAddParticipant","trnSetStatus","trnAddAssessment","trnIssueCert","ctAddTask","ctAutoPlan","ctTaskDone","ctTaskDel","ctAddTrend","ctTrendDel","ctAddCamp","ctCampViews","ctCampToggle","ctCampDel","ctAiSaveNotes","airSave","airDelete","mtrSubmitMinta","mtrKoreksiBeli","mtrDoLokal","mtrDoWaste","mtrDoOpname","mtrDoInvite","audMakeAuditor","audAssignOutlet","audUnassign","audDemote","mitraInvite","mtrAssign","doFulfill","doSaveSupplyPrices","toggleLocalAllowed","doReviewOpname","toggleMenuOff","mtrDoExpense","picSubmitMinta","audCreateVisit","audSaveAndScore","audResetScore","audFinalize","audAddFinding","audAddCapa","audAddEvidence","audFindingToTicket","audVerifyCapa","audFollowupCapa"]){const fn=App[name];App[name]=function(...args){if(CURRENT.role==='ai_review'){this.toast('Akun AI Review hanya dapat membaca data.','bad');return Promise.resolve();}return fn.apply(this,args);};}
 for(const name of Object.keys(App).filter(n=>n.startsWith('render_'))){const fn=App[name];App[name]=async function(...args){const r=await fn.apply(this,args);if(CURRENT.role==='ai_review'){const writes=["_submitQueued","_flushQueue","resolveOfflineFail","attClockIn","attClockOut","prEditHarga","prEditTakaran","prEditHasil","prEditOverhead","prSimpan","pyAddEmployee","pyEditEmployee","pySetAbsen","pySetLembur","pyHitung","pyFinal","saveIngredient","archiveIngredient","activateIngredient","addIngredientUI","stockAdd","stockSet","saveRecipeItem","delRecipeItem","saveMenu","toggleMenu","delMenu","addMenu","addRecipe","doTransfer","revokeUser","delBranch","toggleBranchExempt","doSetSupplySource","forceDeleteIngredient","doRejectRequest","doCancelRequest","saveBranch","addBranch","saveReceiptCfg","toggleOpnameFeature","toggleAutoPrint","saveProfile","voidSale","doOpenShift","doCashWithdrawal","doCloseShift","ajukanBiaya","reviewBiaya","prKirim","erAjukan","erReview","addExpCategory","removeExpCategory","saveExpDefault","addExpense","delExpense","doWaste","saveEditPurchase","delPurchase","doPurchase","saveAdditional","toggleAdd","delAdd","submitUsulDiskon","submitOutletBundle","reviewOutletBundle","cancelOutletBundle","saveEmpDisc","toggleHappyProduct","saveHappyHour","addDiscount","discApprove","toggleDisc","delDisc","saveBundle","toggleBundle","removeBundle","doSavePackageMin","doIssueRoyalty","doVerifyRoyalty","doSaveRoyaltySettings","tktCreate","tktSendMsg","tktUpdateStatus","tktClose","tktSetWaitingPusat","trnAddParticipant","trnSetStatus","trnAddAssessment","trnIssueCert","ctAddTask","ctAutoPlan","ctTaskDone","ctTaskDel","ctAddTrend","ctTrendDel","ctAddCamp","ctCampViews","ctCampToggle","ctCampDel","ctAiSaveNotes","airSave","airDelete","mtrSubmitMinta","mtrKoreksiBeli","mtrDoLokal","mtrDoWaste","mtrDoOpname","mtrDoInvite","audMakeAuditor","audAssignOutlet","audUnassign","audDemote","mitraInvite","mtrAssign","doFulfill","doSaveSupplyPrices","toggleLocalAllowed","doReviewOpname","toggleMenuOff","mtrDoExpense","picSubmitMinta","audCreateVisit","audSaveAndScore","audResetScore","audFinalize","audAddFinding","audAddCapa","audAddEvidence","audFindingToTicket","audVerifyCapa","audFollowupCapa","checkout"];for(const el of document.querySelectorAll('[onclick]')){const handler=el.getAttribute('onclick')||'';if(writes.some(n=>handler.includes('App.'+n+'('))){el.disabled=true;el.setAttribute('aria-disabled','true');el.title='Akun ini hanya dapat membaca data.';}}}return r;};}
+</script>
+
+
+
+<script>
+/* SRUPUT workflow 1.4 — integrated into existing App; no mock data or automatic production migration. */
+(()=>{
+'use strict';
+const W={ctx:null,branch:null,month:null,tab:'daily',busy:false,token:0,stockCart:[],client:null};
+const E=escHtml,J=jsArg;
+const labels={daily:'Tugas Harian',roster:'Roster & Presensi',request:'Izin / Libur / Sakit',stock:'Permintaan Stok',bonus:'Target & Bonus',picroyalty:'Jenis & Insentif PIC',longshift:'Long Shift',case:'Kasus & Pengganti',finance:'Biaya & Penutupan',payroll:'Slip Gaji',warehouse:'Gudang & Konsolidasi',setup:'Kebijakan & Penugasan'};
+const status={pending:'Menunggu verifikasi',approved:'Disetujui',rejected:'Ditolak',cancelled:'Dibatalkan',submitted:'Diajukan',prepared:'Disiapkan',shipped:'Dikirim',partial:'Diterima sebagian',received:'Diterima penuh',completed:'Selesai',estimate:'Estimasi',verified:'Diverifikasi',paid:'Dibayar',pic_verified:'PIC memverifikasi',posted:'Diposting payroll',awaiting_consent:'Menunggu persetujuan pegawai',recorded_exception:'Realisasi di luar kuota'};
+const val=id=>document.getElementById('wf_'+id)?.value??'';
+const num=id=>{const s=val(id);if(!s.trim()||!Number.isFinite(Number(s)))throw Error('Isi angka '+id);return Number(s);};
+const ck=id=>!!document.getElementById('wf_'+id)?.checked;
+const field=(id,label,type='text',value='',extra='')=>`<label>${E(label)}<input id="wf_${id}" type="${type}" value="${E(value)}" ${extra}></label>`;
+const select=(id,label,opts)=>`<label>${E(label)}<select id="wf_${id}">${opts.map(([v,l])=>`<option value="${E(v)}">${E(l)}</option>`).join('')}</select></label>`;
+const check=(id,label)=>`<label class="wf-check"><input id="wf_${id}" type="checkbox"> ${E(label)}</label>`;
+const text=(id,label)=>`<label>${E(label)}<textarea id="wf_${id}" rows="3" maxlength="2000"></textarea></label>`;
+const btn=(label,method,args='')=>`<button class="btn" type="button" onclick="App.${method}(${args})">${E(label)}</button>`;
+const form=(body,method,label='Simpan')=>`<form class="card pad wf-form" onsubmit="event.preventDefault();App.${method}()"><div class="wf-fields">${body}</div><button class="btn btn-primary" type="submit">${E(label)}</button></form>`;
+const person=id=>W.ctx?.people?.find(p=>p.user_id===id)?.name||'Pegawai';
+const people=()=>W.ctx.people.filter(p=>['crew','pic','gudang'].includes(p.role)).map(p=>[p.user_id,p.name+' · '+p.role]);
+const today=()=>todayWIBStr();
+const manage=()=>CURRENT.role==='owner'||CURRENT.role==='pic'&&W.ctx.assignments.some(a=>a.user_id===CURRENT.user.id&&a.branch_id===W.branch&&a.duty==='pic'&&a.starts<=today()&&(!a.ends||a.ends>=today()));
+const money=v=>v==null?'Belum lengkap':App.rp(Number(v));
+const tag=s=>`<span class="tag">${E(status[s]||s)}</span>`;
+const file=(id,label,multiple=false)=>`<label>${E(label)}<input id="wf_${id}" type="file" accept="image/jpeg,image/png,application/pdf" ${multiple?'multiple':''}></label>`;
+async function upload(id){const fs=[...(document.getElementById('wf_'+id)?.files||[])];const out=[];for(const f of fs){if(f.size>5*1024*1024)throw Error('Maksimal 5 MB/file');if(!['image/jpeg','image/png','application/pdf'].includes(f.type))throw Error('Gunakan JPG, PNG atau PDF');const path=CURRENT.user.id+'/'+crypto.randomUUID()+'.'+({'image/jpeg':'jpg','image/png':'png','application/pdf':'pdf'}[f.type]);const r=await sb.storage.from('sruput-workflow').upload(path,f,{upsert:false,contentType:f.type});if(r.error)throw r.error;out.push(path);}return out;}
+const queueKey=()=> 'sruput_workflow_pending:'+CURRENT.user.id;
+const queueRead=()=>{const a=JSON.parse(localStorage.getItem(queueKey())||'[]');if(!Array.isArray(a))throw Error('Antrean lokal tidak valid');return a;};
+function enqueue(action,data){if(!data.client_id||!['request','daily','cost','stock_create'].includes(action))throw Error('Offline: simpan setelah koneksi kembali. Presensi terlambat diajukan melalui koreksi absensi.');const a=queueRead(),old=a.find(x=>x.data.client_id===data.client_id);if(old&&JSON.stringify(old.data)!==JSON.stringify(data))throw Error('Isi berubah dari antrean sebelumnya. Sinkronkan atau periksa antrean dahulu.');if(!old)a.push({actor:CURRENT.user.id,action,data,queued_at:new Date().toISOString(),status:'pending'});localStorage.setItem(queueKey(),JSON.stringify(a));W.queued=true;return{queued:true};}
+async function call(action,data={}){if(!CURRENT.user)throw Error('Sesi berakhir');if(!navigator.onLine&&action!=='context'&&action!=='list'&&action!=='bonus')return enqueue(action,data);try{const r=await sb.rpc('sruput_workflow',{p_action:action,p_data:data});if(r.error)throw r.error;return r.data;}catch(e){if(!navigator.onLine||/Failed to fetch|NetworkError|fetch failed/i.test(e.message||''))return enqueue(action,data);throw e;}}
+async function picContextSafe(){try{return await picCall('context');}catch(e){return{types:[],support:[],partners:[],unavailable:true,error:e.message};}}
+async function picCall(action,data={}){const r=await sb.rpc('sruput_pic',{p_action:action,p_data:data});if(r.error)throw r.error;return r.data;}
+function picType(uid,context=W.ctx?.pic){const rows=(context?.types||[]).filter(x=>x.user_id===uid).sort((a,b)=>b.starts.localeCompare(a.starts));return rows.find(x=>x.starts<=today()&&(!x.ends||x.ends>=today()))?.kind||rows.find(x=>!x.ends||x.ends>=today())?.kind||null;}
+async function overtimeCall(action,data={}){const r=await sb.rpc('sruput_overtime',{p_action:action,p_data:data});if(r.error)throw r.error;return r.data;}
+async function run(fn){if(W.busy)return;W.busy=true;W.queued=false;const epoch=CURRENT.sessionEpoch;document.querySelectorAll('#view button[type=submit]').forEach(x=>x.disabled=true);try{await fn();if(epoch!==CURRENT.sessionEpoch)return;if(W.queued){App.toast('Tersimpan dalam antrean perangkat; belum masuk server.','warn');const el=document.getElementById('wf_sync');if(el)el.innerHTML='Belum sinkron · '+queueRead().length+' antrean '+btn('Sinkronkan antrean','wfSync');return;}App.toast('Tersimpan di server','good');W.client=null;await App.render_workflow();}catch(e){if(epoch===CURRENT.sessionEpoch)App.toast(e.message||'Gagal menyimpan; periksa koneksi','bad');}finally{W.busy=false;document.querySelectorAll('#view button[type=submit]').forEach(x=>x.disabled=false);}}
+const payload=()=>({branch_id:W.branch,month:W.month+'-01'});
+const client=()=>W.client||(W.client=crypto.randomUUID());
+function cards(rows,content){return rows.length?rows.map(r=>`<article class="card pad wf-record"><div class="wf-row"><b>${E(r.day||r.starts||r.needed||r.month||'')}</b>${tag(r.status)}</div>${content(r)}</article>`).join(''):'<div class="card pad mini muted">Belum ada catatan untuk pilihan ini.</div>';}
+async function list(entity){return call('list',{...payload(),entity});}
+function rosterSelect(rows){return select('roster_id','Roster',rows.map(r=>[r.id,`${r.day} · ${person(r.user_id)} · ${r.duty}`]));}
+async function render(){const token=++W.token,epoch=CURRENT.sessionEpoch,uid=CURRENT.user?.id;const active=()=>token===W.token&&epoch===CURRENT.sessionEpoch&&CURRENT.user?.id===uid&&App.state.page==='workflow';const view=document.getElementById('view');view.innerHTML=App.loadingHTML('Memuat workflow…');try{
+ const ctx=await call('context');if(['owner','pic'].includes(CURRENT.role))ctx.pic=await picContextSafe();if(!active())return;W.ctx=ctx;if(CURRENT.role==='pic'){const type=picType(CURRENT.user.id);const label=type==='pusat'?'PIC Pusat':type==='mitra'?'PIC Mitra':'PIC Pusat / PIC Mitra';document.getElementById('whoRole').textContent=label;}W.month=W.month||today().slice(0,7);if(!ctx.branches.some(b=>b.id===W.branch))W.branch=ctx.branches.find(b=>b.type==='outlet')?.id||ctx.branches[0]?.id||'';
+ const tabs=CURRENT.role==='gudang'?['stock']:['daily','roster','request','stock','bonus',...(['owner','pic'].includes(CURRENT.role)?['picroyalty']:[]),'longshift',...(manage()?['case','finance']:[]),'payroll',...(CURRENT.role==='owner'?['warehouse','setup']:[])];if(!tabs.includes(W.tab))W.tab=tabs[0];
+ document.getElementById('pageTitle').textContent='Operasional SRUPUT';document.getElementById('pageSub').textContent='Workflow 1.4 · jam layanan 09.00–22.00 · Asia/Jakarta';
+ view.innerHTML=`<div class="wf-row card pad"><div><b>Operasional 09.00–22.00</b><div class="mini muted" id="wf_sync">${navigator.onLine?'Terhubung':'Offline — data belum disinkronkan'} · server ${E(new Date(ctx.server_at).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'}))}</div></div><label>Outlet<select onchange="App.wfSwitch('branch',this.value)">${ctx.branches.map(b=>`<option value="${E(b.id)}" ${b.id===W.branch?'selected':''}>${E(b.name)}</option>`).join('')}</select></label><label>Periode<input type="month" value="${E(W.month)}" onchange="App.wfSwitch('month',this.value)"></label>${btn('Muat ulang','render_workflow')}${btn('Sinkronkan antrean ('+queueRead().length+')','wfSync')}</div>
+ <nav class="wf-tabs">${tabs.map(t=>`<button class="btn ${W.tab===t?'btn-primary':''}" onclick="App.wfSwitch('tab',${J(t)})">${E(labels[t])}</button>`).join('')}</nav>
+ ${!ctx.policy?'<div class="banner">Kebijakan belum efektif. Payroll dan bonus belum dapat dihitung.</div>':''}
+ ${!W.branch&&W.tab!=='setup'?'<div class="banner">Owner perlu menetapkan outlet dan penugasan bertanggal efektif.</div>':''}<div id="wf_body"></div>`;
+ const body=document.getElementById('wf_body');const html=await panes[W.tab]();if(active()&&document.getElementById('wf_body')===body)body.innerHTML=html;
+ }catch(e){if(active())view.innerHTML=`<div class="card pad"><b>Workflow belum tersedia</b><p>${E(e.message)}</p><p class="mini">Paket ini memerlukan migrasi workflow.sql dan evidence-storage.sql pada lingkungan uji. Aplikasi tidak menjalankan migrasi otomatis. Jika penugasan belum dibuat, owner membuka modul ini untuk mengaturnya.</p>${btn('Coba lagi','render_workflow')}${btn('Sinkronkan antrean','wfSync')}${btn('Kembali ke dashboard','go',J('dashboard'))}</div>`;}}
+const panes={
+ async daily(){const rows=await list('daily');return `<div class="banner info">Satu laporan per kegiatan. Opening: foto dan kesiapan; closing: kas, stok, waste, kebersihan dan keamanan. Selisih diperiksa, tanpa potongan otomatis.</div>`+form(select('kind','Jenis laporan',[['opening','Opening'],['closing','Closing'],['handover','Serah terima'],['weekly','Foto mingguan (5 area)'],...(manage()?[['visit','Kunjungan PIC'],['coaching','Coaching']]:[]),['incident','Insiden aset / selisih'],['uniform','Distribusi seragam']])+field('day','Tanggal','date',today())+field('cash','Kas fisik / uang awal (Rp)','number','0','min="0"')+select('counterpart','Pihak penerima serah terima',[['','Tidak ada'],...people().filter(p=>p[0]!==CURRENT.user.id)])+check('uniform','Kaos hitam, apron dan topi layak')+check('clean','Area, alat, air dan penyimpanan bersih/aman')+check('equipment','Peralatan/listrik dan keamanan diperiksa')+text('stock_note','Stok kritis, waste / rincian aset dan jumlah')+text('orders','POS, tunai, QRIS, online / pesanan berjalan')+text('issue','Kendala, kronologi, temuan, tenggat atau coaching')+file('photos','Foto bukti (mingguan: fasad, meja, sink, penyimpanan, lantai)',true),'wfDaily','Kirim laporan')+cards(rows,r=>`<b>${E(r.kind)} · ${E(person(r.user_id))}</b><p>Kas ${money(r.cash)}</p><p>${E(r.stock_note||'')}</p><p>${E(r.orders||'')}</p><p>${E(r.issue||'')}</p>${(r.evidence||[]).map(p=>btn('Lihat bukti','wfEvidence',J(p))).join('')}${!r.confirmed_by&&r.user_id!==CURRENT.user.id&&(r.counterpart===CURRENT.user.id||manage())?btn(r.kind==='handover'?'Konfirmasi penerimaan':'Tinjau laporan','wfAction',J('daily_confirm')+','+J(r.id)):''}`);},
+ async roster(){const rows=await list('roster');const mine=rows.filter(r=>r.user_id===CURRENT.user.id&&r.day===today()&&r.duty!=='libur');return `<div class="banner info">Roster H-7; persiapan, closing, gudang, audit dan coaching termasuk jam kerja. Dua crew × 40 jam menyediakan 80 jam, sedangkan layanan memerlukan 91 jam/minggu sebelum jeda. Libur weekend berbobot 2 untuk perencanaan, hak istirahat mingguan tetap berlaku.</div>`+mine.map(r=>`<div class="card pad"><b>${E(r.duty)} ${E(new Date(r.starts).toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta'}))}–${E(new Date(r.ends).toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta'}))}</b><p>Waktu server menjadi dasar pencatatan. Jika offline, ajukan koreksi; absensi kosong tetap perlu verifikasi.</p>${btn('Absen masuk','wfPunch',J(r.id)+','+J('in'))}${btn('Absen pulang','wfPunch',J(r.id)+','+J('out'))}</div>`).join('')+(manage()?form(select('user_id','Pegawai',people())+field('day','Tanggal roster','date',today())+field('starts','Mulai (WIB)','datetime-local',today()+'T09:00')+field('ends','Selesai (WIB)','datetime-local',today()+'T17:00')+field('break_minutes','Jeda (menit)','number','60','min="0"')+select('duty','Tugas',['layanan','gudang','audit','coaching','persiapan','closing','libur'].map(x=>[x,x]))+text('reason','Alasan / pengganti pusat / pengecualian H-7'),'wfRoster','Terbitkan roster'):'')+cards(rows,r=>`<b>${E(person(r.user_id))} · ${E(r.duty)}</b><p>${E(new Date(r.starts).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'}))} – ${E(new Date(r.ends).toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta'}))}</p><p>Jeda ${E(r.break_minutes)} menit · ${E(r.reason)}</p><small>ID roster: ${E(r.id)}</small><p>${(r.punches||[]).map(x=>E(x.kind==='in'?'Masuk':'Pulang')+': '+E(new Date(x.server_at).toLocaleTimeString('id-ID',{timeZone:'Asia/Jakarta'}))).join(' · ')||'Belum ada presensi tersinkron'}</p>`);},
+ async request(){const rows=await list('request');return `<div class="banner info">Izin terencana H-3, preferensi libur H-7. Sakit/darurat secepatnya; bukti dapat dilengkapi dalam 2 hari kerja dengan kelonggaran yang dicatat. Dokumen hanya untuk pegawai terkait dan pemeriksa. Weekend berbobot 2 tanpa menghilangkan libur mingguan.</div>`+form(select('kind','Jenis',['izin','libur','sakit','koreksi_absensi'].map(x=>[x,x]))+field('starts','Mulai','date',today())+field('ends','Selesai','date',today())+text('reason','Alasan / rincian koreksi waktu')+file('evidence','Bukti terbatas (opsional saat darurat)')+field('fix_roster','Khusus koreksi: ID roster')+field('fix_in','Koreksi masuk (WIB)','datetime-local')+field('fix_out','Koreksi pulang (WIB)','datetime-local')+(manage()?select('user_id','Pengaju (PIC dapat mencatat laporan darurat)',people())+text('emergency','Kronologi input susulan bila untuk orang lain'):''),'wfRequest','Ajukan')+cards(rows,r=>`<b>${E(person(r.user_id))} · ${E(r.kind)}</b><p>${E(r.starts)}–${E(r.ends)} · Bobot perencanaan weekend 2/hari</p><p>${E(r.reason)}</p>${r.evidence?btn('Buka bukti terbatas','wfEvidence',J(r.evidence)):''}${r.status==='pending'&&r.user_id===CURRENT.user.id?btn('Lengkapi bukti','wfSupplement',J(r.id)):''}<p>${E(r.decision||'')}${r.paid==null?'':r.paid?' · Berbayar':' · Tanpa upah sesuai keputusan'}</p>${manage()&&r.status==='pending'&&(r.user_id!==CURRENT.user.id||CURRENT.role==='owner')?btn('Tinjau pengajuan','wfReviewRequest',J(r.id)):''}`);},
+ async stock(){const rows=await list('stock');W.stockRows=rows;const ings=await Data._pages(()=>sb.from('ingredients_safe').select('id,name,unit').eq('active',true).order('name'));W.ingredients=ings;return `<div class="banner info">Crew → PIC → gudang → dikirim → diterima → selesai. Pengajuan rutin Senin/Kamis sebelum 12.00. Di luar jadwal wajib urgent. Stok gudang turun saat kirim; stok outlet naik sesuai realisasi. Sisa berada dalam perjalanan.</div>`+(CURRENT.role!=='gudang'?form(field('needed','Tanggal perlu','date',today())+check('urgent','Urgent / di luar jadwal rutin')+text('reason','Alasan kebutuhan / urgensi')+select('ingredient','Bahan',ings.map(i=>[i.id,i.name+' ('+i.unit+')']))+field('physical','Stok layak pakai','number','0','min="0" step="0.001"')+field('daily_use','Pemakaian rata-rata/hari','number','0','min="0" step="0.001"')+field('qty','Jumlah diminta','number','','min="0.001" step="0.001"')+'<div class="mini">Rekomendasi: kebutuhan sampai kiriman berikut + safety stock 1–2 hari − stok layak pakai − kiriman terjadwal. Sesuaikan daya simpan dan kapasitas.</div><div>'+btn('Tambah bahan','wfStockAdd')+'<div id="wf_cart">'+cartHTML()+'</div></div>','wfStockCreate','Kirim permintaan'):'')+cards(rows,r=>`<b>Dokumen ${E(r.id.slice(0,8))}</b><p>${E(r.reason)}</p>${(r.items||[]).map(i=>`<div>${E(i.name)}: ${E(i.qty)} ${E(i.unit)} · kirim ${E(i.shipped)} · terima ${E(i.received)} · perjalanan ${E(Number(i.shipped)-Number(i.received))}</div>`).join('')}${btn('Cetak 58 mm','wfStockPrint',J(r.id))}${manage()&&r.status==='submitted'?btn('Setujui','wfStockStep',J(r.id)+','+J('approved'))+btn('Tolak','wfStockStep',J(r.id)+','+J('rejected')):''}${['owner','gudang','pic'].includes(CURRENT.role)&&r.status==='approved'?btn('Siapkan gudang','wfStockStep',J(r.id)+','+J('prepared')):''}${['owner','gudang','pic'].includes(CURRENT.role)&&r.status==='prepared'?btn('Kirim barang','wfStockStep',J(r.id)+','+J('shipped')):''}${CURRENT.role!=='gudang'&&['shipped','partial'].includes(r.status)?btn('Catat penerimaan','wfReceive',J(r.id)):''}${manage()&&r.status==='received'?btn('Selesaikan','wfStockStep',J(r.id)+','+J('completed')):''}${['submitted','approved','prepared'].includes(r.status)?btn('Batalkan','wfStockStep',J(r.id)+','+J('cancelled')):''}`);},
+ async bonus(){const b=await call('bonus',payload());const policy=W.ctx.policy||{};return `<div class="wf-stats">${[['Omzet neto berjalan',money(b.revenue)],['Target operasional / hari',money(policy.daily_target||700000)],['Ambang bonus crew',money(policy.crew_threshold||18000000)],['Ambang bonus PIC / outlet',money(policy.pic_threshold||25000000)],['Pool crew sebelum KPI',money(b.crew_pool)],['Status',status[b.status]||b.status]].map(([l,v])=>`<div class="card pad"><div class="mini muted">${E(l)}</div><b>${E(v)}</b></div>`).join('')}</div><div class="banner info">Crew: omzet ≥ Rp18 juta; minimum dari 5% × (omzet − Rp15 juta) dan 15% surplus. PIC: omzet outlet ≥ Rp25 juta; 5% surplus outlet. Bagi crew menurut jam layanan sah, PIC tidak masuk pool crew. KPI ≥90: 100%; 80–89: 90%; &lt;80: 75% + coaching.</div><p>${b.complete?'Data perhitungan lengkap.':'Estimasi — data biaya, jam atau KPI belum lengkap; finalisasi diblokir.'}</p>`+(b.surplus!=null?`<div class="card pad">Laba kotor ${money(b.gross_profit)} · fee online belum tercakup ${money(b.online_fee)} · opex ${money(b.opex)} · penyusutan ${money(b.depreciation)}<p>Surplus sebelum bonus: <b>${money(b.surplus)}</b></p><p>Pajak aktual: ${money(b.tax)}. Belum dinyatakan laba bersih final bila biaya/pajak belum lengkap.</p></div>`:'')+cards([...(b.crew||[]),...(b.pics||[])],r=>`<b>${E(person(r.user_id))}</b><p>${r.minutes!=null?E(r.minutes)+' menit layanan':E(r.days)+' hari penugasan PIC'} · KPI ${E(r.kpi??'belum disahkan')}</p><b>${money(r.amount)}</b>`);},
+ async picroyalty(){if(W.ctx.pic?.unavailable)return '<div class="card pad"><b>Jenis PIC dan insentif royalti belum aktif</b><p>PIC pusat yang mendampingi mitra memperoleh tambahan 10% royalti yang sudah dibayar dan diverifikasi. PIC mitra mengelola outlet mitra. Aturan tambahan ini menunggu pemasangan backend; belum diposting ke payroll.</p>'+btn('Coba lagi','render_workflow')+'</div>';const r=await picCall('estimate',{month:W.month+'-01'});const c=W.ctx.pic||{};const isOwner=CURRENT.role==='owner';return `<div class="banner info"><b>PIC hanya terdiri dari PIC pusat dan PIC mitra.</b><br>PIC pusat yang ditugaskan mendampingi mitra mendapat 10% royalti mitra yang telah dibayar dan diverifikasi. Ini tambahan terpisah dari bonus surplus; biaya ditanggung pusat. Jika masa pendampingan tidak penuh, dibagi menurut hari penugasan. KPI bonus surplus tidak mengubah tarif insentif royalti ini.</div>`+(isOwner?form(select('type_user','Akun PIC',W.ctx.people.filter(p=>p.role==='pic').map(p=>[p.user_id,p.name]))+select('type_kind','Jenis PIC',[['pusat','PIC Pusat'],['mitra','PIC Mitra']])+field('type_start','Efektif mulai','date','2026-11-01')+field('type_end','Sampai (opsional)','date')+text('type_reason','Alasan klasifikasi'),'wfPicType','Simpan jenis PIC'):'')+cards(c.types||[],t=>`<b>${E(person(t.user_id))} · PIC ${E(t.kind)}</b><p>${E(t.starts)}–${E(t.ends||'berjalan')}</p>${isOwner&&!t.ends?btn('Akhiri klasifikasi','wfPicEnd',J('type_end')+','+J(t.id)):''}`)+(isOwner?form(select('support_user','PIC pusat pendamping',W.ctx.people.filter(p=>p.role==='pic'&&picType(p.user_id)==='pusat').map(p=>[p.user_id,p.name]))+select('support_branch','Outlet mitra',(c.partners||[]).map(b=>[b.id,b.name]))+field('support_start','Mulai pendampingan','date','2026-11-01')+field('support_end','Sampai (opsional)','date')+text('support_reason','Lingkup bantuan / dasar penugasan'),'wfPicSupport','Tetapkan pendamping mitra'):'')+cards(c.support||[],s=>`<b>${E(person(s.user_id))} → ${E(c.partners?.find(b=>b.id===s.branch_id)?.name||s.branch_id)}</b><p>${E(s.starts)}–${E(s.ends||'berjalan')} · ${E(s.reason)}</p>${isOwner&&!s.ends?btn('Akhiri pendampingan','wfPicEnd',J('support_end')+','+J(s.id)):''}`)+`<div class="card pad"><b>Insentif royalti ${E(W.month)}: ${money((r.rows||[]).reduce((a,x)=>a+Number(x.amount),0))}</b> ${tag(r.status)}<p class="mini">Tagihan belum lunas tidak dihitung. Alokasi yang sudah masuk periode lain tidak dibayar ulang. Posting dilakukan saat owner menghitung payroll; perubahan sumber sebelum pengesahan meminta hitung ulang.</p></div>`+cards(r.rows||[],x=>`<b>${E(person(x.user_id))} · ${E(c.partners?.find(b=>b.id===x.branch_id)?.name||x.branch_id)}</b><p>Royalti terverifikasi ${money(x.royalty_paid)} × 10% × ${E(x.days)}/${E(x.total_days)} hari</p><b>${money(x.amount)}</b><small> · tagihan ${E(x.charge_id)}</small>`);},
+ async longshift(){const rows=[...await list('longshift'),...await overtimeCall('list',payload())];const roster=(await list('roster')).filter(r=>(manage()||r.user_id===CURRENT.user.id)&&r.duty!=='libur');W.longRosters=roster;const count=rows.filter(r=>['approved','completed','recorded_exception'].includes(r.status)).length;return `<div class="banner info">Kuota gabungan outlet maksimal 8 kejadian/bulan, bukan per pegawai. Anggaran Rp50.000/kejadian; kewajiban lembur yang lebih tinggi tetap dibayar. Persetujuan digital pegawai wajib. Owner/PIC dapat membuat pengajuan untuk crew, lalu crew mengonfirmasi melalui akunnya. Batas diperiksa lintas outlet.</div><div class="card pad mini">1. Buat roster di Roster & Presensi. 2. Pilih roster, isi tambahan menit dan alasan. 3. Crew menyetujui. 4. PIC/owner menyetujui reservasi. 5. Setelah dikerjakan, catat realisasi dan nilai kewajiban. Payroll mengambil kejadian yang selesai, bukan draft.</div>${count>=6?'<div class="banner">Peringatan: '+count+' kejadian tercatat pada daftar yang dapat Anda akses. PIC memeriksa kuota outlet.</div>':''}`+form(rosterSelect(roster)+field('minutes','Tambahan menit efektif','number','60','min="1" max="240"')+check('agreed','Saya adalah pegawai pada roster ini dan menyetujui jam tambahan')+text('reason','Alasan long shift'),'wfLongshift','Ajukan long shift')+cards(rows,r=>`<b>${E(person(r.user_id))}</b><p>${E(r.minutes)} menit · ${E(r.reason)}</p><p>Persetujuan pegawai: ${r.agreed?'Sudah':'Menunggu pegawai terkait'} · Kewajiban sah ${money(r.legal_amount)}</p>${r.draft&&r.status==='awaiting_consent'&&r.user_id===CURRENT.user.id?btn('Saya setuju lembur ini','wfLongConsent',J(r.id)):''}${manage()&&r.status==='pending'&&r.agreed?btn('Setujui reservasi','wfLongReview',J(r.id)+','+J('approved'))+btn('Batalkan','wfLongReview',J(r.id)+','+J('cancelled')):''}${manage()&&r.status==='approved'?btn('Catat realisasi','wfLongReview',J(r.id)+','+J('completed'))+btn('Batalkan reservasi','wfLongReview',J(r.id)+','+J('cancelled')):''}`);},
+ async case(){if(!manage())return '';const rows=await list('case'),roster=await list('roster');return `<div class="banner info">Absensi kosong tidak otomatis mangkir. Catat kontak, klarifikasi, verifikasi PIC, dasar sah dan pengesahan owner. Tidak ada denda otomatis untuk sakit/izin. Tambahan pengganti hanya atas jam tambahan nyata.</div>`+form(rosterSelect(roster)+text('reason','Kejadian dan bukti awal')+text('contact','Upaya kontak dan tenggat klarifikasi'),'wfCase','Buka kasus pending')+cards(rows,r=>`<b>${E(person(r.user_id))}</b><p>${E(r.reason)} · ${E(r.contact)}</p><p>${E(r.clarification||'')} · Dasar ${E(r.basis||'belum disahkan')} · ${money(r.amount)}</p>${r.status==='pending'?btn('Verifikasi PIC','wfCaseReview',J(r.id)+','+J('pic_verified')):''}${CURRENT.role==='owner'&&r.status==='pic_verified'?btn('Sahkan owner','wfCaseReview',J(r.id)+','+J('approved')):''}${!['posted','cancelled'].includes(r.status)?btn('Catat pengganti','wfReplacement',J(r.id)):''}${CURRENT.role==='owner'&&r.status!=='posted'?btn('Batalkan kasus','wfCaseReview',J(r.id)+','+J('cancelled')):''}`);},
+ async finance(){const costs=await list('cost');return `<div class="banner info">Pembelian stok adalah arus kas; biaya pemakaian masuk HPP. Biaya yang sudah tercakup HPP/margin tidak dikurangi lagi. Fee online ditarik dari transaksi platform; QRIS booth tidak diberi fee platform. Angka simulasi 55% tidak dipakai sebagai margin aktual.</div>`+form(field('day','Tanggal','date',today())+field('category','Kategori')+field('amount','Biaya aktual (Rp)','number','','min="0"')+check('included','Sudah tercakup HPP / margin (tidak dikurangi lagi)')+text('reference','Referensi bukti / persetujuan / alokasi'),'wfCost','Catat biaya aktual')+(CURRENT.role==='owner'?form(field('cogs_adjustment','Rekonsiliasi HPP tambahan (Rp)','number','0')+field('opex_adjustment','Opex teralokasi belum tercatat (Rp)','number','0')+field('depreciation','Penyusutan aktual (Rp)','number','0','min="0"')+field('fee_already_in_cogs','Fee online yang SUDAH tercakup HPP (Rp)','number','0','min="0"')+field('tax','Pajak aktual (kosong jika belum lengkap)','number','','min="0"')+text('reason','Dasar rekonsiliasi, kelengkapan gaji/lembur/bonus dan biaya pusat')+check('complete','Biaya, refund, fee, jam layanan dan kewajiban sudah direkonsiliasi'),'wfFinance','Simpan rekonsiliasi'):'')+form(select('user_id','Pegawai dinilai',people())+[0,1,2,3,4].map((x)=>field('kpi'+x,'Indikator '+(x+1)+' (0–100; kosong = N/A)','number','','min="0" max="100"')).join('')+text('evidence','Bukti KPI dan alasan N/A; crew: layanan 30, kebersihan 25, kas/stok 20, disiplin 15, administrasi 10. PIC: stok 25, standar 25, roster 20, data 20, coaching 10.'),'wfKPI','Sahkan KPI')+cards(costs,r=>`<b>${E(r.category)} · ${money(r.amount)}</b><p>${E(r.reference)}</p><p>${r.included_in_cogs?'Sudah di HPP; tidak dikurangi ulang':'Opex tambahan'}</p>`);},
+ async payroll(){const rows=await list('payroll');return `<div class="banner info">Slip baru terpisah dari riwayat payroll lama. Periode dibayar terkunci. Tanggal gajian ditetapkan owner. Tambahan pengganti yang belum mencukupi kewajiban kerja/lembur tetap menjadi beban perusahaan.</div>`+(CURRENT.role==='owner'?`<div class="card pad wf-row">${btn('Hitung estimasi payroll','wfPeriod',J('generate'))}${btn('Verifikasi periode','wfPeriod',J('verified'))}${btn('Sahkan & kunci','wfPeriod',J('approved'))}${btn('Tandai sudah dibayar','wfPeriod',J('paid'))}</div>`:'')+`<div class="card pad"><b>Total baris yang dapat Anda akses: ${money(rows.reduce((s,r)=>s+Number(r.amount),0))}</b></div>`+cards(rows,r=>`<b>${E(person(r.user_id))} · ${E(r.source?.startsWith('royalty_support:')?'Insentif royalti mitra':r.source?.startsWith('meal_allowance:')?'Uang makan/transport':{salary:'Gaji pokok',overtime:'Long shift/lembur',bonus:'Bonus',replacement:'Tambahan pengganti',deduction:'Potongan sah',adjustment:'Penyesuaian'}[r.kind]||r.kind)}</b><p>${money(r.amount)} · ${E(r.reason)}</p><small>${E(r.source)}</small>`);},
+ async warehouse(){const r=await call('consolidation',payload());return `<div class="banner info">Hanya outlet milik sendiri masuk laba perusahaan. Margin gudang target 18% dari harga jual: harga transfer = modal ÷ 0,82. Margin gudang tidak menambah dasar bonus PIC outlet. Eliminasi penjualan internal dan laba internal stok yang belum terpakai memakai rekonsiliasi aktual gudang.</div>`+form(field('wh_revenue','Penjualan suplai gudang aktual (Rp)','number','0','min="0"')+field('wh_cogs','HPP suplai siap kirim aktual (Rp)','number','0','min="0"')+field('wh_opex','Biaya gudang aktual (Rp)','number','0','min="0"')+field('internal_sales','Penjualan internal ke outlet milik sendiri (Rp)','number','0','min="0"')+field('unrealized_profit','Laba internal stok BELUM terpakai (Rp)','number','0','min="0"')+field('wh_tax','Pajak gudang aktual (kosong jika belum lengkap)','number','','min="0"')+text('reference','Referensi ledger suplai, stok akhir, biaya dan eliminasi'),'wfWarehouse','Simpan rekonsiliasi gudang')+`<div class="card pad"><p>Outlet belum lengkap: ${E(r.incomplete_outlets)}</p><p>Laba outlet sebelum pajak: ${money(r.outlet_pretax)}</p><p>Pendapatan gabungan setelah eliminasi: ${money(r.consolidated_revenue)}</p><p>HPP gabungan setelah eliminasi: ${money(r.consolidated_cogs)}</p><p>Laba gabungan sebelum pajak: ${money(r.consolidated_pretax)}</p><p>Pajak aktual: ${money(r.tax)}</p><p>Laba setelah pajak: ${r.tax==null||r.consolidated_pretax==null?'Belum lengkap':money(r.consolidated_pretax-r.tax)}</p><p>${E(r.reference||'Rekonsiliasi gudang belum diisi. Tidak dihitung sebagai laba final.')}</p></div>`;},
+ async setup(){if(CURRENT.role!=='owner')return '';const pol=W.ctx.policy||{daily_target:700000,crew_threshold:18000000,pic_threshold:25000000,crew_base:15000000,crew_rate:.05,crew_cap:.15,pic_rate:.05,crew_salary:1320000,pic_salary:2000000,long_limit:8,long_budget:50000,absence_reference:60000};W.policyBase=pol;return `<div class="banner info">Penugasan workflow harus diisi owner. PIC pusat dapat ditugaskan ke 2–5 outlet termasuk pusat; hak operasional lama tetap mengikuti profil lama sampai integrasi menyeluruh diverifikasi. Kebijakan baru berlaku ke depan; payroll nyata tetap memerlukan verifikasi upah dan tanggal gajian.</div>`+form(select('user_id','Pegawai',people())+select('duty','Peran penugasan',[['crew','Crew'],['pic','PIC pusat / gudang'],['gudang','Gudang']])+field('starts','Efektif mulai','date',today())+field('ends','Sampai (opsional)','date'),'wfAssignment','Tambah penugasan outlet terpilih')+cards(W.ctx.assignments,r=>`<b>${E(person(r.user_id))} · ${E(r.branch_id)} · ${E(r.duty)}</b><p>${E(r.starts)} – ${E(r.ends||'berjalan')}</p>${!r.ends?btn('Akhiri penugasan','wfAssignmentEnd',J(r.id)):''}`)+form(field('effective','Efektif kebijakan berikutnya','date','')+Object.entries({daily_target:'Target harian',crew_threshold:'Ambang crew',pic_threshold:'Ambang PIC',crew_base:'Dasar rumus crew',crew_salary:'Anggaran gaji crew',pic_salary:'Anggaran gaji PIC',long_budget:'Anggaran long shift',absence_reference:'Acuan potongan (perlu dasar sah)',long_limit:'Kuota long shift'}).map(([k,l])=>field(k,l,'number',pol[k],'min="0"')).join('')+field('payday','Tanggal gajian (1–28)','number',pol.payday??'','min="1" max="28"')+check('wage_verified','Dasar pengupahan aktual telah diverifikasi')+check('deduction_verified','Dasar tertulis dan prosedur potongan telah diverifikasi')+text('reason','Alasan kebijakan dan referensi verifikasi'),'wfPolicy','Simpan kebijakan berversi');}
+};
+function cartHTML(){return W.stockCart.map((x,i)=>`<div>${E(W.ingredients?.find(z=>z.id===x.ingredient_id)?.name||x.ingredient_id)} × ${E(x.qty)} ${btn('Hapus','wfStockRemove',String(i))}</div>`).join('')||'Belum ada bahan';}
+Object.assign(App,{
+ render_workflow:render,
+ async wfSync(){if(W.busy||!CURRENT.user)return;if(!navigator.onLine){this.toast('Koneksi belum tersedia','warn');return;}W.busy=true;const uid=CURRENT.user.id,epoch=CURRENT.sessionEpoch;try{for(const entry of queueRead()){if(entry.actor!==uid)throw Error('Akun antrean tidak sesuai');const r=await sb.rpc('sruput_workflow',{p_action:entry.action,p_data:entry.data});if(CURRENT.user?.id!==uid||CURRENT.sessionEpoch!==epoch)return;if(r.error){const a=queueRead();const item=a.find(x=>x.data.client_id===entry.data.client_id);if(item){item.status='conflict';item.error=r.error.message;localStorage.setItem(queueKey(),JSON.stringify(a));}throw Error('Antrean perlu diperiksa: '+r.error.message);}localStorage.setItem(queueKey(),JSON.stringify(queueRead().filter(x=>x.data.client_id!==entry.data.client_id)));}W.client=null;this.toast('Antrean tersinkron ke server','good');await render();}catch(e){if(CURRENT.user?.id===uid)this.toast(e.message,'bad');}finally{W.busy=false;}},
+ wfSwitch(key,value){if(W.busy)return;if(!['branch','month','tab'].includes(key))return;W[key]=value;W.client=null;W.stockCart=[];return render();},
+ wfDaily(){return run(async()=>{const photos=await upload('photos');return call('daily',{...payload(),client_id:client(),kind:val('kind'),day:val('day'),cash:num('cash'),counterpart:val('counterpart')||null,checklist:{uniform:ck('uniform'),clean:ck('clean'),equipment:ck('equipment')},stock_note:val('stock_note'),orders:val('orders'),issue:val('issue'),evidence:photos});});},
+ wfRoster(){return run(()=>call('roster',{...payload(),user_id:val('user_id'),day:val('day'),starts:val('starts')+':00+07:00',ends:val('ends')+':00+07:00',break_minutes:num('break_minutes'),duty:val('duty'),reason:val('reason')}));},
+ wfPunch(id,kind){return run(()=>call('punch',{roster_id:id,kind,device_at:new Date().toISOString(),client_id:client()}));},
+ wfRequest(){return run(async()=>call('request',{...payload(),client_id:client(),user_id:val('user_id')||null,emergency:val('emergency'),kind:val('kind'),starts:val('starts'),ends:val('ends'),reason:val('reason'),correction:val('kind')==='koreksi_absensi'?{roster_id:val('fix_roster'),clock_in:val('fix_in')+':00+07:00',clock_out:val('fix_out')+':00+07:00'}:null,evidence:(await upload('evidence'))[0]||null}));},
+ wfReviewRequest(id){const choice=prompt('Keputusan: approved (setujui) atau rejected (tolak)');if(!['approved','rejected'].includes(choice))return;const decision=prompt('Catatan keputusan dan status hak upah:');if(!decision)return;const paid=choice==='approved'?confirm('Pengajuan ini berbayar sesuai dasar yang diverifikasi? OK = berbayar; Batal = tanpa upah.'):null;return run(()=>call('request_review',{id,status:choice,decision,paid}));},
+ wfAction(action,id){return run(()=>call(action,{id}));},
+ wfEvidence(path){return run(async()=>{const r=await sb.storage.from('sruput-workflow').createSignedUrl(path,120);if(r.error)throw r.error;window.open(r.data.signedUrl,'_blank','noopener');});},
+ wfSupplement(id){const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,application/pdf';input.id='wf_supplement';input.hidden=true;document.body.appendChild(input);input.onchange=()=>run(async()=>{try{const path=(await upload('supplement'))[0];if(path)await call('request_supplement',{id,evidence:path});}finally{input.remove();}});input.click();},
+ wfStockAdd(){try{const i=val('ingredient'),x={ingredient_id:i,physical:num('physical'),daily_use:num('daily_use'),qty:num('qty')};if(x.qty<=0||x.physical<0||x.daily_use<0)throw Error('Jumlah tidak valid');if(W.stockCart.some(z=>z.ingredient_id===i))throw Error('Bahan sudah ditambahkan');W.stockCart.push(x);document.getElementById('wf_cart').innerHTML=cartHTML();}catch(e){this.toast(e.message,'bad');}},
+ wfStockRemove(i){W.stockCart.splice(i,1);document.getElementById('wf_cart').innerHTML=cartHTML();},
+ wfStockCreate(){return run(async()=>{await call('stock_create',{...payload(),needed:val('needed'),urgent:ck('urgent'),reason:val('reason'),items:W.stockCart,client_id:client()});W.stockCart=[];});},
+ wfStockStep(id,status1){let source=null,reason='';if(status1==='prepared'){source=prompt('ID gudang sumber (harus sesuai penempatan petugas):',W.ctx.branches.find(x=>x.supply||x.type==='warehouse')?.id||'');if(!source)return;}if(['cancelled','rejected'].includes(status1)){reason=prompt('Alasan:');if(!reason)return;}return run(()=>call('stock_transition',{id,status:status1,source_branch:source,reason}));},
+ wfReceive(id){const r=W.stockRows.find(x=>x.id===id);if(!r)return;const items=[];for(const i of r.items){const s=prompt(i.name+' — jumlah TOTAL diterima (bukan tambahan). Sudah '+i.received+'; dikirim '+i.shipped,i.received);if(s==null)return;const n=Number(s);if(!s.trim()||!Number.isFinite(n)||n<i.received||n>i.shipped){this.toast('Jumlah penerimaan tidak valid','bad');return;}items.push({ingredient_id:i.ingredient_id,received:n});}const reason=prompt('Catatan kekurangan/kerusakan atau kondisi barang:')||'';return run(()=>call('stock_transition',{id,status:'receive',items,reason}));},
+ wfStockPrint(id){const r=W.stockRows.find(x=>x.id===id);if(!r)return;const win=window.open('','_blank');if(!win){this.toast('Izinkan popup untuk cetak','bad');return;}win.document.write(`<!doctype html><html lang="id"><meta charset="utf-8"><title>Permintaan stok</title><style>@page{size:58mm auto;margin:2mm}body{width:48mm;font:11px monospace;overflow-wrap:anywhere;margin:0}table{width:100%;font-size:10px;border-collapse:collapse}td{vertical-align:top}hr{border:0;border-top:1px dashed}button{margin:12px}@media print{button{display:none}}</style><h3>SRUPUT</h3><b>PERMINTAAN / PENGIRIMAN</b><p>${E(r.id)}<br>Outlet: ${E(r.branch_id)}<br>Sumber: ${E(r.source_branch||'belum ditetapkan')}<br>${E(r.needed)} · ${E(status[r.status]||r.status)}</p><hr><table><tr><td>Barang / satuan</td><td>Minta<br>Kirim<br>Terima</td></tr>${r.items.map(i=>`<tr><td>${E(i.name)}<br>${E(i.unit)}</td><td>${E(i.qty)}<br>${E(i.shipped)}<br>${E(i.received)}</td></tr>`).join('')}</table><hr><p>Pengirim: ${E(person(r.sent_by))}<br><br>Tanda tangan: __________</p><p>Penerima: ${E(person(r.received_by))}<br><br>Tanda tangan: __________</p><p>${E(r.decision||'')}</p><button onclick="window.print()">Cetak</button></html>`);win.document.close();},
+ wfPicType(){return run(()=>picCall('type',{user_id:val('type_user'),kind:val('type_kind'),starts:val('type_start'),ends:val('type_end')||null,reason:val('type_reason')}));},
+ wfPicSupport(){return run(()=>picCall('support',{user_id:val('support_user'),branch_id:val('support_branch'),starts:val('support_start'),ends:val('support_end')||null,reason:val('support_reason')}));},
+ wfPicEnd(action,id){const ends=prompt('Tanggal akhir YYYY-MM-DD:');if(!ends)return;return run(()=>picCall(action,{id,ends}));},
+ wfLongshift(){return run(()=>{const ro=W.longRosters?.find(r=>r.id===val('roster_id'));if(!ro)throw Error('Pilih roster pegawai');const p={roster_id:ro.id,minutes:num('minutes'),agreed:ck('agreed'),reason:val('reason')};return ro.user_id===CURRENT.user.id?call('longshift',p):overtimeCall('create',p);});},
+ wfLongConsent(id){if(!confirm('Saya menyetujui jam tambahan pada pengajuan lembur ini.'))return;return run(()=>overtimeCall('consent',{id}));},
+ wfLongReview(id,status1){const a=status1==='completed'?prompt('Nilai kewajiban lembur yang telah diverifikasi (Rp):','0'):'0';if(a==null)return;return run(()=>call('longshift_review',{id,status:status1,legal_amount:Number(a)}));},
+ wfCase(){return run(()=>call('case',{roster_id:val('roster_id'),reason:val('reason'),contact:val('contact')}));},
+ wfCaseReview(id,status1){const data={id,status:status1};if(status1==='pic_verified'){data.clarification=prompt('Hasil klarifikasi dan kesempatan respons:');if(!data.clarification)return;}if(status1==='approved'){data.basis=prompt('Dasar sah/peraturan tertulis, pembuktian, dan pemeriksaan tidak ada potongan ganda:');if(!data.basis)return;const n=prompt('Nominal potongan yang sah (Rp):','0');if(n==null)return;data.amount=Number(n);}return run(()=>call('case_review',data));},
+ wfReplacement(id){const uid=prompt('ID pegawai pengganti:\n'+W.ctx.people.map(p=>p.name+': '+p.user_id).join('\n'));if(!uid)return;const minutes=prompt('Menit pengganti AKTUAL di luar roster awal:');if(minutes==null)return;const evidence=prompt('Bukti jam tambahan dan pekerjaan yang digantikan:');if(!evidence)return;const legal=prompt('Kewajiban sah untuk jam pengganti ini (Rp), sudah diverifikasi:');if(legal==null)return;const long=prompt('ID kejadian long shift yang membayar pekerjaan SAMA (kosong jika tidak ada):')||null;return run(()=>call('replacement',{case_id:id,user_id:uid,minutes:Number(minutes),evidence,legal_amount:Number(legal),longshift_id:long}));},
+ wfCost(){return run(()=>call('cost',{...payload(),day:val('day'),category:val('category'),amount:num('amount'),included_in_cogs:ck('included'),reference:val('reference'),client_id:client()}));},
+ wfFinance(){return run(()=>call('finance',{...payload(),cogs_adjustment:num('cogs_adjustment'),opex_adjustment:num('opex_adjustment'),depreciation:num('depreciation'),fee_already_in_cogs:num('fee_already_in_cogs'),tax:val('tax')===''?null:num('tax'),complete:ck('complete'),reason:val('reason')}));},
+ wfKPI(){return run(()=>call('kpi',{...payload(),user_id:val('user_id'),scores:[0,1,2,3,4].map(x=>val('kpi'+x)===''?null:num('kpi'+x)),evidence:val('evidence')}));},
+ wfPeriod(status1){if(!confirm(status1==='paid'?'Tandai periode ini telah dibayar? Pastikan pembayaran nyata sudah dilakukan.':'Lanjutkan '+status1+' untuk '+W.month+'?'))return;return run(()=>call(status1==='generate'?'payroll_generate':'period_review',{...payload(),status:status1}));},
+ wfWarehouse(){return run(()=>call('warehouse_save',{...payload(),revenue:num('wh_revenue'),cogs:num('wh_cogs'),opex:num('wh_opex'),internal_sales:num('internal_sales'),unrealized_profit:num('unrealized_profit'),tax:val('wh_tax')===''?null:num('wh_tax'),reference:val('reference')}));},
+ wfAssignment(){return run(()=>call('assignment',{...payload(),user_id:val('user_id'),duty:val('duty'),starts:val('starts'),ends:val('ends')||null}));},
+ wfAssignmentEnd(id){const ends=prompt('Tanggal akhir penugasan YYYY-MM-DD:');if(!ends)return;return run(()=>call('assignment_end',{id,ends}));},
+ wfPolicy(){return run(()=>{const settings={...W.policyBase,open:'09:00',close:'22:00',wage_verified:ck('wage_verified'),deduction_verified:ck('deduction_verified'),payday:num('payday')};for(const k of ['daily_target','crew_threshold','pic_threshold','crew_base','crew_salary','pic_salary','long_budget','absence_reference','long_limit'])settings[k]=num(k);return call('policy',{effective:val('effective'),reason:val('reason'),settings});});}
+});
+
+// Employee settings: fixed salary fields remain, workflow bonus is derived from role and policy.
+App.wfOpenTab=function(tab){W.tab=tab;return this.go('workflow');};
+const legacyEmployeeList=App._pyPegawai;
+App._pyPegawai=async function(){const epoch=CURRENT.sessionEpoch;await legacyEmployeeList.call(this);const profiles=await Data.allProfiles();const picContext=await picContextSafe();if(epoch!==CURRENT.sessionEpoch)return;const body=document.getElementById('pyBody');if(!body)return;const note=document.createElement('div');note.className='banner info';note.innerHTML='<div><b>Bonus workflow mulai 1 November 2026</b><br>PIC: 5% surplus outlet yang omzetnya minimal Rp25 juta, setelah faktor KPI. Crew memakai pool bonus outlet, bukan persen omzet pribadi.<br>'+btn('Lihat surplus & bonus','wfOpenTab',J('bonus'))+' '+btn('Input lembur / Long Shift','wfOpenTab',J('longshift'))+'</div>';body.prepend(note);for(const card of body.querySelectorAll('[data-employee-id]')){const role=profiles.find(p=>p.user_id===card.dataset.employeeId)?.role;const kind=picType(card.dataset.employeeId,picContext);if(role==='pic'){const badge=document.createElement('span');badge.className='tag';badge.textContent=kind==='pusat'?'PIC Pusat':kind==='mitra'?'PIC Mitra':'Tetapkan jenis PIC';card.prepend(badge);}for(const row of card.querySelectorAll('tr'))if(row.cells[0]?.textContent.trim()==='Bonus')row.cells[1].textContent=role==='pic'?'5% surplus outlet; omzet ≥ Rp25 juta; faktor KPI.'+(kind==='pusat'?' Tambahan 10% royalti mitra yang didampingi dan terverifikasi.':''):role==='crew'?'Pool crew berdasarkan jam layanan dan KPI; omzet outlet ≥ Rp18 juta.':'Pengaturan lama; role ini belum memakai bonus workflow crew/PIC.';}};
+App.pyEditEmployee=async function(uid){if(CURRENT.role!=='owner'){this.toast('Hanya owner dapat mengubah gaji','bad');return;}const epoch=CURRENT.sessionEpoch;try{const [er,pr]=await Promise.all([sb.from('employees').select('*').eq('user_id',uid).single(),sb.from('profiles').select('role,full_name').eq('user_id',uid).single()]);if(er.error)throw er.error;if(pr.error)throw pr.error;if(epoch!==CURRENT.sessionEpoch)return;const e=er.data,p=pr.data;const picContext=p.role==='pic'?await picContextSafe():null;const kind=picType(uid,picContext);this.wfCloseEmployee();const dialog=document.createElement('dialog');dialog.id='appModal';dialog.className='wf-employee-dialog';this._wfEmpEditor={uid,role:p.role,epoch};dialog.innerHTML='<form class="pad" onsubmit="event.preventDefault();App.wfSaveEmployee()"><h3>Gaji & bonus · '+E(p.full_name||'Pegawai')+'</h3><div class="wf-fields" style="margin-top:16px">'+field('emp_salary','Gaji pokok aktual / bulan (Rp)','number',e.gaji_pokok??0,'min="0" step="1" required')+field('emp_hour','Tarif lembur referensi / jam (Rp)','number',e.tarif_lembur_jam??0,'min="0" step="1" required')+field('emp_meal','Uang makan/transport / hari (Rp)','number',e.uang_makan_harian??0,'min="0" step="1" required')+field('emp_job','Jabatan','text',e.jabatan||'')+'<label>Skema bonus berdasarkan role<select id="wf_emp_bonus" disabled><option>'+E(p.role==='pic'?(kind==='pusat'?'PIC Pusat — surplus + 10% royalti pendampingan':kind==='mitra'?'PIC Mitra — bonus surplus outlet':'PIC — jenis pusat/mitra menunggu aktivasi'):p.role==='crew'?'Crew — pool berdasarkan jam & KPI':'Bonus lama; bukan role PIC/crew')+'</option></select></label></div><div class="banner info">'+(p.role==='pic'?'PIC: bonus surplus mulai omzet neto Rp25 juta per outlet/bulan. Kontribusi = 5% × surplus sebelum bonus × faktor KPI × porsi hari penugasan. PIC pusat juga mendapat 10% royalti mitra terverifikasi sesuai penugasan pendampingan, terpisah dari bonus surplus.':'Crew: kelayakan mulai omzet Rp18 juta; pool dibagi menurut jam layanan sah dan faktor KPI.')+'<br>Surplus dihitung dari penjualan, HPP, fee online, biaya dan penyusutan aktual. Bukan diisi sebagai persen omzet.<br>Tarif lembur di sini merupakan referensi; kejadian dan realisasi dibukukan melalui Long Shift. Besaran kewajiban perlu diverifikasi.</div><div class="wf-row"><button class="btn" type="button" onclick="App.wfCloseEmployee()">Batal</button><button class="btn btn-primary" type="submit" id="wf_emp_save">Simpan gaji</button></div></form>';document.body.appendChild(dialog);dialog.showModal();}catch(e){if(epoch===CURRENT.sessionEpoch)this.toast(e.message,'bad');}};
+App.wfCloseEmployee=function(){document.getElementById('appModal')?.remove();delete this._wfEmpEditor;};
+App.wfSaveEmployee=async function(){const ed=this._wfEmpEditor;if(!ed||ed.epoch!==CURRENT.sessionEpoch||CURRENT.role!=='owner'||ed.busy)return;const button=document.getElementById('wf_emp_save');try{const patch={gaji_pokok:num('emp_salary'),tarif_lembur_jam:num('emp_hour'),uang_makan_harian:num('emp_meal'),jabatan:val('emp_job').trim()||null,updated_at:new Date().toISOString(),updated_by:CURRENT.user.id};for(const k of ['gaji_pokok','tarif_lembur_jam','uang_makan_harian'])if(!Number.isSafeInteger(patch[k])||patch[k]<0)throw Error('Nilai uang wajib rupiah bulat, minimal 0');ed.busy=true;if(button)button.disabled=true;const r=await sb.from('employees').update(patch).eq('user_id',ed.uid).select('user_id,gaji_pokok,tarif_lembur_jam,uang_makan_harian').single();if(r.error)throw r.error;if(!r.data||r.data.user_id!==ed.uid||['gaji_pokok','tarif_lembur_jam','uang_makan_harian'].some(k=>Number(r.data[k])!==patch[k]))throw Error('Perubahan gaji belum terverifikasi');if(ed.epoch!==CURRENT.sessionEpoch)return;this.wfCloseEmployee();this.toast('Gaji tersimpan; bonus mengikuti rumus workflow, tanpa mengubah bonus historis','good');await this.render_employees();}catch(e){if(ed.epoch===CURRENT.sessionEpoch)this.toast(e.message,'bad');}finally{ed.busy=false;if(button?.isConnected)button.disabled=false;}};
+ROLE_LABEL.pic='PIC Pusat / PIC Mitra';
+for(const r of ['owner','pic','crew','gudang']){NAV[r].splice(1,0,['workflow','✓','Operasional Baru',1]);}
+// Route attendance to server-time roster; legacy attendance history remains under employees for authorized users.
+App.render_attend=function(){W.tab='roster';return this.go('workflow');};
+App.voidSale=async function(saleId){const reason=prompt('Alasan pembatalan (minimal 5 karakter):');if(!reason)return;const condition=prompt('Kondisi bahan: ketik BELUM DIPAKAI jika seluruh bahan belum diracik. Ketik TERPAKAI jika sudah dipakai / campuran / meragukan.');if(!['BELUM DIPAKAI','TERPAKAI'].includes(condition))return;try{await call('sale_void',{sale_id:saleId,reason,return_stock:condition==='BELUM DIPAKAI'});this.toast(condition==='BELUM DIPAKAI'?'Transaksi batal; stok dikembalikan sesuai snapshot':'Transaksi batal; bahan terpakai dicatat sebagai biaya','good');await this.render_history();}catch(e){this.toast(e.message,'bad');}};
+Data.voidSale=async function(saleId,reason){throw Error('Kondisi bahan wajib diperiksa melalui tombol pembatalan pada Riwayat.');};
+const oldClockIn=App.attClockIn,oldClockOut=App.attClockOut;
+App.attClockIn=App.attClockOut=function(){this.toast('Gunakan Roster & Presensi di Operasional Baru.','warn');W.tab='roster';return this.go('workflow');};
+// Prevent new payroll via legacy UI. Server migration also blocks direct legacy generate after cutover.
+App.render_picminta=App.picSubmitMinta=function(){W.tab='stock';return this.go('workflow');};
+App.pySetAbsen=function(){W.tab='case';return this.go('workflow');};
+App.pySetLembur=function(){W.tab='longshift';return this.go('workflow');};
+App.pyHitung=function(){W.tab='payroll';return this.go('workflow');};
+const oldFinal=App.pyFinal;App.pyFinal=function(id){this.toast('Finalisasi payroll lama dinonaktifkan pada versi workflow; periksa riwayat di menu pegawai.','warn');};
+const reset=App._resetSession;App._resetSession=function(...args){W.token++;W.ctx=null;W.branch=null;W.month=null;W.tab='daily';W.stockRows=[];W.stockCart=[];W.client=null;W.busy=false;return reset.apply(this,args);};
+window.addEventListener('offline',()=>{const el=document.getElementById('wf_sync');if(el)el.textContent='Offline — formulir belum disimpan. Tidak ada potongan otomatis.';});
+window.addEventListener('online',()=>{const el=document.getElementById('wf_sync');if(el)el.textContent='Koneksi kembali — muat ulang untuk sinkronisasi server.';});
+})();
+
+</script>
+<script id="sruput-loyalty-ui">
+/* Owner controls campaigns; cashier redemption stays in the sale transaction. */
+(()=>{
+const E=escHtml,J=jsArg,$=id=>document.getElementById(id),v=id=>$(id)?.value?.trim()||'';
+const field=(id,label,type='text',value='')=>`<label style="display:block;margin:10px 0">${E(label)}<input id="${id}" type="${type}" value="${E(value)}" style="display:block;width:100%;padding:9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"></label>`;
+const select=(id,label,options)=>`<label style="display:block;margin:10px 0">${E(label)}<select id="${id}" style="display:block;width:100%;padding:9px">${options.map(([id,name])=>`<option value="${E(id)}">${E(name)}</option>`).join('')}</select></label>`;
+async function call(action,data={}){const{data:r,error}=await sb.rpc('sruput_loyalty',{p_action:action,p_data:data});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Fitur voucher/member belum diaktifkan. Hubungi owner.':error.message);return r;}
+const items=()=>App.state.cart.map(c=>({menu_id:c.id,qty:Number(c.qty),note:c.note||null,...(c.adds?.length?{adds:[...new Set(c.adds)]}:{})}));
+const signature=()=>JSON.stringify([CURRENT.sessionEpoch,CURRENT.user?.id,App.state.posBranch,items(),App.state.cart.map(c=>[c.key,c.price])]);
+const oldClear=App._clearCart,oldReset=App._resetSession;
+App._clearCart=function(...args){this._loyalty=null;return oldClear.apply(this,args);};
+App._resetSession=function(...args){this._loyalty=null;this._memberSearch='';this._memberOffset=0;this._memberTab='database';return oldReset.apply(this,args);};
+const oldBest=App._bestPromo;
+App._bestPromo=function(total,employee){const p=oldBest.call(this,total,employee),q=this._loyalty;if(q&&(q.signature!==signature()||!this.state.cart.length))this._loyalty=null;
+ if(!employee&&q===this._loyalty&&q&&Date.parse(q.expires)>Date.now()&&q.amount>(p?.amount||0))return{kind:'loyalty',amount:Math.min(total,q.amount),label:q.name};return p;};
+const oldRender=App.renderCart;
+App.renderCart=function(...args){const r=oldRender.apply(this,args),foot=$('cartFoot');if(foot&&this.state.page==='pos'){
+ const q=this._loyalty;const box=document.createElement('div');box.id='loyaltyPos';box.style.cssText='padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:10px';
+ box.innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" style="width:auto" onclick="App.voucherOpen()">Kode voucher</button><button class="btn" style="width:auto" onclick="App.memberOpen()">Member & poin</button><button class="btn btn-primary" id="posMemberRegister" style="width:auto" onclick="App.loyaltyRegisterForm()">+ Member baru</button></div><div class="mini muted">Member baru bisa didaftarkan sebelum memilih produk.</div>${q?`<div class="mini">${E(q.name)} · potongan hingga ${this.rp(q.amount)}</div><button class="btn" style="width:auto" onclick="App.loyaltyRemove()">Lepas promo</button>`:''}`;
+ foot.prepend(box);}return r;};
+App.loyaltyRemove=function(){if(this._checkoutBusy)return;this._loyalty=null;this.state.cartClientId=null;this.renderCart();};
+App.voucherOpen=function(){if(this._checkoutBusy)return;this._modal(`<div style="width:420px;max-width:80vw"><h3>Kode Voucher</h3>${field('lv_code','Kode voucher')}<button class="btn btn-primary" id="lv_apply" onclick="App.loyaltyApply('voucher')">Terapkan voucher</button><p id="loyaltyMsg" role="status"></p></div>`);};
+App.memberOpen=function(){if(this._checkoutBusy)return;this._modal(`<div style="width:420px;max-width:80vw"><h3>Member</h3>${field('lm_phone','Nomor HP member','tel')}${field('lm_card','Kode kartu member','password')}<button class="btn" onclick="App.loyaltyIdentify()">Lihat benefit member</button><div id="lm_benefits"></div><hr><button class="btn" onclick="App.loyaltyRegisterForm()">Daftarkan member baru</button><p id="loyaltyMsg" role="status"></p></div>`);};
+App.loyaltyOpen=function(){return this.voucherOpen();};
+App.loyaltyIdentify=async function(){const active=this._sessionGuard();try{const r=await call('member',{branch_id:this.state.posBranch,phone:v('lm_phone'),card:v('lm_card')});if(!active()||!$('lm_benefits'))return;
+ $('lm_benefits').innerHTML=`<p>Member: <b>${E(r.name)}</b></p>`+(r.offers.length?select('lm_offer','Benefit tersedia',r.offers.map(o=>[o.id,o.name+' · '+(o.mode==='percent'?o.value+'%':this.rp(o.value))+' · min '+this.rp(o.min_spend)]))+`<button class="btn btn-primary" onclick="App.loyaltyApply('member')">Pakai benefit member</button>`:'<p>Belum ada benefit aktif di outlet ini.</p>');
+ }catch(e){if(active()&&$('loyaltyMsg'))$('loyaltyMsg').textContent=e.message;}};
+App.loyaltyApply=async function(kind){if(this._checkoutBusy)return;const active=this._sessionGuard(),sig=signature(),root=$('appModal'),input=$(kind==='voucher'?'lv_code':'lm_phone'),button=$('lv_apply');if(this._loyaltyQuoteOp?.input===input)return;const op={input};this._loyaltyQuoteOp=op;const selection=()=>JSON.stringify([v('lv_code'),v('lm_phone'),v('lm_card'),v('lm_offer')]),selected=selection();const current=()=>active()&&this._loyaltyQuoteOp===op&&root===$('appModal')&&input===$(kind==='voucher'?'lv_code':'lm_phone')&&sig===signature()&&selected===selection();if(button)button.disabled=true;try{
+ if(!navigator.onLine)throw Error('Voucher/member memerlukan koneksi saat diterapkan dan dibayar.');
+ if(this.state.empSel&&!this.state.empUsedToday)throw Error('Lepas diskon pegawai sebelum memakai voucher/member.');
+ const p={branch_id:this.state.posBranch,items:items(),kind};if(kind==='member')Object.assign(p,{phone:v('lm_phone'),card:v('lm_card'),offer_id:v('lm_offer')});else p.code=v('lv_code');
+ const r=await call('quote',p);if(!current())return;
+ if(!Number.isFinite(Number(r.subtotal))||Math.abs(Number(r.subtotal)-this.state.cart.reduce((a,c)=>a+Number(c.qty)*Number(c.price),0))>0.01)throw Error('Harga di kasir berubah. Muat ulang menu dan terapkan ulang promo sebelum menagih.');
+ this._loyalty={...r,signature:sig};this.state.cartClientId=null;$('appModal')?.remove();this.renderCart();this.toast('Promo diperiksa. Kuota diklaim saat pembayaran berhasil.','good');
+ }catch(e){if(current()&&$('loyaltyMsg'))$('loyaltyMsg').textContent=e.message;}finally{if(this._loyaltyQuoteOp===op)this._loyaltyQuoteOp=null;if(button?.isConnected)button.disabled=false;}};
+App.loyaltyRegisterForm=function(owner=false){if(this._checkoutBusy)return;const prefill=v('lm_phone');this._modal(`<div style="width:400px;max-width:80vw"><h3>Daftar member</h3><input type="hidden" id="lr_origin" value="${owner?'owner':'pos'}">${field('lr_phone','Nomor HP','tel',prefill)}${field('lr_name','Nama')}${field('lr_email','Email (opsional)','email')}<label><input type="checkbox" id="lr_consent"> Pelanggan menyetujui pendaftaran dan penyimpanan data untuk membership. Ini bukan persetujuan promosi massal.</label><button class="btn btn-primary" style="margin-top:14px" id="lr_save" onclick="App.loyaltyRegister()">Daftarkan</button><p id="loyaltyMsg" role="status"></p></div>`);};
+App.loyaltyRegister=async function(){const active=this._sessionGuard(),root=$('appModal'),branch=this.state.posBranch,page=this.state.page,button=$('lr_save');if(button?.disabled)return;try{button.disabled=true;
+ const payload={branch_id:this.state.posBranch,phone:v('lr_phone'),name:v('lr_name'),email:v('lr_email'),consent:!!$('lr_consent')?.checked};const ownerRegistration=v('lr_origin')==='owner';const r=ownerRegistration?await membersCall('create',payload):await (async()=>{const{data,error}=await sb.rpc('sruput_member_register',{p_data:payload});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Pendaftaran cepat belum diaktifkan. Hubungi owner.':error.message);return data;})();if(!active()||root!==$('appModal')||button!==$('lr_save'))return;
+ this._modal(`<h3>Member terdaftar</h3><p>${E(r.name)} · ${E(r.phone)}</p><p>Gunakan nomor telepon ini saat transaksi berikutnya. Tidak perlu kode kartu.</p><p>Saldo awal: <b>0 poin</b>. Poin bertambah setelah transaksi yang memenuhi minimum berhasil.</p>${!ownerRegistration&&page==='pos'&&this.state.page===page&&this.state.posBranch===branch&&this.state.cart.length?'<button class="btn btn-primary" id="lr_use">Gunakan di transaksi ini</button>':''}`);const use=$('lr_use'),success=$('appModal');if(use)use.onclick=()=>{if(!active()||success!==$('appModal')||use!==$('lr_use')||this.state.page!=='pos'||this.state.posBranch!==branch)return;this.memberOpen();$('lm_phone').value=r.phone;return this.loyaltyIdentify();};if(ownerRegistration){this._memberTab='database';await this.render_members();}
+ }catch(e){if(active()&&root===$('appModal')&&button===$('lr_save')&&$('loyaltyMsg'))$('loyaltyMsg').textContent=/duplicate|unique|Nomor sudah terdaftar/i.test(e.message)?'Nomor sudah terdaftar. Cari member menggunakan nomor telepon tersebut.':e.message;}finally{if(button)button.disabled=false;}};
+async function adminCall(rpc,action,data={}){const{data:r,error}=await sb.rpc(rpc,{p_action:action,p_data:data});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Pengelolaan ini belum aktif. Hubungi owner.':error.message);return r;}
+const membersCall=(a,p)=>adminCall('sruput_members',a,p),vouchersCall=(a,p)=>adminCall('sruput_vouchers',a,p);
+const campaignCall=(kind,p)=>kind==='member'?membersCall('benefit_create',p):vouchersCall('create',p);
+function campaignForm(kind,branches){return `<div class="card pad"><h3>${kind==='member'?'Buat benefit member':'Buat voucher'}</h3><input type="hidden" id="lo_kind" value="${kind}">${field('lo_name','Nama '+(kind==='member'?'benefit':'voucher'))}${kind==='voucher'?field('lo_code','Kode voucher (4–32 huruf/angka/tanda -)'):''}${select('lo_mode','Jenis potongan',[['fixed','Nominal rupiah'],['percent','Persentase']])}${field('lo_value','Nilai potongan','number')}${field('lo_cap','Batas maksimum potongan (Rp)','number')}${field('lo_min','Minimum belanja (Rp)','number','0')}${select('lo_branch','Berlaku di outlet',[...branches.filter(b=>b.type==='outlet').map(b=>[b.id,b.name]),['','Semua outlet (termasuk mitra)']])}${field('lo_start','Mulai (WIB)','datetime-local',todayWIBStr()+'T00:00')}${field('lo_end','Berakhir (WIB, tidak termasuk)','datetime-local',wibDateStrOffset(7)+'T23:59')}${field('lo_quota','Kuota total kampanye','number','100')}${kind==='member'?field('lo_per','Batas klaim per member per kampanye','number','1'):'<input type="hidden" id="lo_per" value="1">'}<p class="mini">${kind==='member'?'Benefit hanya bisa diklaim menggunakan kartu member dan dibatasi per member.':'Voucher umum dibatasi kuota kampanye; bukan satu kali per orang.'} Syarat promo tetap setelah dibuat. Nonaktifkan lalu buat promo baru untuk mengubahnya.</p><button id="lo_create" class="btn btn-primary" onclick="App.loyaltyCreate()">${kind==='member'?'Buat benefit':'Buat voucher'}</button><p id="lo_error" role="status"></p></div>`;}
+function campaignCards(offers,kind){return offers.map(o=>`<div class="card pad" style="margin-bottom:10px"><b>${E(o.name)}</b> ${o.code?`<code>${E(o.code)}</code>`:''}<p>${o.mode==='percent'?E(o.value)+'%':App.rp(o.value)} · maksimum ${App.rp(o.cap)} · minimum belanja ${App.rp(o.min_spend)} · ${o.used}/${o.quota} klaim · ${o.branch_id?E(o.branch_id):'semua outlet'}</p><p>${E(new Date(o.starts).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'}))}–${E(new Date(o.ends).toLocaleString('id-ID',{timeZone:'Asia/Jakarta'}))} WIB · ${o.active?'Aktif':'Nonaktif'}</p><button class="btn" onclick="App.loyaltyToggle('${kind==='member'?'benefit':'voucher'}',${J(o.id)},${!o.active})">${o.active?'Nonaktifkan':'Aktifkan'}</button></div>`).join('')||'<div class="card pad">Belum ada promo pada bagian ini.</div>';}
+App.render_vouchers=async function(){const target=$('view');if(CURRENT.role!=='owner'){target.innerHTML='<p>Hanya owner dapat mengelola voucher.</p>';return;}
+ const active=this._sessionGuard();target.innerHTML=this.loadingHTML('Memuat voucher…');try{const[r,branches]=await Promise.all([vouchersCall('dashboard'),Data.branches()]);if(!active()||!['vouchers','loyalty'].includes(this.state.page))return;
+ target.innerHTML='<div class="banner info">Voucher berkode untuk kampanye umum. Data pelanggan dan benefit khusus member tersedia di menu Member.</div>'+campaignForm('voucher',branches)+'<h3>Daftar voucher</h3>'+campaignCards(r.offers,'voucher');
+ }catch(e){if(active())target.innerHTML=this.errHTML(e);}};
+App.render_members=async function(){const target=$('view');if(CURRENT.role!=='owner'){target.innerHTML='<p>Hanya owner dapat mengelola database member.</p>';return;}
+ const active=this._sessionGuard();target.innerHTML=this.loadingHTML('Memuat database member…');try{const[r,branches]=await Promise.all([membersCall('dashboard',{search:this._memberSearch||'',offset:this._memberOffset||0}),Data.branches()]);if(!active()||this.state.page!=='members')return;
+ const benefits=this._memberTab==='benefits';
+ let body=`<div class="banner info">Database pelanggan member tersimpan terpisah dari voucher dan histori penukaran. Data pelanggan: nomor HP, nama, dan email. Member dipilih di kasir menggunakan nomor telepon.</div><div style="display:flex;gap:8px;margin-bottom:16px"><button class="btn" style="width:auto" onclick="App.memberTab('database')">Database Member</button><button class="btn" style="width:auto" onclick="App.memberTab('benefits')">Benefit Member</button></div>`;
+ if(benefits)body+=campaignForm('member',branches)+'<h3>Daftar benefit member</h3>'+campaignCards(r.offers,'member');
+ else body+=`<div class="card pad"><h3>Database Member</h3><p id="memberTotal">${r.total} member${this._memberSearch?' sesuai pencarian':''}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="mb_search" aria-label="Cari member" placeholder="Nomor HP, nama, atau email" value="${E(this._memberSearch||'')}" style="padding:9px;flex:1;min-width:150px"><button class="btn" style="width:auto" onclick="App.memberSearch()">Cari</button><button class="btn btn-primary" style="width:auto" onclick="App.loyaltyRegisterForm(true)">Tambah member</button></div></div>`+r.members.map(m=>`<div class="card pad" data-member-id="${E(m.id)}" style="margin-top:10px"><b>${E(m.name)}</b><p>${E(m.phone)} · ${E(m.email||'tanpa email')} · ${m.active?'Aktif':'Nonaktif'}</p><button class="btn" style="width:auto" onclick="App.memberEdit(${J(m.id)})">Edit data</button><button class="btn" style="width:auto" onclick="App.loyaltyToggle('member',${J(m.id)},${!m.active})">${m.active?'Nonaktifkan':'Aktifkan'}</button></div>`).join('')+(!r.members.length?'<div class="card pad">Member tidak ditemukan.</div>':'')+`<div style="display:flex;gap:8px;margin-top:14px"><button class="btn" style="width:auto" ${this._memberOffset>0?'':'disabled'} onclick="App.memberPage(-20)">Sebelumnya</button><span>Halaman ${Math.floor((this._memberOffset||0)/20)+1}</span><button class="btn" style="width:auto" ${(this._memberOffset||0)+20<r.total?'':'disabled'} onclick="App.memberPage(20)">Berikutnya</button></div>`;
+ target.innerHTML=body;
+ }catch(e){if(active())target.innerHTML=this.errHTML(e);}};
+App.render_loyalty=function(){return this.render_vouchers();};
+App.render_loyaltySection=function(kind){if(kind==='member'){this._memberTab='benefits';return this.render_members();}return this.render_vouchers();};
+App.memberTab=function(tab){this._memberTab=tab;return this.render_members();};
+App.memberSearch=function(){this._memberSearch=v('mb_search');this._memberOffset=0;return this.render_members();};
+App.memberPage=function(delta){this._memberOffset=Math.max(0,(this._memberOffset||0)+delta);return this.render_members();};
+App.memberEdit=async function(id){if(CURRENT.role!=='owner')return;const active=this._sessionGuard();try{const m=await membersCall('get',{id});if(!active())return;this._modal(`<div style="width:400px;max-width:80vw"><h3>Edit data member</h3><input type="hidden" id="me_id" value="${E(m.id)}">${field('me_phone','Nomor HP','tel',m.phone)}${field('me_name','Nama','text',m.name)}${field('me_email','Email (opsional)','email',m.email||'')}<button id="me_save" class="btn btn-primary" onclick="App.memberSave()">Simpan data member</button><p id="me_error" role="status"></p></div>`);}catch(e){if(active())this.toast(e.message,'bad');}};
+App.memberSave=async function(){if(CURRENT.role!=='owner')return;const active=this._sessionGuard(),button=$('me_save');if(button?.disabled)return;try{button.disabled=true;await membersCall('update',{id:v('me_id'),phone:v('me_phone'),name:v('me_name'),email:v('me_email')});if(!active())return;$('appModal')?.remove();this.toast('Data member diperbarui.','good');this._memberTab='database';await this.render_members();}catch(e){if(active()&&$('me_error'))$('me_error').textContent=/duplicate|unique/i.test(e.message)?'Nomor HP sudah dipakai member lain.':e.message;}finally{if(button)button.disabled=false;}};
+
+App.loyaltyCreate=async function(){if(CURRENT.role!=='owner')return;const button=$('lo_create');if(button?.disabled)return;const active=this._sessionGuard();try{
+ const kind=v('lo_kind'),mode=v('lo_mode'),value=Number(v('lo_value')),cap=Number(v('lo_cap')),min=Number(v('lo_min')),quota=Number(v('lo_quota')),per=Number(v('lo_per'));
+ if(!v('lo_name')||![value,cap,min].every(Number.isFinite)||value<=0||cap<=0||min<0||!Number.isInteger(quota)||quota<1||!Number.isInteger(per)||per<1)throw Error('Isi nama, potongan, batas maksimum, minimum belanja dan kuota dengan benar.');
+ if(mode==='percent'&&value>100)throw Error('Persentase maksimal 100%.');
+ button.disabled=true;await campaignCall(kind,{kind,mode,name:v('lo_name'),code:v('lo_code'),value,cap,min_spend:min,branch_id:v('lo_branch'),starts:v('lo_start')+':00+07:00',ends:v('lo_end')+':00+07:00',quota,per_member:per});if(active()){this.toast('Promo dibuat.','good');await this.render_loyaltySection(kind);}
+ }catch(e){if(active()&&$('lo_error'))$('lo_error').textContent=e.message;}finally{if(button)button.disabled=false;}};
+App.loyaltyToggle=async function(kind,id,enabled){if(CURRENT.role!=='owner')return;const active=this._sessionGuard();try{if(kind==='voucher')await vouchersCall('toggle',{id,active:enabled});else await membersCall(kind==='member'?'toggle':'benefit_toggle',{id,active:enabled});if(!active())return;if(kind==='voucher')await this.render_vouchers();else await this.render_members();}catch(e){if(active())this.toast(e.message,'bad');}};
+App.loyaltyResetCard=async function(id){if(CURRENT.role!=='owner'||!confirm('Pastikan pelanggan sudah diverifikasi. Ganti kode kartu lama?'))return;const active=this._sessionGuard();try{const r=await membersCall('card_reset',{id});if(!active())return;this._modal(`<h3>Kode kartu baru</h3><p>Berikan kepada member yang bersangkutan. Kode lama tidak berlaku.</p><code style="word-break:break-all">${E(r.card)}</code>`);}catch(e){if(active())this.toast(e.message,'bad');}};
+App.render_member_register=function(){if($('pageTitle'))$('pageTitle').textContent='Daftar Member';if($('pageSub'))$('pageSub').textContent='Pendaftaran pelanggan · semua role';const target=$('view');target.innerHTML='<div class="card pad"><h3>Pendaftaran member baru</h3><p>Isi nomor HP, nama, dan email opsional dengan persetujuan pelanggan. Saldo awal 0 poin.</p><button class="btn btn-primary" style="width:auto" onclick="App.loyaltyRegisterForm()">+ Daftar member</button><p class="mini">Saldo dan penukaran diperiksa di kasir memakai nomor telepon. Pengelolaan database dan aturan poin melalui owner.</p></div>';};
+for(const role of ['owner','pic','crew','mitra','media','gudang','auditor','ai_review'])if(NAV[role]&&!NAV[role].some(n=>n[0]==='member_register'))NAV[role].push(['member_register','♙','Daftar Member',1]);
+NAV.owner=NAV.owner.filter(n=>n[0]!=='loyalty');for(const row of [['vouchers','◇','Voucher',1],['members','♙','Member',1]])if(!NAV.owner.some(n=>n[0]===row[0]))NAV.owner.push(row);
+})();
+
+</script>
+<script id="sruput-points-ui">
+(()=>{
+const E=escHtml,J=jsArg,$=id=>document.getElementById(id),val=id=>$(id)?.value?.trim()||'';
+async function api(a,p={}){const{data,error}=await sb.rpc('sruput_member_points',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Sistem poin belum diaktifkan oleh owner.':error.message);return data;}
+const field=(id,label,value='',type='number')=>`<label style="display:block;margin:12px 0">${E(label)}<input id="${id}" type="${type}" value="${E(value)}" style="width:100%;display:block;padding:9px"></label>`;
+const items=()=>App.state.cart.map(c=>({menu_id:c.id,qty:Number(c.qty),note:c.note||null,...(c.adds?.length?{adds:[...new Set(c.adds)]}:{})}));
+const sig=()=>JSON.stringify([CURRENT.sessionEpoch,CURRENT.user?.id,App.state.posBranch,items(),App.state.cart.map(c=>[c.key,c.price]),App._loyalty?.ticket||null]);
+const clear=App._clearCart,reset=App._resetSession;
+App._clearCart=function(...a){this._points=null;return clear.apply(this,a);};App._resetSession=function(...a){this._points=null;return reset.apply(this,a);};
+const best=App._bestPromo;
+App._bestPromo=function(total,emp){const p=best.call(this,total,emp),q=this._points;if(q&&q.signature!==sig()){this._points=null;this.toast('Keranjang atau voucher berubah. Pilih ulang member agar poin tercatat.','warn');return p;}if(q&&!emp&&q.mode!=='none'&&Date.parse(q.expires)>Date.now())return{kind:'points',amount:q.discount,label:q.mode==='product'?'Hadiah produk · '+q.spend_points+' poin':'Tukar '+q.spend_points+' poin'};return p;};
+const cart=App.renderCart;
+App.renderCart=function(...a){const r=cart.apply(this,a),box=$('loyaltyPos');if(box&&this._points){const q=this._points,info=document.createElement('div');info.className='mini';info.id='pointsSelected';info.innerHTML=`Member <b>${E(q.name)}</b> · saldo ${E(q.balance)} poin${q.spend_points?' · pakai '+E(q.spend_points)+' poin':''}<br>Perolehan poin dihitung dari total akhir setelah pembayaran.<button class="btn" style="width:auto" onclick="App.pointsRemove()">Lepas member</button>`;box.appendChild(info);}return r;};
+App.pointsRemove=function(){if(this._checkoutBusy)return;this._points=null;this.state.cartClientId=null;this.renderCart();};
+App.memberOpen=function(){if(this._checkoutBusy)return;this._modal(`<div style="width:420px;max-width:80vw"><h3>Member & Poin</h3>${field('lm_phone','Nomor HP member','','tel')}<button class="btn" onclick="App.loyaltyIdentify()">Cari member</button><div id="lm_benefits"></div><hr><button class="btn" onclick="App.loyaltyRegisterForm()">Daftarkan member baru</button><p id="loyaltyMsg" role="status"></p></div>`);for(const id of ['lm_phone'])$(id).oninput=()=>{if($('lm_benefits'))$('lm_benefits').innerHTML='';if($('loyaltyMsg'))$('loyaltyMsg').textContent='';};$('lm_phone').autocomplete='tel';$('lm_phone').inputMode='tel';$('lm_phone').enterKeyHint='search';$('lm_phone').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();this.loyaltyIdentify();}};$('lm_phone').focus();};
+App.loyaltyIdentify=async function(){const active=this._sessionGuard(),root=$('appModal'),input=$('lm_phone'),branch=this.state.posBranch,phone=val('lm_phone'),request=this._memberAccountRequest=(this._memberAccountRequest||0)+1;const current=()=>active()&&root===$('appModal')&&input===$('lm_phone')&&branch===this.state.posBranch&&phone===val('lm_phone')&&request===this._memberAccountRequest;try{if($('lm_benefits'))$('lm_benefits').innerHTML='';if($('loyaltyMsg'))$('loyaltyMsg').textContent='';const r=await api('account',{branch_id:branch,phone});if(!current()||!$('lm_benefits'))return;const c=r.policy;
+ $('lm_benefits').innerHTML=`<p aria-live="polite"><b>${E(r.name)}</b> · Saldo <b id="memberBalance">${E(r.balance)} poin</b></p>${c.active?'<p id="memberPointValue">Setara potongan hingga <b>'+this.rp(Math.max(0,Number(r.balance))*Number(c.point_value))+'</b>, dibatasi total belanja dan syarat penukaran.</p>':''}${Number(r.balance)<0?'<p>Saldo sedang dikoreksi karena transaksi batal. Poin baru akan mengurangi saldo koreksi terlebih dahulu.</p>':''}<p class="mini">${c.active?'Belanja minimum '+this.rp(c.min_spend)+' mendapat '+E(c.earn_points)+' poin per transaksi. Nilai 1 poin = '+this.rp(c.point_value)+'.':'Program poin belum diaktifkan owner; transaksi tetap dapat dikaitkan ke member.'}</p><p class="mini">Pastikan nama di atas sesuai pelanggan sebelum menggunakan atau menukar poin.</p><label>Gunakan poin<select id="pm_mode" style="display:block;padding:9px;width:100%"><option value="none">Tidak ditukar · kumpulkan poin</option>${c.active?'<option value="discount">Poin untuk potongan harga</option><option value="product">Poin untuk produk hadiah</option>':''}</select></label>${field('pm_points','Jumlah poin untuk potongan','1')}<label>Produk dari keranjang<select id="pm_reward" style="display:block;padding:9px;width:100%"><option value="">Pilih produk yang ingin ditukar</option>${r.rewards.filter(x=>App.state.cart.some(c=>c.id===x.menu_id)).map(x=>`<option value="${E(x.id)}">${E(x.name)} · ${E(x.points)} poin${Number(r.balance)>=Number(x.points)?' · Poin cukup':' · Kurang '+E(Number(x.points)-Number(r.balance))+' poin'}</option>`).join('')}</select></label><p class="mini">Semua produk aktif dapat ditukar tanpa didaftarkan owner. Kebutuhan poin = harga produk ÷ nilai 1 poin, dibulatkan ke atas. Pilih produk dari keranjang; 1 unit produk dasar ditukar, topping tetap dibayar. Penukaran poin tidak digabung voucher atau promo lain.</p><button class="btn btn-primary" id="pm_apply" onclick="App.pointsApply()">Gunakan member pada transaksi</button>`;
+ }catch(e){if(current()&&$('loyaltyMsg'))$('loyaltyMsg').textContent=e.message;}};
+App.pointsApply=async function(){if(this._checkoutBusy)return;const active=this._sessionGuard(),root=$('appModal'),input=$('lm_phone'),button=$('pm_apply');if(this._pointsQuoteOp?.input===input)return;const op={input};this._pointsQuoteOp=op;const selection=()=>JSON.stringify([val('lm_phone'),val('pm_mode'),val('pm_points'),val('pm_reward')]),selected=selection(),signature=sig();const current=()=>active()&&this._pointsQuoteOp===op&&root===$('appModal')&&input===$('lm_phone')&&selected===selection()&&signature===sig();if(button)button.disabled=true;try{
+ if(!navigator.onLine)throw Error('Member dan poin memerlukan koneksi saat pembayaran.');if(this.state.empSel&&!this.state.empUsedToday)throw Error('Lepas diskon pegawai sebelum memakai member.');
+ this._points=null;const total=this.state.cart.reduce((a,c)=>a+c.qty*c.price,0),promo=this._bestPromo(total,false),voucher=promo?.kind==='loyalty'?this._loyalty.ticket:null;
+ const r=await api('quote',{branch_id:this.state.posBranch,phone:val('lm_phone'),items:items(),mode:val('pm_mode'),points:val('pm_points'),menu_id:val('pm_reward'),voucher_ticket:voucher});
+ if(!current())return;if(Math.abs(Number(r.subtotal)-total)>0.01)throw Error('Harga di kasir berubah. Muat ulang menu dan pilih ulang member.');
+ this._points={...r,signature};this.state.cartClientId=null;$('appModal')?.remove();this.renderCart();
+ }catch(e){if(current()&&$('loyaltyMsg'))$('loyaltyMsg').textContent=e.message;}finally{if(this._pointsQuoteOp===op)this._pointsQuoteOp=null;if(button?.isConnected)button.disabled=false;}};
+const checkout=App.checkout;
+App.checkout=function(...a){if(this._points){if(this._points.signature!==sig()){this._points=null;this.toast('Keranjang berubah. Pilih member kembali.','bad');return;}if(!navigator.onLine||Date.parse(this._points.expires)<=Date.now()){this.toast('Periksa ulang member secara online sebelum membayar.','bad');return;}if(this.state.empSel&&!this.state.empUsedToday){this.toast('Diskon pegawai tidak digabung dengan member.','bad');return;}}return checkout.apply(this,a);};
+const memberRenderer=App.render_members;
+App.memberTab=function(tab){this._memberTab=tab==='benefits'?'points':tab;return this.render_members();};
+App.render_members=async function(){if(CURRENT.role!=='owner')return memberRenderer.call(this);if(['points','benefits'].includes(this._memberTab))return this.render_pointsAdmin();
+ const active=this._sessionGuard();await memberRenderer.call(this);if(!active()||this.state.page!=='members')return;
+ for(const b of $('view').querySelectorAll('button'))if(b.textContent==='Benefit Member')b.textContent='Poin & Penukaran';
+ const nodes=[...$('view').querySelectorAll('[data-member-id]')];if(!nodes.length)return;try{const balances=await api('balances',{ids:nodes.map(n=>n.dataset.memberId)});if(!active())return;for(const n of nodes){if(!n.isConnected)continue;const row=balances.find(x=>x.id===n.dataset.memberId),line=document.createElement('div');line.className='mini';line.innerHTML=`Saldo <b>${E(row?.balance||0)} poin</b> <button class="btn" style="width:auto" onclick="App.pointsHistory(${J(n.dataset.memberId)})">Riwayat poin</button>`;n.appendChild(line);}}catch(e){if(active())this.toast(e.message,'bad');}};
+App.render_pointsAdmin=async function(){if(CURRENT.role!=='owner')return;const active=this._sessionGuard(),view=$('view');view.innerHTML=this.loadingHTML('Memuat aturan poin…');try{const[r,menu]=await Promise.all([api('admin'),Data.menuAll()]);if(!active()||this.state.page!=='members')return;const c=r.policy,products=menu.filter(m=>m.active&&Number.isFinite(Number(m.price))&&Number(m.price)>0);
+ view.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn" style="width:auto" onclick="App.memberTab('database')">Database Member</button><button class="btn" style="width:auto" onclick="App.memberTab('points')">Poin & Penukaran</button></div><div class="card pad"><h3>Aturan poin member</h3><label><input id="pp_active" type="checkbox" ${c.active?'checked':''}> Aktifkan program poin</label>${field('pp_min','Minimum total akhir belanja untuk mendapat poin (Rp)',c.min_spend)}${field('pp_earn','Poin per transaksi memenuhi minimum (bukan kelipatan belanja)',c.earn_points)}${field('pp_value','Nilai 1 poin untuk potongan harga / seluruh produk (Rp)',c.point_value)}<p class="mini">Dihitung dari total setelah semua potongan. Transaksi gratis tidak menambah poin. Poin baru tidak bisa membiayai transaksi yang sama. Nilai rupiah per poin terbaru berlaku juga untuk saldo lama saat ditukar. Jumlah poin dan histori lama tidak ditulis ulang.</p><button class="btn btn-primary" id="pp_save" onclick="App.pointsSavePolicy()">Simpan aturan poin</button><p id="pp_error" role="status"></p></div><div class="card pad" id="allProductsPoints" style="margin-top:14px"><h3>Semua produk otomatis bisa ditukar dengan poin</h3><p>Tidak perlu menambahkan produk satu per satu. Produk aktif baru otomatis ikut. Poin yang diperlukan = harga produk ÷ nilai 1 poin, dibulatkan ke atas.</p><p class="mini">Harga Rp12.000 dengan nilai 1 poin Rp100 memerlukan 120 poin. Kasir memilih produk dari keranjang. Untuk penukaran produk, 1 unit produk dasar dibebaskan; topping dan unit lain tetap dibayar. Gunakan potongan poin untuk membayar sebagian atau seluruh total keranjang.</p>${!c.active?'<p class="mini">Daftar ini adalah simulasi. Penukaran tersedia setelah program poin diaktifkan.</p>':''}<div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>Produk aktif</th><th>Harga dasar</th><th>Poin penukaran</th></tr></thead><tbody>${products.map(m=>`<tr><td>${E(m.name)}</td><td>${this.rp(m.price)}</td><td>${E(Math.ceil(Number(m.price)/Number(c.point_value)))} poin</td></tr>`).join('')}</tbody></table></div>${!products.length?'<p>Belum ada produk aktif berharga di atas Rp0.</p>':''}<p class="mini">Ketersediaan produk dan stok mengikuti outlet. Penukaran poin tidak digabung voucher atau promo lain. Angka di atas mengikuti aturan yang terakhir disimpan.</p></div>`;
+ }catch(e){if(active())view.innerHTML=this.errHTML(e);}};
+App.pointsSavePolicy=async function(){const active=this._sessionGuard(),button=$('pp_save');if(CURRENT.role!=='owner'||button?.disabled)return;try{const min=Number(val('pp_min')),earn=Number(val('pp_earn')),value=Number(val('pp_value'));if(!Number.isFinite(min)||min<0||!Number.isSafeInteger(earn)||earn<0||!Number.isSafeInteger(value)||value<1)throw Error('Minimum minimal 0, poin harus bulat, dan nilai 1 poin minimal Rp1.');button.disabled=true;await api('policy_save',{active:!!$('pp_active').checked,min_spend:min,earn_points:earn,point_value:value});if(active()){this.toast('Aturan poin tersimpan.','good');await this.render_pointsAdmin();}}catch(e){if(active()&&$('pp_error'))$('pp_error').textContent=e.message;}finally{if(button)button.disabled=false;}};
+App.pointsHistory=async function(id){if(CURRENT.role!=='owner')return;const active=this._sessionGuard();try{const rows=await api('ledger',{member_id:id});if(!active())return;this._modal('<h3>Riwayat poin member</h3>'+rows.map(r=>`<div style="padding:8px 0"><b>${E(r.invoice_no)}</b> · ${E({earn:'Perolehan',spend:'Penukaran',reversal:'Koreksi transaksi batal'}[r.event])}<br>${Number(r.delta)>0?'+':''}${E(r.delta)} poin · saldo saat itu ${E(r.balance_after)} · ${E(r.status)}</div>`).join('')+(rows.length?'':'<p>Belum ada pergerakan poin.</p>'));}catch(e){if(active())this.toast(e.message,'bad');}};
+})();
+
+</script>
+<script id="sruput-order-ui">
+(()=>{
+ const $=id=>document.getElementById(id);
+ const sync=()=>{
+  const on=App.state.page==='pos'&&!!CURRENT.user;
+  document.body.classList.toggle('sruput-pos',on);
+  if(!on){document.body.classList.remove('pos-nav-open');return;}
+  const brand=document.querySelector('.side .brand2');
+  if(brand&&!$('posNavToggle')){
+   const b=document.createElement('button');b.id='posNavToggle';b.className='pos-nav-toggle';b.textContent='Menu';b.setAttribute('aria-controls','nav');b.setAttribute('aria-expanded','false');
+   b.onclick=()=>{const open=document.body.classList.toggle('pos-nav-open');b.setAttribute('aria-expanded',String(open));};brand.appendChild(b);
+  }
+  const h=document.querySelector('.topbar')?.getBoundingClientRect().height;
+  if(h)document.body.style.setProperty('--pos-topbar-h',Math.ceil(h)+'px');
+ };
+ const go=App.go;App.go=function(...a){const r=go.apply(this,a);sync();if(this.state.page===a[0]){document.body.classList.remove('pos-nav-open');$('posNavToggle')?.setAttribute('aria-expanded','false');}return r;};
+ const reset=App._resetSession;App._resetSession=function(...a){const r=reset.apply(this,a);document.body.classList.remove('sruput-pos','pos-nav-open');return r;};
+ const pos=App.render_pos;App.render_pos=async function(...a){sync();const r=await pos.apply(this,a);sync();return r;};
+ const render=App.renderCart;App.renderCart=function(...a){const r=render.apply(this,a);sync();const panel=$('cartItems')?.closest('.pos');if(!panel||this.state.page!=='pos')return r;
+  if(!$('orderShortcuts')){const bar=document.createElement('div');bar.id='orderShortcuts';bar.className='order-shortcuts';bar.setAttribute('aria-label','Navigasi kasir');for(const [label,target]of[['Produk','#menuGrid'],['Pesanan','.cart'],['Pembayaran','.order-payment']]){const b=document.createElement('button');b.textContent=label;b.dataset.orderTarget=target;b.onclick=()=>panel.querySelector(target)?.scrollIntoView({block:'start',behavior:'auto'});bar.appendChild(b);}panel.before(bar);}
+  const qty=this.state.cart.reduce((n,c)=>n+Number(c.qty),0),buttons=$('orderShortcuts').querySelectorAll('button');buttons[1].textContent='Pesanan · '+qty;buttons[2].disabled=!qty;buttons[2].textContent=qty?'Pembayaran · '+($('cartFoot')?.querySelector('.sum-amt')?.textContent||''):'Pembayaran';
+  // Navigation only: never call checkout from the sticky shortcut.
+  document.querySelectorAll('.pos .pay-card').forEach(b=>b.setAttribute('aria-pressed',String(b.classList.contains('sel'))));return r;
+ };
+ window.addEventListener('resize',sync,{passive:true});
+ window.visualViewport?.addEventListener('resize',()=>{sync();const input=document.activeElement;if(document.body.classList.contains('sruput-pos')&&input?.matches('.pos input,#appModal input'))requestAnimationFrame(()=>input.scrollIntoView({block:'nearest'}));},{passive:true});
+})();
+
 </script>
 </body>
 </html>
