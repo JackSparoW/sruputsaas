@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="sruput-build" content="2026-11-07-workflow-v1.9.11">
+<meta name="sruput-build" content="2026-11-12-workflow-v1.9.14">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>SRUPUT OS v2.0 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -357,7 +357,7 @@ body.mp-mode > :not(#memberPortal){display:none!important}
     <div class="topbar">
       <div><h2 id="pageTitle">Dashboard</h2><div class="sub" id="pageSub"></div></div>
       <div class="grow"></div>
-      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">07.11.2026 · WF1.9.11</span>
+      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">12.11.2026 · WF1.9.14</span>
       <span class="badge alert hidden" id="alertBadge"></span>
     </div>
     <div class="content" id="view"></div>
@@ -809,11 +809,14 @@ const BTPrint={
     const payload=new Uint8Array(bytes),guard=options?.guard;
     const task=async()=>{
       const prof=this._speedProfile(),useNR=!!chr.properties.writeWithoutResponse;
-      for(let i=0;i<payload.length;i+=prof.chunk){
+      const chunk=Math.min(prof.chunk,options?.maxChunk||prof.chunk);
+      for(let i=0;i<payload.length;i+=chunk){
         if(this._chr!==chr)throw new Error('Printer berubah. Pilih kembali printer yang benar.');
         if(guard&&!guard())throw new Error('Sesi berubah; pengiriman cetak dihentikan.');
-        const part=payload.slice(i,i+prof.chunk);
-        if(useNR)await chr.writeValueWithoutResponse(part);else await chr.writeValue(part);
+        const part=payload.slice(i,i+chunk);
+        if(useNR && chr.writeValueWithoutResponse)await chr.writeValueWithoutResponse(part);
+        else if(chr.writeValueWithResponse && chr.properties.write)await chr.writeValueWithResponse(part);
+        else await chr.writeValue(part);
         if(prof.gap>0)await new Promise(r=>setTimeout(r,prof.gap));
       }
     };
@@ -837,17 +840,26 @@ const BTPrint={
   _sizeBoth(sz){ const m={1:0,2:0x11,3:0x22}; return [29,33,(m[sz]!=null?m[sz]:0)]; }, // besar 2 arah (header/antrian, center)
   _sizeTall(sz){ const m={1:0,2:0x01,3:0x02}; return [29,33,(m[sz]!=null?m[sz]:0)]; }, // tinggi saja (TOTAL → lebar tetap, kolom presisi)
   _fontCmd(f){ return [27,77, f==='B'?1:0]; },
-  // QR ESC/POS native (GS ( k, model 2). Tergantung dukungan printer.
-  _qrBytes(data,moduleSize){
-    const enc=new TextEncoder(); const d=enc.encode(String(data||'')); if(!d.length) return [];
-    const out=[]; const push=a=>{for(const b of a)out.push(b);};
-    push([29,40,107,4,0,49,65,50,0]);              // pilih model 2
-    push([29,40,107,3,0,49,67,(moduleSize||5)]);   // ukuran modul
-    push([29,40,107,3,0,49,69,49]);                // koreksi error M
-    const len=d.length+3, pL=len&0xff, pH=(len>>8)&0xff;
-    push([29,40,107,pL,pH,49,80,48]); for(const b of d) out.push(b); // simpan data
-    push([29,40,107,3,0,49,81,48]);                // cetak
-    return out;
+  receiptQR(rc,outlet){
+    if(!rc.qrOn)return null;
+    const custom=String(rc.qrVal||'').trim();
+    let value=custom;
+    if(rc.qrSrc!=='custom'){
+      const handle=String(outlet.ig||custom).trim().replace(/^@/,'');
+      value=handle && (/^https?:\/\//i.test(handle)?handle:'https://instagram.com/'+handle);
+    }
+    if(!value)return null;
+    return App.signupQRCanvas(value,4);
+  },
+  _rasterQR(canvas){
+    const size=canvas.width,rowBytes=Math.ceil(size/8);
+    const pixels=canvas.getContext('2d').getImageData(0,0,size,size).data;
+    const bytes=new Uint8Array(8+rowBytes*size);
+    bytes.set([29,118,48,0,rowBytes&255,rowBytes>>8,size&255,size>>8]);
+    for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+      if(pixels[(y*size+x)*4]===0)bytes[8+y*rowBytes+(x>>3)]|=128>>(x%8);
+    }
+    return bytes;
   },
   escpos(d,width,rc){
     width=width||32;
@@ -952,12 +964,10 @@ const BTPrint={
     push([27,97,1]);
     if(rc.footer1) wrap(rc.footer1).forEach(w=>line(w));
     if(rc.footer2) wrap(rc.footer2).forEach(w=>line(w));
-    /* ---- QR CODE (opsional, center) ---- */
-    if(rc.qrOn){
-      let qd=''; 
-      if(rc.qrSrc==='custom') qd=rc.qrVal||'';
-      else { const h=(o.ig||rc.qrVal||'').replace(/^@/,'').trim(); if(h) qd=/^https?:\/\//i.test(h)?h:('https://instagram.com/'+h); }
-      if(qd){ blank(); push(this._qrBytes(qd,5)); if(rc.qrLabel) line(this.ascii(rc.qrLabel)); }
+    const qr=this.receiptQR(rc,o);
+    if(qr){
+      blank();push(this._rasterQR(qr));
+      if(rc.qrLabel)wrap(rc.qrLabel).forEach(w=>line(w));
     }
     push([27,97,0]);
     push([10,10,10,10]);                 // umpan kertas (58mm umumnya tanpa pemotong)
@@ -2394,11 +2404,8 @@ const App={
     const sepCss=rc.sep==='none'?'border:none;margin:3px 0':(rc.sep==='double'?'border:none;border-top:3px double #000;margin:5px 0':(rc.sep==='dot'?'border:none;border-top:1px dotted #000;margin:5px 0':'border:none;border-top:1px dashed #000;margin:5px 0'));
     const HR=`<hr style="${sepCss}">`;
     const bodyStyle=(rc.bodyFont==='B'?'font-size:10px;':'')+(rc.bodyBold?'font-weight:700;':'');
-    let qrImg='';
-    if(rc.qrOn){
-      let qd=''; if(rc.qrSrc==='custom') qd=rc.qrVal||''; else { const h=(o.ig||rc.qrVal||'').replace(/^@/,'').trim(); if(h) qd=/^https?:\/\//i.test(h)?h:('https://instagram.com/'+h); }
-      if(qd) qrImg=`<div class="c" style="margin-top:6px"><img alt="QR" style="width:96px;height:96px" src="https://api.qrserver.com/v1/create-qr-code/?size=96x96&data=${encodeURIComponent(qd)}">${rc.qrLabel?`<div class="c sm">${esc(rc.qrLabel)}</div>`:''}</div>`;
-    }
+    const qr=BTPrint.receiptQR(rc,o);
+    const qrImg=qr?`<div class="c" style="break-inside:avoid;margin-top:2mm"><img alt="QR struk" style="display:block;margin:auto;width:32mm;max-width:100%;height:auto;image-rendering:pixelated" src="${qr.toDataURL('image/png')}">${rc.qrLabel?`<div class="sm">${esc(rc.qrLabel)}</div>`:''}</div>`:'';
     return `<div class="rc">
       <div class="c" style="font-size:${hpx}px;font-weight:700;letter-spacing:1px">${esc(rc.brand||'SRUPUT')}</div>
       <div class="c">${esc(d.branchName||'')}</div>
@@ -2510,16 +2517,23 @@ const App={
     if(d&&(d.totalPending||d.pricesChanged)){this.toast('Rincian server belum cocok. Periksa Riwayat; struk perkiraan tidak dicetak.','bad');return;}
     if(!d){ this.toast('Belum ada transaksi untuk dicetak','bad'); return; }
     const cfg=BTPrint.cfg();
-    const bytes=opt.kitchen?BTPrint.escposKitchen(d,cfg.width||32,this._rcpt()):BTPrint.escpos(d,cfg.width||32,this._rcpt());
+    let bytes;
+    try{
+      if(cfg.method==='ble'||cfg.method==='rawbt'){
+        bytes=opt.kitchen?BTPrint.escposKitchen(d,cfg.width||32,this._rcpt()):BTPrint.escpos(d,cfg.width||32,this._rcpt());
+      }
+    }catch(e){this.toast('Gagal menyiapkan struk: '+e.message,'bad');return false;}
     if(cfg.method==='ble'){
+      let sending=false;
       try{
         if(!(await BTPrint.ensureConnected())) await BTPrint.connect(); // connect = butuh ketukan
-        await BTPrint.write(bytes);
+        sending=true;await BTPrint.write(bytes,{maxChunk:20});
         if(!opt.auto) this.toast('Struk terkirim ke printer','good');
         return;
       }catch(e){
         console.warn('Cetak BLE gagal:',e);
-        if(opt.auto){ this.toast('Auto-print gagal — ketuk "Cetak Struk" sekali untuk menyambung ulang printer','bad'); return; }
+        if(sending){this.toast('Pengiriman Bluetooth terputus. Periksa kertas sebelum mencetak ulang. Jika perlu, pilih RawBT di Setting → Printer.','bad');return false;}
+        if(opt.auto){ this.toast('Auto-print gagal — ketuk "Cetak Struk" sekali untuk menyambung ulang printer','bad'); return false; }
         this.toast('Cetak Bluetooth gagal: '+((e&&e.message)||'')+' — memakai dialog print','bad');
       }
     }else if(cfg.method==='rawbt'){
@@ -2527,13 +2541,13 @@ const App={
       catch(e){ this.toast('RawBT gagal: '+((e&&e.message)||''),'bad'); if(opt.auto) return; }
     }
     if(opt.auto && cfg.method!=='dialog') return;
-    this._printDialog(d,opt.kitchen);
+    try{this._printDialog(d,opt.kitchen);}catch(e){this.toast('Gagal menyiapkan struk: '+e.message,'bad');return false;}
   },
   // efektif auto-print: pengaturan PERANGKAT menang; null = ikut setting global owner
   // Cetak struk PELANGGAN lalu LIST ORDER barista secara berurutan.
   // Jeda 900ms agar printer murah tidak "tersedak" saat dua dokumen beruntun.
   async _cetakDuaStruk(data){
-    try{ await this.printReceipt(data,{auto:true}); }catch(e){}
+    try{ if(await this.printReceipt(data,{auto:true})===false)return; }catch(e){return;}
     if(BTPrint.cfg().kitchen===false) return;
     await new Promise(r=>setTimeout(r,900));
     try{ await this.printReceipt(data,{auto:true,kitchen:true}); }catch(e){}
@@ -4647,6 +4661,12 @@ const App={
       qSize:Number(gv('rc_qSize',3)),sep:gv('rc_sep','dash'),spacing:gc('rc_spacing'),
       qrOn:gc('rc_qrOn'),qrSrc:gv('rc_qrSrc','ig'),qrVal:g('rc_qrVal'),qrLabel:g('rc_qrLabel')};
     try{
+      if(cfg.qrOn && cfg.qrSrc==='custom'){
+        if(!cfg.qrVal)throw Error('Isi tautan QR struk terlebih dahulu.');
+        const url=new URL(cfg.qrVal);
+        if(url.protocol!=='https:' || url.username || url.password || url.href.length>512)throw Error('Gunakan tautan HTTPS maksimal 512 karakter.');
+        cfg.qrVal=url.href;
+      }
       const n=await Data.setAppSetting('receipt_cfg',JSON.stringify(cfg));
       if(!n){ this.toast('Gagal menyimpan (cek izin owner / tabel app_settings)','bad'); return; }
       this._receiptCfg=Object.assign({},this._rcptDefaults,cfg);
@@ -4780,9 +4800,9 @@ const App={
           </div>
 
           <div class="mini" style="font-weight:700;margin-bottom:8px">QR Code</div>
-          <div class="mini" style="color:var(--muted);margin-bottom:8px">Tergantung dukungan printer — sebagian printer murah belum mendukung QR ESC/POS. Selalu cek hasilnya lewat Tes Cetak.</div>
+          <div class="mini" style="color:var(--muted);margin-bottom:8px">QR tercetak di bagian bawah struk pelanggan, setelah total belanja. Gunakan Tes Cetak untuk memeriksa hasilnya.</div>
           <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
-            <label class="mini" style="display:flex;align-items:center;gap:6px;margin-bottom:9px"><input type="checkbox" id="rc_qrOn" ${escHtml(rc.qrOn?'checked':'')}> Cetak QR</label>
+            <label class="mini" style="display:flex;align-items:center;gap:6px;margin-bottom:9px"><input type="checkbox" id="rc_qrOn" ${escHtml(rc.qrOn?'checked':'')}> Cetak QR di struk pelanggan</label>
             <div><label class="mini" style="display:block;margin-bottom:4px">Isi QR</label>
               <select id="rc_qrSrc" style="padding:8px 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"><option value="ig" ${escHtml(rc.qrSrc!=='custom'?'selected':'')}>IG outlet (otomatis)</option><option value="custom" ${escHtml(rc.qrSrc==='custom'?'selected':'')}>Link sendiri</option></select></div>
             <div style="flex:1;min-width:160px"><label class="mini" style="display:block;margin-bottom:4px">Link (bila "Link sendiri")</label>
@@ -4883,7 +4903,7 @@ const App={
     return {};
   },
   async printTest(){
-    const o=await this._outletUntukStruk();
+    const [o]=await Promise.all([this._outletUntukStruk(),this._loadReceiptCfg()]);
     const dummy={invoice:'TES-PRINTER',branchName:o.name||'Tes Perangkat Ini',outlet:o,
       cashier:CURRENT.name||'-',payment:'cash',
       items:[{name:'Butterscotch Latte',qty:1,price:13000},{name:'Thai Tea',qty:2,price:10000,note:'less sugar'}],
@@ -10572,10 +10592,10 @@ App.loyaltyApply=async function(kind){if(this._checkoutBusy)return;const active=
  if(!Number.isFinite(Number(r.subtotal))||Math.abs(Number(r.subtotal)-this.state.cart.reduce((a,c)=>a+Number(c.qty)*Number(c.price),0))>0.01)throw Error('Harga di kasir berubah. Muat ulang menu dan terapkan ulang promo sebelum menagih.');
  this._loyalty={...r,signature:sig};this.state.cartClientId=null;$('appModal')?.remove();this.renderCart();this.toast('Promo diperiksa. Kuota diklaim saat pembayaran berhasil.','good');
  }catch(e){if(current()&&$('loyaltyMsg'))$('loyaltyMsg').textContent=e.message;}finally{if(this._loyaltyQuoteOp===op)this._loyaltyQuoteOp=null;if(button?.isConnected)button.disabled=false;}};
-App.loyaltyRegisterForm=function(owner=false){if(this._checkoutBusy)return;const prefill=v('lm_phone');this._modal(`<div style="width:400px;max-width:80vw"><h3>Daftar member</h3><input type="hidden" id="lr_origin" value="${owner?'owner':'pos'}">${field('lr_phone','Nomor HP','tel',prefill)}${field('lr_name','Nama')}${field('lr_email','Email (opsional)','email')}<label><input type="checkbox" id="lr_consent"> Pelanggan menyetujui pendaftaran dan penyimpanan data untuk membership. Ini bukan persetujuan promosi massal.</label><button class="btn btn-primary" style="margin-top:14px" id="lr_save" onclick="App.loyaltyRegister()">Daftarkan</button><p id="loyaltyMsg" role="status"></p></div>`);};
+App.loyaltyRegisterForm=function(owner=false){if(this._checkoutBusy)return;const prefill=v('lm_phone');this._modal(`<div style="width:400px;max-width:80vw"><h3>Daftar member</h3><input type="hidden" id="lr_origin" value="${owner?'owner':'pos'}">${field('lr_phone','Nomor HP','tel',prefill)}${field('lr_name','Nama')}${field('lr_email','Email (opsional)','email')}${field('lr_invite','Kode voucher undangan (opsional)')}<label><input type="checkbox" id="lr_consent"> Pelanggan menyetujui pendaftaran dan penyimpanan data untuk membership. Ini bukan persetujuan promosi massal.</label><button class="btn btn-primary" style="margin-top:14px" id="lr_save" onclick="App.loyaltyRegister()">Daftarkan</button><p id="loyaltyMsg" role="status"></p></div>`);};
 App.loyaltyRegister=async function(){const active=this._sessionGuard(),root=$('appModal'),branch=this.state.posBranch,page=this.state.page,button=$('lr_save');if(button?.disabled)return;try{button.disabled=true;
- const payload={branch_id:$('lr_branch')?.value||this.state.posBranch,phone:v('lr_phone'),name:v('lr_name'),email:v('lr_email'),consent:!!$('lr_consent')?.checked};const ownerRegistration=v('lr_origin')==='owner';const r=await (async()=>{const{data,error}=await sb.rpc('sruput_member_register',{p_data:payload});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Pendaftaran cepat belum diaktifkan. Hubungi owner.':error.message);return data;})();if(!active()||root!==$('appModal')||button!==$('lr_save'))return;
- this._modal(`<h3>Member terdaftar</h3><p>${E(r.name)} · ${E(r.phone)}</p><p>Gunakan nomor telepon ini saat transaksi berikutnya. Tidak perlu kode kartu.</p><p>Saldo awal: <b>0 poin</b>. Poin bertambah setelah transaksi yang memenuhi minimum berhasil.</p>${!ownerRegistration&&page==='pos'&&this.state.page===page&&this.state.posBranch===branch&&this.state.cart.length?'<button class="btn btn-primary" id="lr_use">Gunakan di transaksi ini</button>':''}`);const use=$('lr_use'),success=$('appModal');if(use)use.onclick=()=>{if(!active()||success!==$('appModal')||use!==$('lr_use')||this.state.page!=='pos'||this.state.posBranch!==branch)return;this.memberOpen();$('lm_phone').value=r.phone;return this.loyaltyIdentify();};if(ownerRegistration){this._memberTab='database';await this.render_members();}
+ const payload={branch_id:$('lr_branch')?.value||this.state.posBranch,phone:v('lr_phone'),name:v('lr_name'),email:v('lr_email'),invite_code:v('lr_invite'),consent:!!$('lr_consent')?.checked};const ownerRegistration=v('lr_origin')==='owner';const r=await (async()=>{const{data,error}=await sb.rpc('sruput_member_register',{p_data:payload});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Pendaftaran cepat belum diaktifkan. Hubungi owner.':error.message);return data;})();if(!active()||root!==$('appModal')||button!==$('lr_save'))return;
+ this._modal(`<h3>Member terdaftar</h3><p>${E(r.name)} · ${E(r.phone)}</p><p>Gunakan nomor telepon ini saat transaksi berikutnya. Tidak perlu kode kartu.</p><p>Saldo awal: <b>${E(r.balance)} poin</b>. Poin bertambah setelah transaksi yang memenuhi minimum berhasil.</p>${!ownerRegistration&&page==='pos'&&this.state.page===page&&this.state.posBranch===branch&&this.state.cart.length?'<button class="btn btn-primary" id="lr_use">Gunakan di transaksi ini</button>':''}`);const use=$('lr_use'),success=$('appModal');if(use)use.onclick=()=>{if(!active()||success!==$('appModal')||use!==$('lr_use')||this.state.page!=='pos'||this.state.posBranch!==branch)return;this.memberOpen();$('lm_phone').value=r.phone;return this.loyaltyIdentify();};if(ownerRegistration){this._memberTab='database';await this.render_members();}
  }catch(e){if(active()&&root===$('appModal')&&button===$('lr_save')&&$('loyaltyMsg'))$('loyaltyMsg').textContent=/duplicate|unique|Nomor sudah terdaftar/i.test(e.message)?'Nomor sudah terdaftar. Cari member menggunakan nomor telepon tersebut.':e.message;}finally{if(button)button.disabled=false;}};
 async function adminCall(rpc,action,data={}){const{data:r,error}=await sb.rpc(rpc,{p_action:action,p_data:data});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Pengelolaan ini belum aktif. Hubungi owner.':error.message);return r;}
 const membersCall=(a,p)=>adminCall('sruput_members',a,p),vouchersCall=(a,p)=>adminCall('sruput_vouchers',a,p);
@@ -10632,7 +10652,7 @@ App.renderCart=function(...a){const r=cart.apply(this,a),box=$('loyaltyPos');if(
 App.pointsRemove=function(){if(this._checkoutBusy)return;this._points=null;this.state.cartClientId=null;this.renderCart();};
 App.memberOpen=function(){if(this._checkoutBusy)return;this._modal(`<div style="width:420px;max-width:80vw"><h3>Member & Poin</h3>${field('lm_phone','Nomor HP member','','tel')}<button class="btn" onclick="App.loyaltyIdentify()">Cari member</button><div id="lm_benefits"></div><hr><button class="btn" onclick="App.loyaltyRegisterForm()">Daftarkan member baru</button><p id="loyaltyMsg" role="status"></p></div>`);for(const id of ['lm_phone'])$(id).oninput=()=>{if($('lm_benefits'))$('lm_benefits').innerHTML='';if($('loyaltyMsg'))$('loyaltyMsg').textContent='';};$('lm_phone').autocomplete='tel';$('lm_phone').inputMode='tel';$('lm_phone').enterKeyHint='search';$('lm_phone').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();this.loyaltyIdentify();}};$('lm_phone').focus();};
 App.loyaltyIdentify=async function(){const active=this._sessionGuard(),root=$('appModal'),input=$('lm_phone'),branch=this.state.posBranch,phone=val('lm_phone'),request=this._memberAccountRequest=(this._memberAccountRequest||0)+1;const current=()=>active()&&root===$('appModal')&&input===$('lm_phone')&&branch===this.state.posBranch&&phone===val('lm_phone')&&request===this._memberAccountRequest;try{if($('lm_benefits'))$('lm_benefits').innerHTML='';if($('loyaltyMsg'))$('loyaltyMsg').textContent='';const r=await api('account',{branch_id:branch,phone});if(!current()||!$('lm_benefits'))return;const c=r.policy;
- $('lm_benefits').innerHTML=`<p aria-live="polite"><b>${E(r.name)}</b> · Saldo <b id="memberBalance">${E(r.balance)} poin</b></p>${c.active?'<p id="memberPointValue">Setara potongan hingga <b>'+this.rp(Math.max(0,Number(r.balance))*Number(c.point_value))+'</b>, dibatasi total belanja dan syarat penukaran.</p>':''}${Number(r.balance)<0?'<p>Saldo sedang dikoreksi karena transaksi batal. Poin baru akan mengurangi saldo koreksi terlebih dahulu.</p>':''}<p class="mini">${c.active?'Belanja minimum '+this.rp(c.min_spend)+' mendapat '+E(c.earn_points)+' poin per transaksi. Nilai 1 poin = '+this.rp(c.point_value)+'.':'Program poin belum diaktifkan owner; transaksi tetap dapat dikaitkan ke member.'}</p><p class="mini">Pastikan nama di atas sesuai pelanggan sebelum menggunakan atau menukar poin.</p><label>Gunakan poin<select id="pm_mode" style="display:block;padding:9px;width:100%"><option value="none">Tidak ditukar · kumpulkan poin</option>${c.active?'<option value="discount">Poin untuk potongan harga</option><option value="product">Poin untuk produk hadiah</option>':''}</select></label>${field('pm_points','Jumlah poin untuk potongan','1')}<label>Produk dari keranjang<select id="pm_reward" style="display:block;padding:9px;width:100%"><option value="">Pilih produk yang ingin ditukar</option>${r.rewards.filter(x=>App.state.cart.some(c=>c.id===x.menu_id)).map(x=>`<option value="${E(x.id)}">${E(x.name)} · ${E(x.points)} poin${Number(r.balance)>=Number(x.points)?' · Poin cukup':' · Kurang '+E(Number(x.points)-Number(r.balance))+' poin'}</option>`).join('')}</select></label><p class="mini">Semua produk aktif dapat ditukar tanpa didaftarkan owner. Kebutuhan poin = harga produk ÷ nilai 1 poin, dibulatkan ke atas. Pilih produk dari keranjang; 1 unit produk dasar ditukar, topping tetap dibayar. Penukaran poin tidak digabung voucher atau promo lain.</p><button class="btn btn-primary" id="pm_apply" onclick="App.pointsApply()">Gunakan member pada transaksi</button>`;
+ $('lm_benefits').innerHTML=`<p aria-live="polite"><b>${E(r.name)}</b> · Saldo <b id="memberBalance">${E(r.balance)} poin</b></p>${c.active?'<p id="memberPointValue">Setara potongan hingga <b>'+this.rp(Math.max(0,Number(r.balance))*Number(c.point_value))+'</b>, dibatasi total belanja dan syarat penukaran.</p>':''}${Number(r.balance)<0?'<p>Saldo sedang dikoreksi karena transaksi batal. Poin baru akan mengurangi saldo koreksi terlebih dahulu.</p>':''}<p class="mini">${c.active?(Number(c.min_spend)>0?'Setiap kelipatan '+this.rp(c.min_spend)+' dari total bersih':'Setiap transaksi berbayar')+' mendapat '+E(c.earn_points)+' poin. Nilai 1 poin = '+this.rp(c.point_value)+'.':'Program poin belum diaktifkan owner; transaksi tetap dapat dikaitkan ke member.'}</p><p class="mini">Pastikan nama di atas sesuai pelanggan sebelum menggunakan atau menukar poin.</p><label>Gunakan poin<select id="pm_mode" style="display:block;padding:9px;width:100%"><option value="none">Tidak ditukar · kumpulkan poin</option>${c.active?'<option value="discount">Poin untuk potongan harga</option><option value="product">Poin untuk produk hadiah</option>':''}</select></label>${field('pm_points','Jumlah poin untuk potongan','1')}<label>Produk dari keranjang<select id="pm_reward" style="display:block;padding:9px;width:100%"><option value="">Pilih produk yang ingin ditukar</option>${r.rewards.filter(x=>App.state.cart.some(c=>c.id===x.menu_id)).map(x=>`<option value="${E(x.id)}">${E(x.name)} · ${E(x.points)} poin${Number(r.balance)>=Number(x.points)?' · Poin cukup':' · Kurang '+E(Number(x.points)-Number(r.balance))+' poin'}</option>`).join('')}</select></label><p class="mini">Semua produk aktif dapat ditukar tanpa didaftarkan owner. Kebutuhan poin = harga produk ÷ nilai 1 poin, dibulatkan ke atas. Pilih produk dari keranjang; 1 unit produk dasar ditukar, topping tetap dibayar. Penukaran poin tidak digabung voucher atau promo lain.</p><button class="btn btn-primary" id="pm_apply" onclick="App.pointsApply()">Gunakan member pada transaksi</button>`;
  }catch(e){if(current()&&$('loyaltyMsg'))$('loyaltyMsg').textContent=e.message;}};
 App.pointsApply=async function(){if(this._checkoutBusy)return;const active=this._sessionGuard(),root=$('appModal'),input=$('lm_phone'),button=$('pm_apply');if(this._pointsQuoteOp?.input===input)return;const op={input};this._pointsQuoteOp=op;const selection=()=>JSON.stringify([val('lm_phone'),val('pm_mode'),val('pm_points'),val('pm_reward')]),selected=selection(),signature=sig();const current=()=>active()&&this._pointsQuoteOp===op&&root===$('appModal')&&input===$('lm_phone')&&selected===selection()&&signature===sig();if(button)button.disabled=true;try{
  if(!navigator.onLine)throw Error('Member dan poin memerlukan koneksi saat pembayaran.');if(this.state.empSel&&!this.state.empUsedToday)throw Error('Lepas diskon pegawai sebelum memakai member.');
@@ -10650,10 +10670,10 @@ App.render_members=async function(){if(CURRENT.role!=='owner')return memberRende
  for(const b of $('view').querySelectorAll('button'))if(b.textContent==='Benefit Member')b.textContent='Poin & Penukaran';
  const nodes=[...$('view').querySelectorAll('[data-member-id]')];if(!nodes.length)return;try{const balances=await api('balances',{ids:nodes.map(n=>n.dataset.memberId)});if(!active())return;for(const n of nodes){if(!n.isConnected)continue;const row=balances.find(x=>x.id===n.dataset.memberId),line=document.createElement('div');line.className='mini';line.innerHTML=`Saldo <b>${E(row?.balance||0)} poin</b> <button class="btn" style="width:auto" onclick="App.pointsHistory(${J(n.dataset.memberId)})">Riwayat poin</button>`;n.appendChild(line);}}catch(e){if(active())this.toast(e.message,'bad');}};
 App.render_pointsAdmin=async function(){if(CURRENT.role!=='owner')return;const active=this._sessionGuard(),view=$('view');view.innerHTML=this.loadingHTML('Memuat aturan poin…');try{const[r,menu]=await Promise.all([api('admin'),Data.menuAll()]);if(!active()||this.state.page!=='members')return;const c=r.policy,products=menu.filter(m=>m.active&&Number.isFinite(Number(m.price))&&Number(m.price)>0);
- view.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn" style="width:auto" onclick="App.memberTab('database')">Database Member</button><button class="btn" style="width:auto" onclick="App.memberTab('points')">Poin & Penukaran</button></div><div class="card pad"><h3>Aturan poin member</h3><label><input id="pp_active" type="checkbox" ${c.active?'checked':''}> Aktifkan program poin</label>${field('pp_min','Minimum total akhir belanja untuk mendapat poin (Rp)',c.min_spend)}${field('pp_earn','Poin per transaksi memenuhi minimum (bukan kelipatan belanja)',c.earn_points)}${field('pp_value','Nilai 1 poin untuk potongan harga / seluruh produk (Rp)',c.point_value)}<p class="mini">Dihitung dari total setelah semua potongan. Transaksi gratis tidak menambah poin. Poin baru tidak bisa membiayai transaksi yang sama. Nilai rupiah per poin terbaru berlaku juga untuk saldo lama saat ditukar. Jumlah poin dan histori lama tidak ditulis ulang.</p><button class="btn btn-primary" id="pp_save" onclick="App.pointsSavePolicy()">Simpan aturan poin</button><p id="pp_error" role="status"></p></div><div class="card pad" id="allProductsPoints" style="margin-top:14px"><h3>Semua produk otomatis bisa ditukar dengan poin</h3><p>Tidak perlu menambahkan produk satu per satu. Produk aktif baru otomatis ikut. Poin yang diperlukan = harga produk ÷ nilai 1 poin, dibulatkan ke atas.</p><p class="mini">Harga Rp12.000 dengan nilai 1 poin Rp100 memerlukan 120 poin. Kasir memilih produk dari keranjang. Untuk penukaran produk, 1 unit produk dasar dibebaskan; topping dan unit lain tetap dibayar. Gunakan potongan poin untuk membayar sebagian atau seluruh total keranjang.</p>${!c.active?'<p class="mini">Daftar ini adalah simulasi. Penukaran tersedia setelah program poin diaktifkan.</p>':''}<div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>Produk aktif</th><th>Harga dasar</th><th>Poin penukaran</th></tr></thead><tbody>${products.map(m=>`<tr><td>${E(m.name)}</td><td>${this.rp(m.price)}</td><td>${E(Math.ceil(Number(m.price)/Number(c.point_value)))} poin</td></tr>`).join('')}</tbody></table></div>${!products.length?'<p>Belum ada produk aktif berharga di atas Rp0.</p>':''}<p class="mini">Ketersediaan produk dan stok mengikuti outlet. Penukaran poin tidak digabung voucher atau promo lain. Angka di atas mengikuti aturan yang terakhir disimpan.</p></div>`;
+ view.innerHTML=`<div style="display:flex;gap:8px;margin-bottom:14px"><button class="btn" style="width:auto" onclick="App.memberTab('database')">Database Member</button><button class="btn" style="width:auto" onclick="App.memberTab('points')">Poin & Penukaran</button></div><div class="card pad"><button class="btn" onclick="App.go('signup_bonus')">Voucher Undangan</button><h3>Aturan poin member</h3><label><input id="pp_active" type="checkbox" ${c.active?'checked':''}> Aktifkan program poin</label>${field('pp_min','Kelipatan belanja bersih (Rp, isi 0 untuk poin tetap per transaksi berbayar)',c.min_spend)}${field('pp_earn','Poin untuk setiap kelipatan',c.earn_points)}${field('pp_value','Nilai 1 poin untuk potongan harga / seluruh produk (Rp)',c.point_value)}<p class="mini">Dihitung dari total setelah semua potongan. Transaksi gratis tidak menambah poin. Poin baru tidak bisa membiayai transaksi yang sama. Nilai rupiah per poin terbaru berlaku juga untuk saldo lama saat ditukar. Jumlah poin dan histori lama tidak ditulis ulang.</p><button class="btn btn-primary" id="pp_save" onclick="App.pointsSavePolicy()">Simpan aturan poin</button><p id="pp_error" role="status"></p></div><div class="card pad" id="allProductsPoints" style="margin-top:14px"><h3>Semua produk otomatis bisa ditukar dengan poin</h3><p>Tidak perlu menambahkan produk satu per satu. Produk aktif baru otomatis ikut. Poin yang diperlukan = harga produk ÷ nilai 1 poin, dibulatkan ke atas.</p><p class="mini">Harga Rp12.000 dengan nilai 1 poin Rp100 memerlukan 120 poin. Kasir memilih produk dari keranjang. Untuk penukaran produk, 1 unit produk dasar dibebaskan; topping dan unit lain tetap dibayar. Gunakan potongan poin untuk membayar sebagian atau seluruh total keranjang.</p>${!c.active?'<p class="mini">Daftar ini adalah simulasi. Penukaran tersedia setelah program poin diaktifkan.</p>':''}<div style="overflow-x:auto"><table style="width:100%"><thead><tr><th>Produk aktif</th><th>Harga dasar</th><th>Poin penukaran</th></tr></thead><tbody>${products.map(m=>`<tr><td>${E(m.name)}</td><td>${this.rp(m.price)}</td><td>${E(Math.ceil(Number(m.price)/Number(c.point_value)))} poin</td></tr>`).join('')}</tbody></table></div>${!products.length?'<p>Belum ada produk aktif berharga di atas Rp0.</p>':''}<p class="mini">Ketersediaan produk dan stok mengikuti outlet. Penukaran poin tidak digabung voucher atau promo lain. Angka di atas mengikuti aturan yang terakhir disimpan.</p></div>`;
  }catch(e){if(active())view.innerHTML=this.errHTML(e);}};
 App.pointsSavePolicy=async function(){const active=this._sessionGuard(),button=$('pp_save');if(CURRENT.role!=='owner'||button?.disabled)return;try{const min=Number(val('pp_min')),earn=Number(val('pp_earn')),value=Number(val('pp_value'));if(!Number.isFinite(min)||min<0||!Number.isSafeInteger(earn)||earn<0||!Number.isSafeInteger(value)||value<1)throw Error('Minimum minimal 0, poin harus bulat, dan nilai 1 poin minimal Rp1.');button.disabled=true;await api('policy_save',{active:!!$('pp_active').checked,min_spend:min,earn_points:earn,point_value:value});if(active()){this.toast('Aturan poin tersimpan.','good');await this.render_pointsAdmin();}}catch(e){if(active()&&$('pp_error'))$('pp_error').textContent=e.message;}finally{if(button)button.disabled=false;}};
-App.pointsHistory=async function(id){if(CURRENT.role!=='owner')return;const active=this._sessionGuard();try{const rows=await api('ledger',{member_id:id});if(!active())return;this._modal('<h3>Riwayat poin member</h3>'+rows.map(r=>`<div style="padding:8px 0"><b>${E(r.invoice_no)}</b> · ${E({earn:'Perolehan',spend:'Penukaran',reversal:'Koreksi transaksi batal'}[r.event])}<br>${Number(r.delta)>0?'+':''}${E(r.delta)} poin · saldo saat itu ${E(r.balance_after)} · ${E(r.status)}</div>`).join('')+(rows.length?'':'<p>Belum ada pergerakan poin.</p>'));}catch(e){if(active())this.toast(e.message,'bad');}};
+App.pointsHistory=async function(id){if(CURRENT.role!=='owner')return;const active=this._sessionGuard();try{const rows=await api('ledger',{member_id:id});if(!active())return;this._modal('<h3>Riwayat poin member</h3>'+rows.map(r=>`<div style="padding:8px 0"><b>${E(r.invoice_no||'Pendaftaran')}</b> · ${E({earn:'Perolehan',spend:'Penukaran',reversal:'Koreksi transaksi batal',multiple_adjustment:'Tambahan poin kelipatan',signup_bonus:'Bonus voucher undangan'}[r.event])}<br>${Number(r.delta)>0?'+':''}${E(r.delta)} poin · saldo saat itu ${E(r.balance_after)} ${r.status?'· '+E(r.status):''}</div>`).join('')+(rows.length?'':'<p>Belum ada pergerakan poin.</p>'));}catch(e){if(active())this.toast(e.message,'bad');}};
 })();
 
 </script>
@@ -10703,7 +10723,7 @@ App.memberInsightsApply=function(){this._memberFilters={search:$('mb_search').va
 App.memberPage=function(delta){const f=this._memberFilters||{};f.offset=Math.max(0,(f.offset||0)+delta);this._memberFilters=f;return this.render_members();};
 App.memberSearch=App.memberInsightsApply;
 App.memberPortalLink=function(){const link=baseLink($('mi_branch')?.value||'');this._modal(`<h3>Link pendaftaran mandiri</h3><p>Bagikan link berikut kepada pelanggan. Tautan beroutlet mencatat sumber pendaftaran ke outlet pilihan.</p><a class="mp-link" href="${E(link)}" target="_blank" rel="noopener">${E(link)}</a><p class="mp-help">Link berlaku setelah file aplikasi terbaru dipasang pada hosting. Pendaftaran mandiri bukan verifikasi kepemilikan nomor telepon.</p><button class="btn" id="mi_copy_link">Salin link</button><p id="mi_copy_status" role="status"></p>`);$('mi_copy_link').onclick=()=>copyText(link,$('mi_copy_status'),'Link disalin.','Tekan lama tautan untuk menyalin.');};
-App.memberPortalAccess=async function(id){if(CURRENT.role!=='owner'||this._memberAccessOp||!confirm('Pastikan identitas pelanggan sudah diperiksa. Buat akses pribadi baru? Akses lama akan dicabut.'))return;const active=this._sessionGuard(),page=this.state.page,modal=$('appModal'),renderEpoch=this._memberInsightsEpoch,op={};this._memberAccessOp=op;const current=()=>active()&&CURRENT.role==='owner'&&this._memberAccessOp===op&&this.state.page===page&&$('appModal')===modal&&this._memberInsightsEpoch===renderEpoch;const buttons=[...document.querySelectorAll('[data-member-access-id]')];for(const button of buttons)button.disabled=true;try{const r=await insight('issue_access',{member_id:id,verified:true});if(!current())return;this._modal(`<h3>Akses pribadi member</h3><p>Berikan hanya kepada pelanggan yang sudah diverifikasi. Jangan bagikan di grup.</p><p>Buka <a href="${E(baseLink())}" target="_blank" rel="noopener">halaman member</a> → Masuk member, lalu gunakan kode berikut:</p><code style="display:block;overflow-wrap:anywhere">${E(r.access_key)}</code><p>Berlaku sampai ${E(fmt(r.expires_at))}. Kode ini hanya untuk halaman member; kasir tetap memakai nomor telepon.</p><button class="btn" id="mi_copy_access">Salin kode</button><p id="mi_copy_status" role="status"></p>`);$('mi_copy_access').onclick=()=>copyText(r.access_key,$('mi_copy_status'),'Kode disalin.','Tekan lama kode untuk menyalin.');}catch(e){if(current())this.toast(e.message,'bad');}finally{if(this._memberAccessOp===op)this._memberAccessOp=null;for(const button of buttons)if(button.isConnected)button.disabled=button.dataset.memberAccessDisabled==='true';}};
+App.memberPortalAccess=async function(id){if(CURRENT.role!=='owner'||this._memberAccessOp||!confirm('Pastikan identitas pelanggan sudah diperiksa. Terbitkan kode reset sekali pakai untuk member ini?'))return;const active=this._sessionGuard(),page=this.state.page,modal=$('appModal'),renderEpoch=this._memberInsightsEpoch,op={};this._memberAccessOp=op;const current=()=>active()&&CURRENT.role==='owner'&&this._memberAccessOp===op&&this.state.page===page&&$('appModal')===modal&&this._memberInsightsEpoch===renderEpoch;const buttons=[...document.querySelectorAll('[data-member-access-id]')];for(const button of buttons)button.disabled=true;try{const {data:r,error}=await sb.rpc('sruput_member_password',{p_action:'owner_reset',p_data:{member_id:id,verified:true}});if(error)throw error;if(r?.error)throw Error(r.error);if(!current())return;this._modal(`<h3>Kode reset kata sandi</h3><p>Berikan hanya kepada pelanggan yang sudah diverifikasi. Jangan bagikan di grup.</p><p>Buka <a href="${E(baseLink())}" target="_blank" rel="noopener">halaman member</a> → Masuk → Lupa kata sandi, lalu gunakan kode berikut:</p><code style="display:block;overflow-wrap:anywhere">${E(r.code)}</code><p>Berlaku sampai ${E(fmt(r.expires_at))}. Kode ini hanya untuk halaman member; kasir tetap memakai nomor telepon.</p><button class="btn" id="mi_copy_access">Salin kode</button><p id="mi_copy_status" role="status"></p>`);$('mi_copy_access').onclick=()=>copyText(r.code,$('mi_copy_status'),'Kode disalin.','Tekan lama kode untuk menyalin.');}catch(e){if(current())this.toast(e.message,'bad');}finally{if(this._memberAccessOp===op)this._memberAccessOp=null;for(const button of buttons)if(button.isConnected)button.disabled=button.dataset.memberAccessDisabled==='true';}};
 const previousMembers=App.render_members;
 App.render_members=async function(){if(CURRENT.role!=='owner'||['points','benefits'].includes(this._memberTab))return previousMembers.call(this);
  const active=this._sessionGuard(),epoch=this._memberInsightsEpoch=(this._memberInsightsEpoch||0)+1,view=$('view'),f={search:'',date:todayWIBStr(),period:'all',group:'month',branch_id:'',offset:0,...this._memberFilters};
@@ -10711,7 +10731,7 @@ App.render_members=async function(){if(CURRENT.role!=='owner'||['points','benefi
  view.innerHTML=this.loadingHTML('Memuat aktivitas member…');try{const[r,branches]=await Promise.all([insight('dashboard',f),Data.branches()]);if(!current())return;
  const option=(value,label,selected)=>`<option value="${E(value)}" ${value===selected?'selected':''}>${E(label)}</option>`;
  view.innerHTML=`<div class="mp-actions" style="margin-bottom:14px"><button class="btn" onclick="App.memberTab('database')">Database Member</button><button class="btn" onclick="App.memberTab('points')">Poin & Penukaran</button></div><div class="banner info">Aktivitas belanja: ${E(fmt(r.activity_month))}. Perolehan 50 poin dihitung dari transaksi berbayar yang masih aktif; penukaran tidak mengurangi perolehan.</div><div class="card pad"><h3>Database & aktivitas member</h3><p id="memberTotal">${E(r.total)} member sesuai filter</p><form id="mi_filters" class="mp-filters"><label>Pencarian<input id="mb_search" placeholder="Nomor HP, nama, email" value="${E(f.search)}"></label><label>Pendaftaran<select id="mi_period">${[['all','Semua tanggal'],['day','Per tanggal'],['month','Per bulan'],['year','Per tahun']].map(x=>option(...x,f.period)).join('')}</select></label><label>Tanggal acuan / bulan aktivitas<input id="mi_date" type="date" required value="${E(f.date)}"></label><label>Ringkasan<select id="mi_group">${[['day','Per tanggal'],['month','Per bulan'],['year','Per tahun']].map(x=>option(...x,f.group)).join('')}</select></label><label>Outlet pendaftaran<select id="mi_branch">${option('','Semua / belum diketahui',f.branch_id)}${branches.filter(b=>b.type==='outlet').map(b=>option(b.id,b.name,f.branch_id)).join('')}</select></label><button class="btn btn-primary" style="width:auto" type="submit">Terapkan</button></form><div class="mp-actions" style="margin-top:12px"><button class="btn" onclick="App.memberPortalLink()">Link daftar mandiri</button><button class="btn" onclick="App.loyaltyRegisterForm(true)">Tambah member</button></div><p class="mp-help">Tanggal dan pengelompokan memakai WIB. Tanggal acuan menentukan bulan aktivitas, terpisah dari filter tanggal pendaftaran. Data lama dengan outlet asal tidak pasti tidak dialokasikan ke outlet mana pun.</p></div><div class="mp-grid">${[['Member sesuai filter',r.total],['Belanja bulan pilihan',r.summary.active],['Member baru ≥50 poin',r.summary.qualified_new],['Belum pernah belanja',r.summary.never],['Tidak belanja >30 hari',r.summary.dormant]].map(([t,n])=>`<div class="mp-metric">${E(t)}<strong>${E(n)}</strong></div>`).join('')}</div><div class="card pad" style="margin-top:14px"><h3>Ringkasan pendaftaran</h3><div class="mp-table"><table><thead><tr><th>Periode</th><th>Member baru</th><th>Memenuhi 50 poin*</th></tr></thead><tbody>${r.groups.map(g=>`<tr><td>${E(g.period)}</td><td>${E(g.members)}</td><td>${E(g.qualified_new)}</td></tr>`).join('')||'<tr><td colspan="3">Belum ada data.</td></tr>'}</tbody></table></div><p class="mp-help">*Member baru pada bulan aktivitas yang dipilih dengan perolehan ≥50 poin. Ini indikator kelayakan, bukan pembayaran bonus otomatis. Maksimal 366 kelompok terbaru.</p></div>`+
- r.members.map(m=>`<article class="card pad mp-member" data-member-id="${E(m.id)}"><h3>${E(m.name)}</h3>${badge(m.activity)} ${m.qualified_new?'<span class="mp-badge qualified">Member baru ≥50 poin</span>':''}<p>${E(m.phone)} · ${E(m.email||'tanpa email')}</p><p><b>Terdaftar:</b> ${E(fmt(m.created_at,true))}<br><b>Outlet asal:</b> ${E(branches.find(b=>b.id===m.branch_id)?.name||'Belum diketahui')} · ${E({self:'Mandiri',staff:'Crew / staf',legacy:'Data lama'}[m.source]||'Data lama')}</p><div class="mp-grid"><div>Saldo saat ini<br><b>${E(m.balance)} poin</b></div><div>Perolehan bulan pilihan<br><b>${E(m.earned)} / 50 poin</b></div><div>Transaksi bulan pilihan<br><b>${E(m.transactions)}</b></div><div>Belanja bulan pilihan<br><b>${rp(m.net_paid)}</b></div></div><p>Transaksi terakhir: ${E(fmt(m.last_purchase,true))}</p><div class="mp-actions"><button class="btn" onclick="App.memberEdit(${J(m.id)})">Edit data</button><button class="btn" onclick="App.pointsHistory(${J(m.id)})">Riwayat poin</button><button class="btn" data-member-access-id="${E(m.id)}" data-member-access-disabled="${!m.active}" onclick="App.memberPortalAccess(${J(m.id)})" ${m.active?'':'disabled'}>Buat / ganti akses pribadi</button><button class="btn" onclick="App.loyaltyToggle('member',${J(m.id)},${!m.active})">${m.active?'Nonaktifkan':'Aktifkan'}</button></div></article>`).join('')+(!r.members.length?'<div class="card pad">Member tidak ditemukan.</div>':'')+`<div class="mp-actions" style="margin-top:14px"><button class="btn" ${f.offset>0?'':'disabled'} onclick="App.memberPage(-20)">Sebelumnya</button><span>Halaman ${Math.floor(f.offset/20)+1} · ${E(r.total)} member</span><button class="btn" ${f.offset+20<r.total?'':'disabled'} onclick="App.memberPage(20)">Berikutnya</button></div>`;
+ r.members.map(m=>`<article class="card pad mp-member" data-member-id="${E(m.id)}"><h3>${E(m.name)}</h3>${badge(m.activity)} ${m.qualified_new?'<span class="mp-badge qualified">Member baru ≥50 poin</span>':''}<p>${E(m.phone)} · ${E(m.email||'tanpa email')}</p><p><b>Terdaftar:</b> ${E(fmt(m.created_at,true))}<br><b>Outlet asal:</b> ${E(branches.find(b=>b.id===m.branch_id)?.name||'Belum diketahui')} · ${E({self:'Mandiri',staff:'Crew / staf',legacy:'Data lama'}[m.source]||'Data lama')}</p><div class="mp-grid"><div>Saldo saat ini<br><b>${E(m.balance)} poin</b></div><div>Perolehan bulan pilihan<br><b>${E(m.earned)} / 50 poin</b></div><div>Transaksi bulan pilihan<br><b>${E(m.transactions)}</b></div><div>Belanja bulan pilihan<br><b>${rp(m.net_paid)}</b></div></div><p>Transaksi terakhir: ${E(fmt(m.last_purchase,true))}</p><div class="mp-actions"><button class="btn" onclick="App.memberEdit(${J(m.id)})">Edit data</button><button class="btn" onclick="App.pointsHistory(${J(m.id)})">Riwayat poin</button><button class="btn" data-member-access-id="${E(m.id)}" data-member-access-disabled="${!m.active}" onclick="App.memberPortalAccess(${J(m.id)})" ${m.active?'':'disabled'}>Buat kode reset kata sandi</button><button class="btn" onclick="App.loyaltyToggle('member',${J(m.id)},${!m.active})">${m.active?'Nonaktifkan':'Aktifkan'}</button></div></article>`).join('')+(!r.members.length?'<div class="card pad">Member tidak ditemukan.</div>':'')+`<div class="mp-actions" style="margin-top:14px"><button class="btn" ${f.offset>0?'':'disabled'} onclick="App.memberPage(-20)">Sebelumnya</button><span>Halaman ${Math.floor(f.offset/20)+1} · ${E(r.total)} member</span><button class="btn" ${f.offset+20<r.total?'':'disabled'} onclick="App.memberPage(20)">Berikutnya</button></div>`;
  $('mi_filters').onsubmit=e=>{e.preventDefault();this.memberInsightsApply();};
  }catch(e){if(current())view.innerHTML=this.errHTML(e);}
 };
@@ -10724,18 +10744,18 @@ App.render_member_register=function(...a){const r=previousRegisterPage.apply(thi
 const portal={client:null,catalog:null,key:null,epoch:0,pending:null,tab:'home',account:null,
  async rpc(a,p={}){const{data,error}=await this.client.rpc('sruput_member_portal',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Halaman member belum diaktifkan. Silakan hubungi kasir.':error.message);if(data?.error)throw Error(data.error);return data;},
  nav(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Menu minuman'],['register','Daftar member'],[this.key?'account':'login',this.key?'Member saya':'Masuk member']].map(([id,title])=>`<button data-tab="${id}" aria-current="${this.tab===id}">${title}</button>`).join('')}</nav>`;},
- shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.11</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
- policy(){const c=this.catalog?.policy;if(!c?.active)return '<p>Saldo poin member berlaku di seluruh cabang SRUPUT. Program poin belum aktif; pengumpulan dan penukaran mengikuti aktivasi owner.</p>';return `<p>Belanja minimal <b>${rp(c.min_spend)}</b> setelah semua potongan mendapat <b>${E(c.earn_points)} poin per transaksi</b>. Nilai penukaran 1 poin = <b>${rp(c.point_value)}</b>.</p><p><b>Poin dapat dikumpulkan dan digunakan di seluruh cabang SRUPUT.</b> Outlet asal pendaftaran tidak membatasi pemakaian poin.</p><p>Poin dapat digunakan untuk potongan harga atau menukar satu unit produk dasar. Topping tetap dibayar. Penukaran tidak digabung voucher atau promo lain.</p>`;},
- async start(){document.body.classList.add('mp-mode');document.title='Member SRUPUT';const root=document.createElement('div');root.id='memberPortal';document.body.append(root);this.shell('<div class="mp-card" role="status">Memuat halaman member…</div>');try{this.client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'sruput-member-public-v170'}});try{this.key=sessionStorage.getItem('sruput_member_access');}catch{}this.catalog=await this.rpc('catalog');this.render(this.key?'account':'home');}catch(e){this.shell(`<div class="mp-card"><h1>Belum dapat terhubung</h1><p role="alert">${E(e.message)}</p><button id="mp_retry">Coba lagi</button></div>`);$('mp_retry').onclick=()=>location.reload();}},
+ shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.14</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
+ policy(){const c=this.catalog?.policy;if(!c?.active)return '<p>Saldo poin member berlaku di seluruh cabang SRUPUT. Program poin belum aktif; pengumpulan dan penukaran mengikuti aktivasi owner.</p>';return `<p>${Number(c.min_spend)>0?'Setiap kelipatan <b>'+rp(c.min_spend)+'</b> setelah semua potongan':'Setiap transaksi berbayar'} mendapat <b>${E(c.earn_points)} poin</b>. Nilai penukaran 1 poin = <b>${rp(c.point_value)}</b>.</p><p><b>Poin dapat dikumpulkan dan digunakan di seluruh cabang SRUPUT.</b> Outlet asal pendaftaran tidak membatasi pemakaian poin.</p><p>Poin dapat digunakan untuk potongan harga atau menukar satu unit produk dasar. Topping tetap dibayar. Penukaran tidak digabung voucher atau promo lain.</p>`;},
+ async start(){document.body.classList.add('mp-mode');document.title='Member SRUPUT';const root=document.createElement('div');root.id='memberPortal';document.body.append(root);this.shell('<div class="mp-card" role="status">Memuat halaman member…</div>');try{this.client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'sruput-member-public-v170'}});try{this.key=sessionStorage.getItem('sruput_member_access');}catch{}this.catalog=await this.rpc('catalog');this.render(this.key?'account':new URL(location.href).searchParams.has('invite')?'register':'login');}catch(e){this.shell(`<div class="mp-card"><h1>Belum dapat terhubung</h1><p role="alert">${E(e.message)}</p><button id="mp_retry">Coba lagi</button></div>`);$('mp_retry').onclick=()=>location.reload();}},
  async render(tab){const epoch=++this.epoch;this.tab=tab;
  if(tab==='home'){this.shell(`<section class="mp-hero"><h1>Belanja, kumpulkan poin,<br>nikmati benefitnya.</h1><p>Jadi member SRUPUT dengan nomor telepon dan nama. Cek saldo serta aktivitas belanja lewat halaman pribadi Anda.</p><button data-tab="register">Daftar member</button></section><section class="mp-card"><h2>Benefit member</h2>${this.policy()}<p>Poin masuk setelah transaksi berhasil. Sampaikan nomor telepon sebelum pembayaran.</p></section>`);return;}
  if(tab==='menu'){this.shell(`<h1>Menu SRUPUT</h1><p>Harga dasar katalog. Harga akhir, promo, topping, dan ketersediaan mengikuti outlet.</p><div class="mp-catalog">${this.catalog.menu.map(m=>`<article class="mp-product"><span class="mp-help">${E(m.category||'Minuman')}</span><b>${E(m.name)}</b><div>${rp(m.price)}</div>${this.catalog.policy?.active?`<p class="mp-help">Penukaran produk dasar: ${E(Math.ceil(Number(m.price)/Number(this.catalog.policy.point_value)))} poin</p>`:''}</article>`).join('')||'<p>Belum ada menu aktif.</p>'}</div>`);return;}
- if(tab==='register'){const selected=new URL(location.href).searchParams.get('outlet')||'';this.shell(`<section class="mp-card mp-form-wrap"><h1>Daftar member</h1><p>Cukup isi nomor telepon dan nama. Email opsional.</p><form id="mp_register"><label>Nomor telepon<input id="mp_phone" type="tel" autocomplete="tel" maxlength="25" placeholder="08xxxxxxxxxx" required></label><label>Nama<input id="mp_name" autocomplete="name" minlength="2" maxlength="100" required></label><label>Email (opsional)<input id="mp_email" type="email" autocomplete="email" maxlength="254"></label><label>Outlet asal pendaftaran (wajib)<select id="mp_outlet" required aria-describedby="mp_outlet_help"><option value="">Pilih outlet</option>${this.catalog.outlets.map(b=>`<option value="${E(b.id)}" ${b.id===selected?'selected':''}>${E(b.name)}</option>`).join('')}</select><span id="mp_outlet_help" class="mp-help">Pilih outlet asal Anda mendaftar. Outlet ini digunakan untuk pencatatan pendaftaran; poin tetap berlaku di seluruh cabang SRUPUT.</span></label><label class="mp-hp" aria-hidden="true">Website<input id="mp_website" tabindex="-1" autocomplete="off"></label><label class="mp-consent"><input id="mp_consent" type="checkbox" required><span>Saya menyetujui penyimpanan nomor telepon, nama, email opsional, dan aktivitas transaksi untuk layanan membership. Persetujuan ini bukan izin promosi massal.</span></label><button id="mp_submit" type="submit">Daftar & buka member saya</button><p id="mp_message" class="mp-status" role="status" aria-live="polite"></p></form><p class="mp-help">Sudah terdaftar di kasir? Gunakan menu Masuk member. Jika belum memiliki akses pribadi, minta bantuan owner. Jangan mendaftar ulang.</p></section>`);$('mp_register').onsubmit=e=>{e.preventDefault();this.register(epoch);};return;}
+ if(tab==='register'){const selected=new URL(location.href).searchParams.get('outlet')||'';this.shell(`<section class="mp-card mp-form-wrap"><h1>Daftar member</h1><p>Daftar dengan nomor HP dan kata sandi pilihan Anda. Email opsional.</p><form id="mp_register"><label>Nomor telepon<input id="mp_phone" type="tel" autocomplete="tel" maxlength="25" placeholder="08xxxxxxxxxx" required></label><label>Nama<input id="mp_name" autocomplete="name" minlength="2" maxlength="100" required></label><label>Email (opsional)<input id="mp_email" type="email" autocomplete="email" maxlength="254"></label>${this.passwordFields()}<label>Kode voucher undangan (opsional)<input id="mp_invite" maxlength="40" value="${E(new URL(location.href).searchParams.get('invite')||'')}"></label><label>Outlet asal pendaftaran (wajib)<select id="mp_outlet" required aria-describedby="mp_outlet_help"><option value="">Pilih outlet</option>${this.catalog.outlets.map(b=>`<option value="${E(b.id)}" ${b.id===selected?'selected':''}>${E(b.name)}</option>`).join('')}</select><span id="mp_outlet_help" class="mp-help">Pilih outlet asal Anda mendaftar. Outlet ini digunakan untuk pencatatan pendaftaran; poin tetap berlaku di seluruh cabang SRUPUT.</span></label><label class="mp-hp" aria-hidden="true">Website<input id="mp_website" tabindex="-1" autocomplete="off"></label><label class="mp-consent"><input id="mp_consent" type="checkbox" required><span>Saya menyetujui penyimpanan nomor telepon, nama, email opsional, dan aktivitas transaksi untuk layanan membership. Persetujuan ini bukan izin promosi massal.</span></label><button id="mp_submit" type="submit">Daftar & buka member saya</button><p id="mp_message" class="mp-status" role="status" aria-live="polite"></p></form><p class="mp-help">Sudah terdaftar di kasir? Gunakan menu Masuk member. Pilih aktivasi dengan kode akses lama atau minta kode reset dari owner.</p></section>`);$('mp_register').onsubmit=e=>{e.preventDefault();this.register(epoch);};return;}
  if(tab==='login'){this.shell(`<section class="mp-card mp-form-wrap"><h1>Masuk member</h1><p>Masukkan kode akses pribadi yang diperoleh saat mendaftar mandiri atau dari owner. Nomor telepon saja tidak dapat membuka riwayat.</p><form id="mp_login"><label>Kode akses pribadi<input id="mp_key" type="password" autocomplete="off" spellcheck="false" minlength="64" maxlength="64" required></label><button id="mp_submit" type="submit">Buka member saya</button><p id="mp_message" class="mp-status" role="status"></p></form></section>`);$('mp_login').onsubmit=async e=>{e.preventDefault();const btn=$('mp_submit'),input=$('mp_key'),key=input.value.trim().toLowerCase();const current=()=>epoch===this.epoch&&input===$('mp_key')&&input.value.trim().toLowerCase()===key;if(btn.disabled)return;btn.disabled=true;try{const account=await this.rpc('account',{access_key:key});if(!current())return;this.saveKey(key);this.account=account;this.render('account');}catch(err){if(current())$('mp_message').textContent=err.message;}finally{if(btn.isConnected)btn.disabled=false;if(epoch===this.epoch&&input===$('mp_key')&&input.value.trim().toLowerCase()!==key)$('mp_message').textContent='Kode berubah. Tekan Buka member saya untuk mencoba kode yang baru.';}};return;}
  if(tab==='account'){if(!this.key)return this.render('login');this.shell('<div class="mp-card" role="status">Memuat member saya…</div>');try{const m=await this.rpc('account',{access_key:this.key});if(epoch!==this.epoch)return;this.account=m;this.shell(`<section class="mp-hero"><h1>Halo, ${E(m.name)}</h1><p>${E(m.phone)}<br>Terdaftar ${E(fmt(m.registered_at,true))}</p><h2>${E(m.balance)} poin</h2><p>Saldo saat ini${this.catalog.policy?.active?' · setara '+rp(Number(m.balance)*Number(this.catalog.policy.point_value)):''}</p></section><section class="mp-card"><h2>Aktivitas bulan ini</h2>${badge(m.activity)}<div class="mp-grid" style="margin-top:16px"><div class="mp-metric">Poin diperoleh<strong>${E(m.earned_month)}</strong></div><div class="mp-metric">Poin ditukarkan<strong>${E(m.spent_month)}</strong></div><div class="mp-metric">Transaksi berbayar<strong>${E(m.transactions_month)}</strong></div></div><p>Transaksi terakhir: ${E(fmt(m.last_purchase,true))}</p></section><section class="mp-card"><h2>Benefit & cara menukar</h2>${this.policy()}<p>Informasikan nomor telepon kepada kasir dan pilih penukaran sebelum membayar. Poin baru tidak bisa membayar transaksi yang sama.</p></section><section class="mp-card"><h2>Riwayat transaksi member</h2><div class="mp-table"><table><thead><tr><th>Tanggal WIB</th><th>Transaksi</th><th>Poin masuk</th><th>Poin dipakai</th><th>Status</th></tr></thead><tbody>${m.history.map(h=>`<tr><td>${E(fmt(h.created_at,true))}</td><td>${E(h.invoice_no||h.sale_id)}</td><td>+${E(h.earned)}</td><td>${E(h.spent)}</td><td>${h.reversed?'Dibatalkan':'Berhasil'}</td></tr>`).join('')||'<tr><td colspan="5">Belum ada transaksi member.</td></tr>'}</tbody></table></div><p class="mp-help">Menampilkan 20 transaksi terakhir yang menggunakan member. Transaksi batal tidak masuk aktivitas atau perolehan poin.</p></section><section class="mp-card"><h2>Simpan akses pribadi</h2><p>Kode akses berlaku 90 hari sejak dibuat. Simpan di tempat pribadi agar dapat masuk lagi. Jangan bagikan kode kepada orang lain.</p><button id="mp_show_key">Tampilkan kode akses</button><div id="mp_key_area"></div><p id="mp_message" role="status"></p><button id="mp_logout" style="margin-top:18px">Keluar dari perangkat ini</button></section>`);$('mp_show_key').onclick=()=>{$('mp_key_area').innerHTML=`<code>${E(this.key)}</code><button id="mp_copy_key" style="margin-top:10px">Salin kode akses</button>`;$('mp_copy_key').onclick=()=>copyText(this.key,$('mp_message'),'Kode disalin. Simpan secara pribadi.','Tekan lama kode untuk menyalin.');};$('mp_logout').onclick=()=>{this.saveKey(null);this.account=null;this.render('home');};}catch(err){if(epoch===this.epoch)this.shell(`<section class="mp-card"><h1>Akses belum tersedia</h1><p role="alert">${E(err.message)}</p><button data-tab="login">Masuk dengan kode lain</button></section>`);}return;}
  },
  saveKey(key){this.key=key;try{if(key)sessionStorage.setItem('sruput_member_access',key);else sessionStorage.removeItem('sruput_member_access');}catch{}},
- async register(epoch){const btn=$('mp_submit');if(btn.disabled)return;const branch=$('mp_outlet').value;if(!branch||!this.catalog.outlets.some(b=>b.id===branch)){$('mp_message').textContent='Pilih outlet asal pendaftaran terlebih dahulu.';$('mp_outlet').focus();return;}const p={phone:$('mp_phone').value.trim(),name:$('mp_name').value.trim(),email:$('mp_email').value.trim(),branch_id:$('mp_outlet').value,consent:$('mp_consent').checked,website:$('mp_website').value};const signature=JSON.stringify(p);if(this.pending?.signature!==signature){const bytes=new Uint8Array(32);crypto.getRandomValues(bytes);this.pending={signature,key:Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('')};}const key=this.pending.key,controls=[...$('mp_register').elements].map(node=>[node,node.disabled]);for(const[node]of controls)node.disabled=true;try{await this.rpc('register',{...p,access_key:key});if(epoch!==this.epoch)return;this.saveKey(key);this.pending=null;this.render('account');}catch(err){if(epoch===this.epoch)$('mp_message').textContent=err.message;}finally{for(const[node,disabled]of controls)if(node.isConnected)node.disabled=disabled;}}
+ async register(epoch){const btn=$('mp_submit');if(btn.disabled)return;const branch=$('mp_outlet').value;if(!branch||!this.catalog.outlets.some(b=>b.id===branch)){$('mp_message').textContent='Pilih outlet asal pendaftaran terlebih dahulu.';$('mp_outlet').focus();return;}const p={phone:$('mp_phone').value.trim(),name:$('mp_name').value.trim(),invite_code:$('mp_invite').value.trim(),email:$('mp_email').value.trim(),branch_id:$('mp_outlet').value,consent:$('mp_consent').checked,website:$('mp_website').value};const signature=JSON.stringify(p);if(this.pending?.signature!==signature){const bytes=new Uint8Array(32);crypto.getRandomValues(bytes);this.pending={signature,key:Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('')};}const key=this.pending.key,controls=[...$('mp_register').elements].map(node=>[node,node.disabled]);for(const[node]of controls)node.disabled=true;try{await this.rpc('register',{...p,access_key:key});if(epoch!==this.epoch)return;this.saveKey(key);this.pending=null;this.render('account');}catch(err){if(epoch===this.epoch)$('mp_message').textContent=err.message;}finally{for(const[node,disabled]of controls)if(node.isConnected)node.disabled=disabled;}}
 };
 window.SruputMemberPortal=portal;
 const boot=App.boot;App.boot=function(...a){if(new URL(location.href).searchParams.get('member')==='1')return portal.start();return boot.apply(this,a);};
@@ -10783,8 +10803,8 @@ const labels={active:'Siap ditukar',cancelled:'Dibatalkan',used:'Sudah ditukar',
 const rawRender=P.render;P.category='';P.search='';P.rewards=null;P.claimOp=null;
 P.rewardRPC=async function(a,p={}){const{data,error}=await this.client.rpc('sruput_member_rewards',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Penukaran mandiri belum tersedia. Silakan hubungi kasir.':error.message);return data;};
 P.nav=function(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Tukar poin'],['vouchers','Voucher saya'],[this.key?'account':'login',this.key?'Akun saya':'Masuk / daftar']].map(([t,n])=>`<button data-tab="${t}" aria-current="${this.tab===t}">${n}</button>`).join('')}</nav>`;};
-P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Simpan kode akses pribadi Anda; kode ini berbeda dari kode voucher dan tidak perlu diberikan kepada kasir.<br>SRUPUT OS · WF1.9.11</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
-P.terms=function(){return `<div class="mh-notice">Klaim dari rumah mencadangkan poin selama <b>7 hari</b>. Poin baru dipotong saat voucher ditukar di kasir. Batalkan voucher yang belum dipakai untuk melepas cadangan. Voucher kedaluwarsa otomatis melepas cadangan.</div><details><summary>Bagaimana cara mendapatkan poin?</summary>${this.policy()}<p>Poin masuk setelah pembayaran berhasil. Sebutkan nomor telepon member sebelum membayar; halaman ini tidak memberikan poin gratis atau mengklaim transaksi yang belum dicatat kasir.</p></details><details><summary>Bagaimana menukar voucher di outlet?</summary><p>Tunjukkan kode voucher dan sebutkan nomor telepon member. Kasir menggunakan tombol Voucher produk member. Satu voucher untuk satu produk dasar pada transaksi terpisah, tanpa minimum belanja tambahan. Topping dibeli terpisah. Tidak digabung dengan promo lain.</p></details><details><summary>Kalau stok habis atau aturan berubah?</summary><p>Voucher tidak memesan stok. Coba cabang lain, atau batalkan voucher sebelum dipakai. Bila harga produk atau kebutuhan poin berubah, kasir akan meminta pembatalan dan klaim ulang sesuai aturan terbaru. Tidak ada tambahan poin yang dipotong diam-diam.</p></details><details><summary>Apakah bisa ditukar di cabang mitra?</summary><p>Bisa. Penukaran di kasir otomatis tercatat pada transaksi member dan menjadi kandidat penggantian Dana Loyalty untuk outlet. Pencairan dana kepada mitra dikelola pusat.</p></details>`;};
+P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Untuk menukar, tunjukkan kode voucher dan sebutkan nomor HP. Simpan kata sandi dan kode pemulihan untuk Anda sendiri.<br>SRUPUT OS · WF1.9.14</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
+P.terms=function(){return `<div class="mh-notice">Klaim dari rumah mencadangkan poin selama <b>7 hari</b>. Poin baru dipotong saat voucher ditukar di kasir. Batalkan voucher yang belum dipakai untuk melepas cadangan. Voucher kedaluwarsa otomatis melepas cadangan.</div><details><summary>Bagaimana cara mendapatkan poin?</summary>${this.policy()}<p>Poin masuk setelah pembayaran berhasil. Sebutkan nomor telepon member sebelum membayar; bonus undangan masuk saat pendaftaran dengan kode yang berlaku.</p></details><details><summary>Bagaimana menukar voucher di outlet?</summary><p>Tunjukkan kode voucher dan sebutkan nomor telepon member. Kasir menggunakan tombol Voucher produk member. Satu kode hanya bisa ditukar satu kali di seluruh booth, untuk satu produk dasar pada transaksi terpisah, tanpa minimum belanja tambahan. Topping dibeli terpisah. Tidak digabung dengan promo lain.</p></details><details><summary>Kalau stok habis atau aturan berubah?</summary><p>Voucher tidak memesan stok. Coba cabang lain, atau batalkan voucher sebelum dipakai. Bila harga produk atau kebutuhan poin berubah, kasir akan meminta pembatalan dan klaim ulang sesuai aturan terbaru. Tidak ada tambahan poin yang dipotong diam-diam.</p></details><details><summary>Apakah bisa ditukar di cabang mitra?</summary><p>Bisa. Penukaran di kasir otomatis tercatat pada transaksi member dan menjadi kandidat penggantian Dana Loyalty untuk outlet. Pencairan dana kepada mitra dikelola pusat.</p></details>`;};
 P.walletHTML=function(){const a=this.account,r=this.rewards,c=this.catalog?.policy;return `<div class="mh-wallet"><span class="mh-label">${a?'POIN TERSEDIA':'SATU NOMOR, BANYAK BENEFIT'}</span><span class="mh-seal">✦</span><strong>${a?num(r?.available??a.balance):'✦'} <small>${a?'poin':'SRUPUT MEMBER'}</small></strong><p>${a&&c?.active?'Setara hingga '+rp(Math.max(0,Number(r?.available??a.balance))*Number(c.point_value)):'Daftar, belanja, lalu pilih produk favoritmu.'}</p><div class="mh-line"><span>${a?'Total saldo: '+num(r?.balance??a.balance):'Berlaku di semua cabang'}</span><b>${a?'Dicadangkan: '+num(r?.held||0):'100% untuk member'}</b></div><p>${a?'Poin dicadangkan belum dipotong dari saldo total.':'Aturan perolehan dan penukaran mengikuti program aktif.'}</p></div>`;};
 P.productsHTML=function(limit=0){const c=this.catalog.policy,available=Number(this.rewards?.available??this.account?.balance??0);let rows=this.catalog.menu.filter(m=>(!this.category||(m.category||'Lainnya')===this.category)&&(!this.search||m.name.toLowerCase().includes(this.search.toLowerCase())));if(limit)rows=rows.slice(0,limit);return rows.map(m=>{const cost=Math.ceil(Number(m.price)/Number(c?.point_value||1)),enough=available>=cost,progress=Math.max(0,Math.min(100,Math.round(available/cost*100)));return `<article class="mh-product" data-product="${E(m.id)}"><div class="mh-icon" aria-hidden="true">♨</div><span class="mh-label" style="font-size:9px;color:#a0836c">${E(m.category||'SRUPUT FAVORITES')}</span><h3>${E(m.name)}</h3><span class="mh-price">Harga dasar ${rp(m.price)}</span><div class="mh-cost">${num(cost)} <small>poin / produk</small></div>${this.key?`<div class="mh-progress" aria-label="Progres poin ${progress}%"><span style="width:${progress}%"></span></div><p class="mh-muted" style="margin:8px 0 0">${enough?'Poin cukup untuk diklaim':'Kurang '+num(cost-available)+' poin'}</p>`:'<p class="mh-muted">1 produk dasar · tanpa topping</p>'}<button data-claim="${E(m.id)}" ${!c?.active||(this.key&&!enough)?'disabled':''}>${!c?.active?'Program belum aktif':this.key?(enough?'Klaim voucher produk':'Kumpulkan poin lagi'):'Masuk untuk klaim'}</button></article>`;}).join('')||'<div class="mh-empty">Produk tidak ditemukan. Coba kata lain.</div>';};
 P.bindProducts=function(){for(const b of $('memberPortal').querySelectorAll('[data-claim]'))b.onclick=()=>this.claimDialog(b.dataset.claim);};
@@ -10796,7 +10816,7 @@ P.render=async function(tab){
  try{if(this.key&&await this.loadWallet(epoch)===false)return;if(!this.key){this.account=null;this.rewards=null;}if(epoch!==this.epoch)return;
  const c=this.catalog.policy,a=this.account;
  if(tab==='home'){
- this.shell(`<section class="mh-hero"><div><span class="mh-label">LEBIH DARI SEKADAR MINUM</span><h1>${a?'Halo, '+E(a.name)+'.<br>Waktunya menikmati<br>poinmu.':'Sruput hari ini.<br>Benefitnya<br>kamu nikmati.'}</h1><p>${a?'Pilih produk favorit, klaim voucher dari rumah, lalu tukarkan saat mampir ke cabang SRUPUT.':'Setiap transaksi bisa jadi langkah menuju minuman favorit berikutnya. Satu membership untuk seluruh cabang SRUPUT.'}</p><div class="mh-actions"><button data-tab="${a?'menu':'register'}">${a?'Pilih hadiah saya ↗':'Daftar jadi member ↗'}</button><button class="mh-ghost" data-tab="${a?'vouchers':'login'}">${a?'Voucher saya':'Sudah member? Masuk'}</button></div></div>${this.walletHTML()}</section><div class="mh-strip"><div><span class="mh-label">01 / BELANJA</span><b>${c?.active?'Minimal '+rp(c.min_spend):'Sebutkan nomor member'}</b><p>${c?.active?'Dapat '+num(c.earn_points)+' poin per transaksi yang memenuhi syarat.':'Pengumpulan mengikuti aktivasi program.'}</p></div><div><span class="mh-label">02 / KLAIM DARI RUMAH</span><b>Semua produk aktif bisa ditukar</b><p>Pilih hadiah, poin dicadangkan, voucher siap digunakan.</p></div><div><span class="mh-label">03 / MAMPIR KE SRUPUT</span><b>Satu voucher, satu produk</b><p>Tunjukkan kode dan nomor member ke kasir.</p></div></div><section class="mh-section"><div class="mh-section-head"><div><span class="mh-label">PILIH FAVORITMU</span><h2>Minuman berikutnya,<br>dari poinmu.</h2></div><button class="mh-link" data-tab="menu">Lihat semua produk ↗</button></div><div class="mh-products">${this.productsHTML(6)}</div></section><section class="mh-section"><h2>Member yang lebih menguntungkan.</h2>${this.terms()}</section>`);this.bindProducts();return;
+ this.shell(`<section class="mh-hero"><div><span class="mh-label">LEBIH DARI SEKADAR MINUM</span><h1>${a?'Halo, '+E(a.name)+'.<br>Waktunya menikmati<br>poinmu.':'Sruput hari ini.<br>Benefitnya<br>kamu nikmati.'}</h1><p>${a?'Pilih produk favorit, klaim voucher dari rumah, lalu tukarkan saat mampir ke cabang SRUPUT.':'Setiap transaksi bisa jadi langkah menuju minuman favorit berikutnya. Satu membership untuk seluruh cabang SRUPUT.'}</p><div class="mh-actions"><button data-tab="${a?'menu':'register'}">${a?'Pilih hadiah saya ↗':'Daftar jadi member ↗'}</button><button class="mh-ghost" data-tab="${a?'vouchers':'login'}">${a?'Voucher saya':'Sudah member? Masuk'}</button></div></div>${this.walletHTML()}</section><div class="mh-strip"><div><span class="mh-label">01 / BELANJA</span><b>${c?.active?(Number(c.min_spend)>0?'Setiap '+rp(c.min_spend):'Setiap transaksi berbayar'):'Sebutkan nomor member'}</b><p>${c?.active?'Dapat '+num(c.earn_points)+' poin dari belanja bersih.':'Pengumpulan mengikuti aktivasi program.'}</p></div><div><span class="mh-label">02 / KLAIM DARI RUMAH</span><b>Semua produk aktif bisa ditukar</b><p>Pilih hadiah, poin dicadangkan, voucher siap digunakan.</p></div><div><span class="mh-label">03 / MAMPIR KE SRUPUT</span><b>Satu voucher, satu produk</b><p>Tunjukkan kode dan nomor member ke kasir.</p></div></div><section class="mh-section"><div class="mh-section-head"><div><span class="mh-label">PILIH FAVORITMU</span><h2>Minuman berikutnya,<br>dari poinmu.</h2></div><button class="mh-link" data-tab="menu">Lihat semua produk ↗</button></div><div class="mh-products">${this.productsHTML(6)}</div></section><section class="mh-section"><h2>Member yang lebih menguntungkan.</h2>${this.terms()}</section>`);this.bindProducts();return;
  }
  if(tab==='menu'){
  this.shell(`<div class="mh-section-head"><div><span class="mh-label">REWARD CATALOG</span><h1 style="font-size:42px">Pilih hadiahmu.</h1><p class="mh-muted">Semua produk aktif otomatis bisa ditukar. Satu voucher = satu produk dasar.</p></div><div class="mh-pill">${this.key?num(this.rewards.available)+' poin tersedia':'Masuk untuk melihat saldo'}</div></div><label class="mh-search">Cari produk<input id="mh_search" type="search" placeholder="Misalnya: Americano" value="${E(this.search)}"></label><div class="mh-filter" aria-label="Kategori produk">${['',...new Set(this.catalog.menu.map(m=>m.category||'Lainnya'))].map(cat=>`<button data-category="${E(cat)}" aria-pressed="${cat===this.category}">${E(cat||'Semua minuman')}</button>`).join('')}</div><p class="mh-live" id="mh_catalog_message" role="status"></p><div id="mh_products" class="mh-products">${this.productsHTML()}</div><section class="mh-section">${this.terms()}</section>`);this.bindProducts();const update=()=>{$('mh_products').innerHTML=this.productsHTML();this.bindProducts();};$('mh_search').oninput=e=>{this.search=e.target.value;update();};for(const b of $('memberPortal').querySelectorAll('[data-category]'))b.onclick=()=>{this.category=b.dataset.category;for(const x of $('memberPortal').querySelectorAll('[data-category]'))x.setAttribute('aria-pressed',String(x===b));update();};return;
@@ -10806,7 +10826,7 @@ P.render=async function(tab){
  for(const b of $('memberPortal').querySelectorAll('[data-copy]'))b.onclick=()=>this.copy(b.dataset.copy,$('mh_voucher_message'));for(const b of $('memberPortal').querySelectorAll('[data-cancel]'))b.onclick=()=>this.cancelDialog(b.dataset.cancel);return;
  }
  if(tab==='account'){
- this.shell(`<section class="mh-hero"><div><span class="mh-label">YOUR MEMBERSHIP</span><h1>Halo, ${E(a.name)}.</h1><p>${E(a.phone)}<br>Member sejak ${E(date(a.registered_at))}</p><div class="mh-actions"><button data-tab="menu">Tukar poin ↗</button><button data-tab="vouchers" class="mh-ghost">Voucher saya</button></div></div>${this.walletHTML()}</section><div class="mh-strip"><div><span class="mh-label">BULAN INI</span><b>+${num(a.earned_month)} poin diperoleh</b><p>Penukaran tidak mengurangi perolehan bulan ini.</p></div><div><span class="mh-label">TRANSAKSI BERBAYAR</span><b>${num(a.transactions_month)} transaksi</b><p>Terakhir: ${E(date(a.last_purchase))}</p></div><div><span class="mh-label">POIN DIGUNAKAN</span><b>${num(a.spent_month)} poin</b><p>Status: ${E({active:'Aktif bulan ini',never:'Belum bertransaksi',dormant:'Saatnya mampir lagi',recent:'Belanja baru-baru ini'}[a.activity]||'Member aktif')}</p></div></div><div class="mh-duo"><section class="mh-section"><h2>Riwayat poinmu.</h2>${a.history.map(h=>`<div class="mh-row"><div><b>${E(h.invoice_no||h.sale_id)}</b><small>${E(date(h.created_at))} · ${h.reversed?'Dibatalkan':'Berhasil'}</small></div><div style="text-align:right"><b>+${num(h.earned)}</b><small>Dipakai ${num(h.spent)} poin</small></div></div>`).join('')||'<p class="mh-muted">Sebutkan nomor member sebelum pembayaran untuk mulai mengumpulkan poin.</p>'}<p class="mh-muted">20 transaksi member terakhir. Koreksi transaksi batal mengikuti ledger.</p></section><section class="mh-section"><h2>Akses pribadimu.</h2><p class="mh-muted">Akses berlaku 90 hari sejak dibuat. Simpan kode ini sendiri. Kasir hanya memerlukan nomor telepon dan kode voucher saat penukaran.</p><button id="mh_key_show" class="mh-link">Tampilkan kode akses pribadi</button><div id="mh_key_area"></div><p id="mh_key_msg" class="mh-live" role="status"></p><button id="mp_logout" class="mh-link" style="margin-top:20px">Keluar dari perangkat ini</button><p class="mh-muted">Kehilangan akses? Minta owner melakukan verifikasi identitas dan membuat akses pengganti. Jangan mendaftar ulang.</p></section></div>`);$('mh_key_show').onclick=()=>{$('mh_key_area').innerHTML=`<code style="margin-top:12px">${E(this.key)}</code><button id="mh_key_copy" class="mh-link" style="margin-top:10px">Salin akses pribadi</button>`;$('mh_key_copy').onclick=()=>this.copy(this.key,$('mh_key_msg'));};$('mp_logout').onclick=()=>{this.epoch++;this.saveKey(null);this.account=null;this.rewards=null;this.render('home');};return;
+ this.shell(`<section class="mh-hero"><div><span class="mh-label">YOUR MEMBERSHIP</span><h1>Halo, ${E(a.name)}.</h1><p>${E(a.phone)}<br>Member sejak ${E(date(a.registered_at))}</p><div class="mh-actions"><button data-tab="menu">Tukar poin ↗</button><button data-tab="vouchers" class="mh-ghost">Voucher saya</button></div></div>${this.walletHTML()}</section><div class="mh-strip"><div><span class="mh-label">BULAN INI</span><b>+${num(a.earned_month)} poin diperoleh</b><p>Penukaran tidak mengurangi perolehan bulan ini.</p></div><div><span class="mh-label">TRANSAKSI BERBAYAR</span><b>${num(a.transactions_month)} transaksi</b><p>Terakhir: ${E(date(a.last_purchase))}</p></div><div><span class="mh-label">POIN DIGUNAKAN</span><b>${num(a.spent_month)} poin</b><p>Status: ${E({active:'Aktif bulan ini',never:'Belum bertransaksi',dormant:'Saatnya mampir lagi',recent:'Belanja baru-baru ini'}[a.activity]||'Member aktif')}</p></div></div><div class="mh-duo"><section class="mh-section"><h2>Riwayat poinmu.</h2>${a.signup_bonus?'<p>Bonus voucher saat daftar <b>+'+num(a.signup_bonus)+' poin</b></p>':''}${a.history.map(h=>`<div class="mh-row"><div><b>${E(h.invoice_no||h.sale_id)}</b><small>${E(date(h.created_at))} · ${h.reversed?'Dibatalkan':'Berhasil'}</small></div><div style="text-align:right"><b>+${num(h.earned)}</b><small>Dipakai ${num(h.spent)} poin</small></div></div>`).join('')||'<p class="mh-muted">Sebutkan nomor member sebelum pembayaran untuk mulai mengumpulkan poin.</p>'}<p class="mh-muted">20 transaksi member terakhir. Koreksi transaksi batal mengikuti ledger.</p></section><section class="mh-section"><h2>Akses member</h2><p>Masuk kembali dengan nomor HP dan kata sandi. Untuk akun lama yang masih memakai kode akses, buat kata sandi pertama Anda.</p><div class="mh-actions">${this.passwordSession ? '' : '<button data-tab="activate" class="mh-link">Aktifkan akun lama</button>'}<button data-tab="reset" class="mh-link">Reset kata sandi</button><button id="mp_logout" class="mh-link">Keluar</button></div></section></div>`);$('mp_logout').onclick=()=>this.logoutMember();return;
  }
  }catch(e){if(epoch===this.epoch)this.shell(`<section class="mp-card"><h1 style="font-size:32px">Belum bisa dimuat.</h1><p role="alert">${E(e.message)}</p><div class="mh-actions"><button data-tab="${this.key?'account':'home'}">Coba lagi</button><button data-tab="login">Masuk dengan akses lain</button></div></section>`);}
 };
@@ -10816,7 +10836,7 @@ P.claimDialog=function(id){if(!this.key)return this.render('login');if(this.clai
 P.cancelDialog=function(id){const key=this.key,epoch=this.epoch;const d=this.dialog('<h2>Batalkan voucher?</h2><p>Voucher yang belum digunakan akan dinonaktifkan dan cadangan poin dilepas.</p><div class="mh-actions"><button id="mh_cancel_confirm">Ya, batalkan</button><button class="mh-secondary" data-close>Kembali</button></div><p id="mh_cancel_msg" role="status"></p>');$('mh_cancel_confirm').onclick=async()=>{const b=$('mh_cancel_confirm');if(b.disabled)return;b.disabled=true;try{await this.rewardRPC('cancel',{access_key:key,id});if(epoch===this.epoch&&key===this.key){d.remove();this.render('vouchers');}}catch(e){if(d.isConnected)$('mh_cancel_msg').textContent=e.message;}finally{if(b.isConnected)b.disabled=false;}};};
 // A member voucher is a dedicated zero-price sale, not a general promotional code.
 const mount=App.renderCart;App.renderCart=function(...args){const r=mount?.apply(this,args);const box=$('loyaltyPos');if(box&&!$('memberRewardOpen')){const b=document.createElement('button');b.className='btn';b.id='memberRewardOpen';b.style.cssText='width:auto;margin-top:8px';b.textContent='Voucher produk member';b.onclick=()=>this.memberRewardOpen();box.append(b);}return r;};
-App.memberRewardOpen=function(){if(this._checkoutBusy)return;if(this.state.cart.length){this.toast('Selesaikan atau kosongkan keranjang. Voucher member ditukar pada transaksi terpisah.','warn');return;}if(!navigator.onLine){this.toast('Penukaran voucher memerlukan koneksi online.','bad');return;}this._modal('<h3>Voucher produk member</h3><p>Penukaran 1 produk dasar pada transaksi tersendiri. Tidak ada uang tunai yang diterima.</p><label>Kode voucher<input id="mr_code" autocomplete="off" placeholder="SM-…" style="width:100%;padding:12px"></label><label>Nomor telepon member<input id="mr_phone" type="tel" style="width:100%;padding:12px"></label><button class="btn btn-primary" id="mr_preview">Periksa voucher</button><div id="mr_info" role="status" style="margin-top:14px"></div>');const active=this._sessionGuard(),root=$('appModal'),branch=this.state.posBranch;const current=()=>active()&&root===$('appModal')&&branch===this.state.posBranch;let op=false,request;const call=async(a,p)=>{const{data,error}=await sb.rpc('sruput_member_rewards',{p_action:a,p_data:p});if(error)throw error;return data;};$('mr_preview').onclick=async()=>{if(op)return;const code=$('mr_code').value.trim().toUpperCase(),phone=$('mr_phone').value.trim();const selectionCurrent=()=>current()&&$('mr_code')?.value.trim().toUpperCase()===code&&$('mr_phone')?.value.trim()===phone;op=true;try{const r=await call('preview',{code,phone,branch_id:branch});if(!selectionCurrent())return;$('mr_info').innerHTML=`<b>${E(r.name)} · ${num(r.points)} poin</b><p>Status ${E(labels[r.status]||r.status)} · berlaku sampai ${E(date(r.expires_at))}</p>${r.status==='active'?'<button class="btn btn-primary" id="mr_redeem">Konfirmasi produk diserahkan</button>':''}`;if($('mr_redeem'))$('mr_redeem').onclick=async()=>{if(op||this._checkoutBusy||!selectionCurrent())return;if(this.state.cart.length){this.toast('Keranjang harus kosong.','bad');return;}op=true;this._checkoutBusy=true;const button=$('mr_redeem');button.disabled=true;if(!request||request.code!==code||request.phone!==phone)request={code,phone,branch_id:branch,client_id:crypto.randomUUID()};try{const done=await call('redeem',request);if(!current())return;$('mr_info').innerHTML=`<b>Penukaran tercatat.</b><p>${E(done.name)} · transaksi ${E(done.sale_id)}. ${done.reversed?'Transaksi ini sudah dibatalkan; periksa Riwayat.':'Poin dipotong dan stok tercatat.'}</p>`;try{const stock=await Data.stock(branch);if(current()){this._posStockServer=stock;this.state.stock=this._stockMinusQueue(stock);this.renderMenu();}}catch{}this.toast('Voucher berhasil ditukar. Bukti tersedia di Riwayat.','good');}catch(e){if(current()){$('mr_info').append(document.createTextNode(' '+e.message+' Jika koneksi terputus, tekan konfirmasi lagi untuk mengecek transaksi yang sama.'));if(button.isConnected)button.disabled=false;}}finally{if(active())this._checkoutBusy=false;op=false;}};}catch(e){if(current())$('mr_info').textContent=e.message;}finally{op=false;}};};
+App.memberRewardOpen=function(){if(this._checkoutBusy)return;if(this.state.cart.length){this.toast('Selesaikan atau kosongkan keranjang. Voucher member ditukar pada transaksi terpisah.','warn');return;}if(!navigator.onLine){this.toast('Penukaran voucher memerlukan koneksi online.','bad');return;}this._modal('<h3>Voucher produk member</h3><p>Penukaran 1 produk dasar pada transaksi tersendiri. Tidak ada uang tunai yang diterima.</p><label>Kode voucher<input id="mr_code" autocomplete="off" placeholder="SM-…" style="width:100%;padding:12px"></label><label>Nomor telepon member<input id="mr_phone" type="tel" style="width:100%;padding:12px"></label><button class="btn btn-primary" id="mr_preview">Periksa voucher</button><div id="mr_info" role="status" style="margin-top:14px"></div>');const active=this._sessionGuard(),root=$('appModal'),branch=this.state.posBranch;const current=()=>active()&&root===$('appModal')&&branch===this.state.posBranch;let op=false,request;const call=async(a,p)=>{const{data,error}=await sb.rpc('sruput_member_rewards',{p_action:a,p_data:p});if(error)throw error;return data;};$('mr_preview').onclick=async()=>{if(op)return;const code=$('mr_code').value.trim().toUpperCase(),phone=$('mr_phone').value.trim();const selectionCurrent=()=>current()&&$('mr_code')?.value.trim().toUpperCase()===code&&$('mr_phone')?.value.trim()===phone;op=true;try{const r=await call('preview',{code,phone,branch_id:branch});if(!selectionCurrent())return;$('mr_info').innerHTML=`<b>${E(r.name)} · ${num(r.points)} poin</b><p>Status ${E(labels[r.status]||r.status)} · berlaku sampai ${E(date(r.expires_at))}</p>${r.status==='active'?'<button class="btn btn-primary" id="mr_redeem">Konfirmasi penukaran</button>':''}`;if($('mr_redeem'))$('mr_redeem').onclick=async()=>{if(op||this._checkoutBusy||!selectionCurrent())return;if(this.state.cart.length){this.toast('Keranjang harus kosong.','bad');return;}op=true;this._checkoutBusy=true;const button=$('mr_redeem');button.disabled=true;if(!request||request.code!==code||request.phone!==phone)request={code,phone,branch_id:branch,client_id:crypto.randomUUID()};try{const done=await call('redeem',request);if(!current())return;$('mr_info').innerHTML=`<b>Penukaran tercatat.</b><p>${E(done.name)} · transaksi ${E(done.sale_id)}. ${done.reversed?'Transaksi ini sudah dibatalkan. Periksa Riwayat.':done.retry?'Transaksi ini sudah tercatat. Pastikan produk hanya diserahkan satu kali.':'Serahkan satu produk kepada member.'}</p>`;try{const stock=await Data.stock(branch);if(current()){this._posStockServer=stock;this.state.stock=this._stockMinusQueue(stock);this.renderMenu();}}catch{}this.toast('Voucher berhasil ditukar. Bukti tersedia di Riwayat.','good');}catch(e){if(current()){$('mr_info').append(document.createTextNode(' '+e.message+' Jika koneksi terputus, tekan konfirmasi lagi untuk mengecek transaksi yang sama.'));if(button.isConnected)button.disabled=false;}}finally{if(active())this._checkoutBusy=false;op=false;}};}catch(e){if(current())$('mr_info').textContent=e.message;}finally{op=false;}};};
 })();
 
 </script>
@@ -12152,20 +12172,10 @@ module.exports = QRCode;
 
 }};const cache={};function require(id){if(!cache[id]){const module={exports:{}};cache[id]=module;factories[id](module,require);}return cache[id].exports;}return require('./index');})();
 (() => {
-  const setting='barcode_print_url';
-  function safeLink(raw) {
-    const text=String(raw??'').trim();
-    if(!text)return '';
-    let url;
-    try{url=new URL(text);}catch{throw Error('Masukkan tautan lengkap yang dimulai dengan https://.');}
-    if(url.protocol!=='https:'||url.username||url.password||url.href.length>512)
-      throw Error('Gunakan tautan HTTPS tanpa kredensial, maksimal 512 karakter.');
-    return url.href;
-  }
-  function makeLabel(link){
+  function makeLabel(link,maxDots=Infinity){
     const qr=new BarcodeQR(-1,0); // QR error correction M
-    qr.addData(link);qr.make();
-    const count=qr.getModuleCount(),dots=Math.floor(384/(count+8));
+    qr.addData(Array.from(new TextEncoder().encode(link),b=>String.fromCharCode(b)).join(''));qr.make();
+    const count=qr.getModuleCount(),dots=Math.min(maxDots,Math.floor(384/(count+8)));
     const canvas=document.createElement('canvas');
     canvas.width=canvas.height=(count+8)*dots;
     const ctx=canvas.getContext('2d');
@@ -12174,75 +12184,196 @@ module.exports = QRCode;
     for(let y=0;y<count;y++)for(let x=0;x<count;x++)if(qr.isDark(y,x))ctx.fillRect((4+x)*dots,(4+y)*dots,dots,dots);
     return canvas;
   }
-  function printerBytes(canvas){
-    const size=canvas.width,rowBytes=Math.ceil(size/8);
-    const pixels=canvas.getContext('2d').getImageData(0,0,size,size).data;
-    const header=[27,64,27,97,1,29,118,48,0,rowBytes&255,rowBytes>>8,size&255,size>>8];
-    const result=new Uint8Array(header.length+rowBytes*size+4);
-    result.set(header);
-    for(let y=0;y<size;y++)for(let x=0;x<size;x++)if(!pixels[(y*size+x)*4])result[header.length+y*rowBytes+(x>>3)]|=128>>(x%8);
-    result.fill(10,result.length-4);
-    return result;
-  }
-  function printWindow(canvas,win){
-    win.opener=null;
-    win.document.write('<!doctype html><html lang="id"><meta charset="utf-8"><title>Barcode SRUPUT</title><style>@page{size:58mm 60mm;margin:0}*{box-sizing:border-box}body{margin:0}main{width:58mm;padding:3mm 0;text-align:center;font:bold 11pt Arial}img{display:block;margin:auto;width:46mm;height:46mm;image-rendering:pixelated}@media print{button{display:none}}</style><main>SRUPUT<img alt="QR tautan owner"><button>Cetak</button></main></html>');
-    win.document.close();
-    win.document.querySelector('button').onclick=()=>win.print();
-    const img=win.document.querySelector('img');img.onload=()=>{if(!win.closed){win.focus();win.print();}};img.src=canvas.toDataURL('image/png');
-  }
-  for(const entries of Object.values(NAV))entries.push(['barcode','▦','Cetak Barcode',1]);
-  App.render_barcode=async function(){
-    const view=document.getElementById('view'),session=this._sessionGuard(),request={};
-    this._barcodeRender=request;
-    const current=()=>session()&&this.state.page==='barcode'&&this._barcodeRender===request;
-    if(!current())return;
-    document.getElementById('pageTitle').textContent='Cetak Barcode';
-    document.getElementById('pageSub').textContent='Tautan dari owner · label QR 58 mm';
-    view.innerHTML=this.loadingHTML('Memuat tautan barcode…');
-    try{
-      const raw=await Data.getAppSetting(setting);
-      if(!current())return;
-      let link='',invalid='';
-      try{link=safeLink(raw);}catch(e){invalid=e.message;}
-      const isOwner=CURRENT.role==='owner';
-      view.innerHTML='<section class="card pad"><div id="barPreview"></div><p id="barInfo" role="status"></p><div class="wf-row"><button class="btn btn-primary" id="barPrint">Cetak QR 58 mm</button><a class="btn" id="barOpen" target="_blank" rel="noopener noreferrer">Buka tautan barcode</a></div></section>'+
-        (isOwner?'<section class="card pad" style="margin-top:12px"><label>Tautan barcode untuk seluruh role<input type="url" id="barUrl" placeholder="https://" style="display:block;width:100%;margin:8px 0"></label><button id="barSave" class="btn">Simpan tautan</button></section>':'');
-      const el=id=>view.querySelector('#'+id),info=el('barInfo');
-      if(isOwner){
-        el('barUrl').value=typeof raw==='string'?raw:'';
-        el('barSave').onclick=async event=>{
-          if(!current()||CURRENT.role!=='owner')return;
-          const btn=event.currentTarget;btn.disabled=true;
-          try{
-            const next=safeLink(el('barUrl').value);
-            if(!await Data.setAppSetting(setting,next))throw Error('Tautan gagal disimpan. Periksa hak akses owner.');
-            if(current()){this.toast(next?'Tautan barcode tersimpan':'Tautan barcode dinonaktifkan','good');await this.render_barcode();}
-          }catch(e){if(current())info.textContent=e.message;}finally{btn.disabled=false;}
-        };
-      }
-      if(!link){el('barPrint').disabled=true;el('barOpen').remove();info.textContent=invalid||'Owner belum mengatur tautan barcode.';return;}
-      const canvas=makeLabel(link);canvas.style.cssText='width:min(190px,100%);height:auto;image-rendering:pixelated';canvas.setAttribute('aria-label','QR untuk '+new URL(link).hostname);el('barPreview').append(canvas);
-      info.textContent=new URL(link).hostname;el('barOpen').href=link;
-      el('barPrint').onclick=async event=>{
-        const btn=event.currentTarget;if(!current()||btn.disabled)return;btn.disabled=true;
-        let win;
-        try{
-          const method=BTPrint.cfg().method;
-          if(method==='ble'&&!(BTPrint._chr&&BTPrint._dev?.gatt?.connected))await BTPrint.connect();
-          if(!['ble','rawbt'].includes(method)){win=window.open('','_blank');if(!win)throw Error('Izinkan jendela cetak, lalu coba lagi.');win.opener=null;}
-          const latest=safeLink(await Data.getAppSetting(setting));
-          if(!current()){win?.close();return;}
-          if(latest!==link){win?.close();await this.render_barcode();this.toast('Tautan berubah. Periksa barcode terbaru sebelum mencetak.','warn');return;}
-          if(method==='ble')await BTPrint.write(printerBytes(canvas),{guard:current});
-          else if(method==='rawbt')BTPrint.printRawBT(printerBytes(canvas));
-          else printWindow(canvas,win);
-        }catch(e){win?.close();if(current())info.textContent=e.message||'Gagal mencetak barcode.';}finally{if(current())btn.disabled=false;}
+  App.signupQRCanvas=makeLabel;
+})();
+
+</script>
+<script>
+(() => {
+  NAV.owner.push(['signup_bonus','✉','Voucher Undangan',1]);
+  App.render_signup_bonus = async function () {
+    const view = document.getElementById('view');
+    const session = this._sessionGuard();
+    const current = () => session() && CURRENT.role === 'owner' && this.state.page === 'signup_bonus';
+    if (!current()) return;
+    document.getElementById('pageTitle').textContent = 'Voucher Undangan';
+    document.getElementById('pageSub').textContent = 'Bonus poin untuk pendaftaran member baru';
+    view.innerHTML = '<section class="card pad"><h3>Buat voucher undangan</h3><form id="inviteForm" class="mp-form-wrap"><label>Kode voucher<input name="code" placeholder="Contoh: SRUPUTBARU" required minlength="3" maxlength="40" autocapitalize="characters"></label><label>Bonus poin per member<input name="points" type="number" min="1" max="999999999" step="1" required></label><label>Kuota pendaftaran (kosongkan untuk tanpa batas)<input name="quota" type="number" min="1" max="999999999" step="1"></label><button class="btn btn-primary">Buat voucher</button></form><p id="inviteStatus" role="status"></p></section><section class="card pad" style="margin-top:14px"><h3>Voucher saya</h3><div id="inviteList">Memuat…</div></section>';
+    const form = view.querySelector('form'), list = view.querySelector('#inviteList'), status = view.querySelector('#inviteStatus');
+    const visible = () => current() && form.isConnected;
+    async function rpc(action, data = {}) {
+      const res = await sb.rpc('sruput_signup_vouchers',{p_action:action,p_data:data});
+      if (res.error) throw Error(res.error.message);
+      return res.data;
+    }
+    function inviteLink(code) {
+      const link = new URL(location.href);
+      link.search = ''; link.hash = '';
+      link.searchParams.set('member','1'); link.searchParams.set('invite',code);
+      return link.href;
+    }
+    function action(parent,label,fn) {
+      const button = document.createElement('button');
+      button.className = 'btn'; button.textContent = label; parent.append(button);
+      button.onclick = async () => {
+        if (!visible() || button.disabled) return;
+        button.disabled = true;
+        try {await fn();} catch(e) {if(visible()) status.textContent=e.message;}
+        finally {button.disabled=false;}
       };
-    }catch(e){if(current())view.innerHTML=this.errHTML(e);}
+    }
+    async function refresh() {
+      const rows = await rpc('list');
+      if (!visible()) return;
+      list.replaceChildren();
+      if (!rows.length) list.textContent = 'Belum ada voucher undangan.';
+      for (const row of rows) {
+        const link=inviteLink(row.code), item=document.createElement('article'), title=document.createElement('h4'), summary=document.createElement('p');
+        item.style.cssText='padding:12px 0;border-top:1px solid var(--line-strong)';
+        title.textContent=row.code;
+        summary.textContent=row.points+' poin · '+row.used+' pendaftaran'+(row.quota?' dari '+row.quota:'')+' · '+(!row.active?'Nonaktif':row.used===row.quota?'Kuota habis':'Aktif');
+        item.append(title,summary); list.append(item);
+        if(row.active && (row.quota===null || row.used<row.quota)){
+          const url=document.createElement('input'), actions=document.createElement('div');
+          url.readOnly=true; url.value=link; url.setAttribute('aria-label','Tautan undangan '+row.code);url.style.width='100%';
+          actions.className='wf-row';item.append(url,actions);
+          action(actions,'Salin undangan',async()=>{
+            try{await navigator.clipboard.writeText(link);if(visible())status.textContent='Tautan undangan disalin.';}
+            catch{url.focus();url.select();status.textContent='Salin tautan yang dipilih.';}
+          });
+          action(actions,'Unduh QR',()=>{
+            const qr=App.signupQRCanvas(link), download=document.createElement('a');
+            download.download='SRUPUT-'+row.code+'.png';download.href=qr.toDataURL('image/png');download.click();
+          });
+          action(actions,'Pasang QR pada struk pelanggan',async()=>{
+            if(!await Data.setAppSetting('barcode_print_url',link))throw Error('Tautan barcode gagal disimpan.');
+            if(visible()){await App._loadReceiptCfg();status.textContent='Tautan undangan tersimpan untuk QR pada struk pelanggan.';}
+          });
+        }
+        action(item,row.active?'Nonaktifkan':'Aktifkan',async()=>{
+          await rpc('toggle',{code:row.code,active:!row.active}); if(visible()) await refresh();
+        });
+      }
+    }
+    form.onsubmit=async e=>{
+      e.preventDefault();
+      const button=form.querySelector('button');
+      if(!visible()||button.disabled)return;
+      button.disabled=true;
+      try{
+        await rpc('create',Object.fromEntries(new FormData(form)));
+        if(visible()){form.reset();status.textContent='Voucher undangan berhasil dibuat.';await refresh();}
+      }catch(e){if(visible())status.textContent=e.message;}finally{button.disabled=false;}
+    };
+    try{await refresh();}catch(e){if(visible())list.textContent=e.message;}
   };
 })();
 
+</script>
+<script id="sruput-member-password">
+(() => {
+  'use strict';
+  const portal = window.SruputMemberPortal;
+  const $ = id => document.getElementById(id);
+  const phone = '<label>Nomor HP terdaftar<input name="phone" type="tel" autocomplete="username" placeholder="08xxxxxxxxxx" required></label>';
+  const password = isNew => '<label>' + (isNew ? 'Buat kata sandi' : 'Kata sandi') +
+    '<input name="password" type="password" minlength="12" autocomplete="' + (isNew ? 'new-password' : 'current-password') +
+    '" required></label>' + (isNew ? '<small>Minimal 12 karakter. Anda bisa memakai beberapa kata yang mudah diingat.</small><label>Ulangi kata sandi<input name="confirmation" type="password" autocomplete="new-password" required></label>' : '');
+  const screens = {
+    login: ['Masuk dan cek poin', '', 'Masuk'],
+    activate: ['Buat kata sandi pertama', 'Gunakan kode akses pribadi dari pendaftaran lama. Jika belum punya kode, minta owner memverifikasi akun dan membuat kode reset.', 'Simpan kata sandi'],
+    reset: ['Atur ulang kata sandi', 'Gunakan kode pemulihan yang Anda simpan. Jika kode hilang, owner dapat memverifikasi akun dan memberikan kode reset yang berlaku 20 menit.', 'Simpan kata sandi baru']
+  };
+  try { portal.passwordSession = sessionStorage.getItem('sruput_password_session') === '1'; } catch {}
+  function rememberPasswordSession(value) {
+    portal.passwordSession = value;
+    try { if (value) sessionStorage.setItem('sruput_password_session','1'); else sessionStorage.removeItem('sruput_password_session'); } catch {}
+  }
+  async function call(client, action, payload) {
+    const {data, error} = await client.rpc('sruput_member_password', {p_action:action, p_data:payload});
+    if (error || data?.error) throw Error(error?.message || data.error);
+    return data;
+  }
+  async function submit(form, action, payload) {
+    const epoch = portal.epoch;
+    const status = form.querySelector('[role=status]');
+    const button = form.querySelector('[type=submit]');
+    if (button.disabled) return;
+    const {password:pwd, confirmation} = form.elements;
+    if (confirmation && pwd.value !== confirmation.value) {
+      status.textContent = 'Kedua kata sandi harus sama.';
+      confirmation.focus();
+      return;
+    }
+    if (new TextEncoder().encode(pwd.value).length > 72) {
+      status.textContent = 'Kata sandi melebihi 72 byte. Gunakan frasa yang lebih pendek.';
+      pwd.focus();
+      return;
+    }
+    button.disabled = true;
+    status.textContent = 'Memproses…';
+    try {
+      const result = await call(portal.client, action, {...payload, password:pwd.value});
+      if (!form.isConnected || epoch !== portal.epoch) return;
+      form.reset();
+      rememberPasswordSession(true);
+      portal.saveKey(result.access_key);
+      await portal.render('account');
+      if (result.recovery_code && portal.key === result.access_key && portal.tab === 'account') {
+        const dialog = portal.dialog('<h2>Simpan kode pemulihan</h2><p>Gunakan kode sekali pakai ini jika lupa kata sandi. Simpan di pengelola kata sandi atau tempat pribadi.</p><code style="overflow-wrap:anywhere">' +
+          escHtml(result.recovery_code) + '</code><div class="mh-actions"><button id="mp_copy_backup">Salin kode</button><button class="mh-secondary" data-close>Selesai</button></div><p role="status"></p>');
+        $('mp_copy_backup').onclick = () => portal.copy(result.recovery_code, dialog.querySelector('[role=status]'));
+      }
+    } catch (error) {
+      if (form.isConnected) status.textContent = error.message;
+    } finally {
+      if (button.isConnected) button.disabled = false;
+    }
+  }
+  const render = portal.render;
+  portal.render = async function(tab) {
+    if (Object.hasOwn(screens, tab)) {
+      this.epoch++;
+      this.tab = tab;
+      const [title, hint, action] = screens[tab];
+      const proof = tab === 'login' ? '' : '<label>' + (tab === 'activate' ? 'Kode akses lama' : 'Kode pemulihan atau kode reset dari owner') +
+        '<input name="proof" autocomplete="off" autocapitalize="none" spellcheck="false" required></label>';
+      this.shell('<section class="mp-card mp-form-wrap"><h1>' + title + '</h1>' + (hint ? '<p>' + hint + '</p>' : '') +
+        '<form id="mp_credentials">' + phone + proof + password(tab !== 'login') + '<button type="submit">' + action +
+        '</button><p role="status" aria-live="polite"></p></form><div class="mh-actions">' +
+        (tab === 'login' ? '<button class="mh-link" data-tab="reset">Lupa kata sandi?</button><button class="mh-link" data-tab="activate">Saya punya kode akses lama</button><button class="mh-link" data-tab="register">Daftar member</button>' :
+        '<button class="mh-link" data-tab="login">Kembali ke login</button>' + (tab === 'activate' ? '<button class="mh-link" data-tab="reset">Gunakan kode reset</button>' : '')) + '</div></section>');
+      const form = $('mp_credentials');
+      if (tab === 'activate' && !this.passwordSession && this.key) form.elements.proof.value = this.key;
+      if (this.account?.phone) form.elements.phone.value = this.account.phone;
+      form.onsubmit = e => {
+        e.preventDefault();
+        return submit(form, tab, {phone:form.elements.phone.value, proof:form.elements.proof?.value});
+      };
+      return;
+    }
+    return render.call(this, tab);
+  };
+  portal.register = function() {
+    const form = $('mp_register');
+    return submit(form, 'register', {phone:$('mp_phone').value, name:$('mp_name').value, email:$('mp_email').value,
+      invite_code:$('mp_invite').value, branch_id:$('mp_outlet').value, website:$('mp_website').value, consent:$('mp_consent').checked});
+  };
+  portal.passwordFields = () => password(true);
+  portal.logoutMember = async function() {
+    const key = this.key;
+    const button = $('mp_logout');
+    if (button) button.disabled = true;
+    let failed = false;
+    try { await call(this.client, 'logout', {access_key:key}); } catch { failed = true; }
+    if (this.key !== key) return;
+    rememberPasswordSession(false);
+    this.saveKey(null);
+    this.account = this.rewards = null;
+    await this.render('login');
+    if (failed && $('mp_credentials')) $('mp_credentials').querySelector('[role=status]').textContent = 'Anda sudah keluar dari perangkat ini. Sesi server belum dapat dicabut. Masuk kembali untuk menggantinya.';
+  };
+})();
 </script>
 </body>
 </html>
