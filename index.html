@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="sruput-build" content="2026-11-12-workflow-v1.9.16">
+<meta name="sruput-build" content="2026-11-12-workflow-v1.9.17">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>SRUPUT OS v2.0 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -357,7 +357,7 @@ body.mp-mode > :not(#memberPortal){display:none!important}
     <div class="topbar">
       <div><h2 id="pageTitle">Dashboard</h2><div class="sub" id="pageSub"></div></div>
       <div class="grow"></div>
-      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">16.11.2026 · WF1.9.16</span>
+      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">16.11.2026 · WF1.9.17</span>
       <span class="badge alert hidden" id="alertBadge"></span>
     </div>
     <div class="content" id="view"></div>
@@ -1074,8 +1074,18 @@ const App={
   _cartPrice(m){const p=this.state.empSel&&!this.state.empUsedToday&&this._empPrices?this._empPrices[String(m.id)]:null;return p!=null?p:Number(m.final_price);},
   _clearCart(){this._empToken={};this._empPreviewBusy=false;this.state.cart=[];this.state.empSel='';this.state.empUsedToday=false;this.state.cashReceived='';this.state.cartClientId=null;this._bundlePreview=null;this._empPrices={};this._bundleToken=(this._bundleToken||0)+1;},
   coffeeId:'16a10000-0000-4000-8000-000000000016',
+  async coffeeCatalog(branch){
+    const {data,error}=await sb.rpc('coffee_upgrade_catalog',{p_branch:branch});
+    if(error)throw error;
+    return new Map(data.map(r=>[r.menu_id,Number(r.shots)]));
+  },
+  coffeeShots(menuId,ids,catalog,materials){
+    const extra=(materials||[]).filter(i=>i.ingredient_id==='kopi'&&ids.includes(i.additional_id))
+      .reduce((sum,i)=>sum+Number(i.qty),0);
+    return (catalog?.get(menuId)||0)+Math.ceil(extra/2);
+  },
   coffeeOption(menuId){
-    if(!this.recipeOf(menuId).some(r=>r.ingredient_id==='kopi' && Number(r.qty)>0))return null;
+    if(!this.state.coffeeCatalog?.has(menuId))return null;
     return (this.state.additionals||[]).find(a=>a.id===this.coffeeId && a.active!==false);
   },
   canChooseCoffee(menuId){
@@ -1084,7 +1094,24 @@ const App={
   coffeeRecipeId(id,adds){
     return id==='kopi' && (adds||[]).includes(this.coffeeId)?'kopi_arabica_instan':id;
   },
-  _cartUsage(cart){const use={};for(const c of cart){for(const r of this.recipeOf(c.id)){const id=this.coffeeRecipeId(r.ingredient_id,c.adds);use[id]=(use[id]||0)+Number(r.qty)*Number(c.qty);}for(const aid of c.adds||[]){if(!(this.state.additionals||[]).some(a=>a.id===aid&&a.kind==='add'))continue;for(const r of (this.state.additionalItems||[]).filter(x=>x.additional_id===aid))use[r.ingredient_id]=(use[r.ingredient_id]||0)+Number(r.qty)*Number(c.qty);}}return use;},
+  _cartUsage(cart){
+    const use={};
+    for(const line of cart){
+      const ids=line.adds||[];
+      const consume=(r,isBase)=>{
+        const id=this.coffeeRecipeId(r.ingredient_id,ids);
+        let grams=Number(r.qty);
+        if(isBase && !grams && id==='kopi_arabica_instan' && r.ingredient_id==='kopi'){
+          grams=2*(this.state.coffeeCatalog?.get(line.id)||0);
+        }
+        use[id]=(use[id]||0)+grams*line.qty;
+      };
+      this.recipeOf(line.id).forEach(r=>consume(r,true));
+      const plus=ids.filter(id=>this.state.additionals?.some(a=>a.id===id&&a.kind==='add'));
+      (this.state.additionalItems||[]).filter(r=>plus.includes(r.additional_id)).forEach(r=>consume(r,false));
+    }
+    return use;
+  },
   async _submitQueued(entry){
     const sameSession=this._sessionGuard();
     const run=async()=>{
@@ -1693,18 +1720,18 @@ const App={
       if(pending){d.branch=pending.branch;d.platform=pending.order.platform;d.cart=pending.order.items.map(x=>({...x}));d.orderRef=pending.order.order_ref;d.discount=String(pending.order.merchant_discount);d.other=String(pending.order.other_deduction);}
       const [menus,policies,shift,adds,off]=await Promise.all([Data.menu(),Data._pages(()=>sb.from('online_fee_policies').select('*').eq('branch_id',d.branch).eq('active',true).order('id')),Data.myOpenShift(d.branch),Data.additionals(),sb.from('outlet_menu_off').select('menu_id').eq('branch_id',d.branch)]);if(!active())return;if(off.error)throw off.error;
       const disabled=new Set((off.data||[]).map(x=>x.menu_id));this._onlineMenus=this._menuAZ(menus.filter(m=>m.active&&!disabled.has(m.id)));this._onlinePolicies=policies;this._onlineAdds=(adds||[]).filter(a=>a.active);this._onlineShift=shift;
-      this._onlineCoffeeMenus=new Set();
+      this._onlineCoffeeMenus=new Map();
       if(this._onlineAdds.some(a=>a.id===this.coffeeId)){
-        const [recipes,materials]=await Promise.all([Data.recipes(),Data.additionalItems()]);if(!active())return;
+        const [catalog,materials]=await Promise.all([this.coffeeCatalog(d.branch),Data.additionalItems()]);if(!active())return;
         this._onlineCoffeeConflicts=new Set(materials.filter(r=>['kopi','kopi_arabica_instan'].includes(r.ingredient_id)).map(r=>r.additional_id));
-        this._onlineCoffeeMenus=new Set(recipes.filter(r=>r.ingredient_id==='kopi'&&Number(r.qty)>0).map(r=>r.menu_id));
+        this._onlineCoffeeMenus=catalog;this._onlineCoffeeMaterials=materials;
       }
       const policy=policies.find(p=>p.platform===d.platform),locked=!!pending,dis=locked?'disabled':'',f='padding:10px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%';
       v.innerHTML=`<div class="banner info"><div><b>Kasir Online</b> · Input rincian pesanan dari aplikasi merchant. Harga per cup sudah mencakup tambahan pada pesanan, sebelum promo yang ditanggung outlet. Subsidi platform bukan promo outlet. Ongkir/tip/biaya pelanggan tidak dimasukkan.</div></div>
       <div class="card pad"><div style="display:flex;gap:12px;flex-wrap:wrap"><label>Outlet<select id="onlBranch" style="${f}" ${dis} onchange="App.onlineSwitch('branch',this.value)">${branches.map(b=>`<option value="${escHtml(b.id)}" ${b.id===d.branch?'selected':''}>${escHtml(b.name)}</option>`).join('')}</select></label><label>Platform<select id="onlPlatform" style="${f}" ${dis} onchange="App.onlineSwitch('platform',this.value)">${['shopeefood','grabfood','gofood'].map(p=>`<option value="${p}" ${p===d.platform?'selected':''}>${this._onlineLabel(p)}</option>`).join('')}</select></label><label style="flex:1">ID pesanan lengkap<input id="onlRef" maxlength="100" style="${f}" value="${escHtml(d.orderRef)}" ${dis} oninput="App._online.orderRef=this.value" placeholder="ID lengkap / YYYY-MM-DD + nomor pendek"></label></div>
       <div class="mini muted" style="margin-top:8px">${shift?'Shift kasir tersedia.':'Buka shift di Kasir (POS) untuk outlet ini terlebih dahulu.'} ${policy?'Tarif tersimpan: '+escHtml(policy.rules.note):'Owner perlu mengatur tarif platform ini sebelum transaksi.'}</div>${!shift?'<button class="btn" style="width:auto" onclick="App.go(\'pos\')">Buka Kasir & Shift</button>':''}</div>
       ${locked?'<div class="banner"><div>Ada pengiriman yang belum dipastikan. Kirim ulang pesanan yang sama untuk mengecek hasil; ID transaksi dipertahankan.</div></div>':''}
-      <div class="card pad" style="margin-top:12px"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end"><label style="flex:1;min-width:150px">Menu<select id="onlMenu" onchange="App.onlineCoffeeChanged()" style="${f}" ${dis}>${this._onlineMenus.map(m=>`<option value="${escHtml(m.id)}">${escHtml(m.name)}</option>`).join('')}</select></label><label id="onlCoffeeWrap" hidden>Pilihan kopi<select id="onlCoffee" onchange="App.onlineCoffeeModifiers()" style="${f}" ${dis}><option value="robusta">Robusta</option><option value="arabica">Upgrade Arabica</option></select></label><label>Jumlah<input id="onlQty" type="number" min="1" max="100" value="1" style="${f}" ${dis}></label><label>Harga per cup di aplikasi (Rp)<input id="onlPrice" type="number" min="0" max="10000000" step="1" placeholder="Wajib sesuai pesanan" style="${f}" ${dis}></label><label>Catatan<input id="onlNote" maxlength="300" style="${f}" ${dis}></label><button class="btn btn-primary" style="width:auto" ${dis} onclick="App.onlineAdd()">Tambah menu</button></div><details style="margin-top:10px"><summary>Tambahan / less bahan sesuai pesanan</summary><div class="mini muted">Harga tambahan sudah termasuk harga per cup yang diinput.</div>${this._onlineAdds.filter(a=>a.id!==this.coffeeId).map(a=>`<label style="display:inline-block;margin:8px"><input type="checkbox" class="onlMod" value="${escHtml(a.id)}" ${dis}> ${escHtml(a.name)} (${a.kind==='less'?'less':'add'})</label>`).join('')}</details><div id="onlCart"></div>
+      <div class="card pad" style="margin-top:12px"><div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end"><label style="flex:1;min-width:150px">Menu<select id="onlMenu" onchange="App.onlineCoffeeChanged()" style="${f}" ${dis}>${this._onlineMenus.map(m=>`<option value="${escHtml(m.id)}">${escHtml(m.name)}</option>`).join('')}</select></label><label id="onlCoffeeWrap" hidden>Pilihan kopi<select id="onlCoffee" onchange="App.onlineCoffeeModifiers()" style="${f}" ${dis}><option value="robusta">Robusta</option><option value="arabica">Upgrade Arabica</option></select><small id="onlShotLabel"></small></label><label>Jumlah<input id="onlQty" type="number" min="1" max="100" value="1" style="${f}" ${dis}></label><label>Harga per cup di aplikasi (Rp)<input id="onlPrice" type="number" min="0" max="10000000" step="1" placeholder="Wajib sesuai pesanan" style="${f}" ${dis}></label><label>Catatan<input id="onlNote" maxlength="300" style="${f}" ${dis}></label><button class="btn btn-primary" style="width:auto" ${dis} onclick="App.onlineAdd()">Tambah menu</button></div><details style="margin-top:10px"><summary>Tambahan / less bahan sesuai pesanan</summary><div class="mini muted">Harga tambahan sudah termasuk harga per cup yang diinput.</div>${this._onlineAdds.filter(a=>a.id!==this.coffeeId).map(a=>`<label style="display:inline-block;margin:8px"><input type="checkbox" class="onlMod" onchange="App.onlineCoffeeModifiers()" value="${escHtml(a.id)}" ${dis}> ${escHtml(a.name)} (${a.kind==='less'?'less':'add'})</label>`).join('')}</details><div id="onlCart"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><label>Promo ditanggung outlet (Rp)<input id="onlDiscount" type="number" min="0" value="${escHtml(d.discount)}" style="${f}" ${dis} oninput="App._online.discount=this.value;App.onlineRenderCart()"></label><label>Potongan lain per pesanan (Rp)<input id="onlOther" type="number" min="0" value="${escHtml(d.other)}" style="${f}" ${dis} oninput="App._online.other=this.value;App.onlineRenderCart()"></label></div><div id="onlPreview"></div><button class="btn btn-primary" id="onlSubmit" style="margin-top:12px" ${!shift||(!policy&&!locked)?'disabled':''} onclick="App.onlineSubmit()">${locked?'Kirim ulang pesanan yang sama':'Catat penjualan online'}</button><div id="onlResult"></div></div>
       ${CURRENT.role==='owner'?this.onlinePolicyHTML(policy,f):''}`;
       this.onlineCoffeeChanged();this.onlineRenderCart();if(this._onlineLast?.actor===CURRENT.user.id&&this._onlineLast.branch===d.branch)document.getElementById('onlResult').innerHTML=this._onlineReceiptHTML(this._onlineLast.receipt);
@@ -1724,6 +1751,10 @@ const App={
       const less=this._onlineAdds.some(a=>a.id===box.value&&a.kind==='less');
       if(less && this._onlineCoffeeConflicts?.has(box.value)){box.disabled=upgrade||pending;if(upgrade)box.checked=false;}
     }
+    const ids=[...document.querySelectorAll('.onlMod:checked')].map(x=>x.value).filter(id=>this._onlineAdds.some(a=>a.id===id&&a.kind==='add'));
+    const shots=this.coffeeShots(document.getElementById('onlMenu').value,ids,this._onlineCoffeeMenus,this._onlineCoffeeMaterials);
+    document.getElementById('onlShotLabel').textContent=upgrade?shots+' shot Arabica per cup · masukkan harga final aplikasi':'';
+
   },
   onlineAdd(){try{if(this._onlineBusy||this._onlinePendingRead())return;const d=this._online,id=document.getElementById('onlMenu').value,m=this._onlineMenus.find(m=>m.id===id);if(!m)throw new Error('Pilih menu aktif.');const qty=this._onlineInt(document.getElementById('onlQty').value,'Jumlah',100),price=this._onlineInt(document.getElementById('onlPrice').value,'Harga aplikasi',10000000);if(!qty)throw new Error('Jumlah minimal satu.');if(d.cart.length>=100)throw new Error('Maksimal 100 baris.');const adds=[...document.querySelectorAll('.onlMod:checked')].map(x=>x.value);if(this._onlineCoffeeMenus?.has(id)&&document.getElementById('onlCoffee').value==='arabica')adds.push(this.coffeeId);d.cart.push({menu_id:id,qty,unit_price:price,adds,note:document.getElementById('onlNote').value.trim()});this.onlineRenderCart();}catch(e){this.toast(e.message,'bad');}},
   onlineRemove(i){if(this._onlineBusy||this._onlinePendingRead())return;this._online.cart.splice(i,1);this.onlineRenderCart();},
@@ -1830,6 +1861,8 @@ const App={
       // additional aktif (untuk dipilih saat transaksi)
       try{ this.state.additionals=(await Data.additionals()).filter(a=>a.active!==false);if(!stillHere())return; }catch(e){ this.state.additionals=[]; }
       try{ this.state.additionalItems=await Data.additionalItems();if(!stillHere())return; }catch(e){ this.state.additionalItems=[]; }
+      const coffeeCatalog=this.state.additionals.some(a=>a.id===this.coffeeId)?await this.coffeeCatalog(branch):new Map();
+      if(!stillHere())return;this.state.coffeeCatalog=coffeeCatalog;
       this._posStockServer=await Data.stock(branch);if(!stillHere())return;
       this.state.stock=this._stockMinusQueue(this._posStockServer); // stok efektif = server − antrian offline
       // diskon pegawai: hanya untuk diri sendiri (akun yang login). Tak ada pilih nama orang lain.
@@ -1946,16 +1979,7 @@ const App={
     const rows=JSON.parse(JSON.stringify(serverRows||[]));
     const pend=OfflineQueue.load(true).filter(e=>e.status==='pending'&&e.branch===this.state.posBranch);
     if(!pend.length)return rows;
-    const use={}; // ingredient_id -> qty terpakai oleh antrian
-    const addKind={};(this.state.additionals||[]).forEach(a=>{addKind[a.id]=a.kind;});
-    pend.forEach(e=>(e.cart||[]).forEach(c=>{
-      this.recipeOf(c.id).forEach(r=>{const id=this.coffeeRecipeId(r.ingredient_id,c.adds);use[id]=(use[id]||0)+Number(r.qty)*c.qty;});
-      (c.adds||[]).forEach(aid=>{
-        if(addKind[aid]!=='add')return;
-        (this.state.additionalItems||[]).filter(x=>x.additional_id===aid)
-          .forEach(x=>{use[x.ingredient_id]=(use[x.ingredient_id]||0)+Number(x.qty||0)*c.qty;});
-      });
-    }));
+    const use=this._cartUsage(pend.flatMap(e=>e.cart||[]));
     rows.forEach(r=>{ if(use[r.ingredient_id]) r.qty=Number(r.qty)-use[r.ingredient_id]; });
     return rows;
   },
@@ -2034,7 +2058,7 @@ const App={
       <div class="mini" style="color:var(--muted);margin-bottom:14px">Pilih tambahan (opsional). Tiap cup dengan tambahan jadi baris sendiri.</div>
       ${coffee?`<fieldset style="margin:12px 0;padding:12px"><legend>Pilihan kopi</legend>
         <label><input type="radio" name="kopiCup" value="robusta" checked onchange="App.coffeePickerChanged(${jsArg(menuId)})"> Robusta · harga standar${this.canMake(menuId)?'':' · stok tidak cukup'}</label>
-        <label style="display:block;margin-top:8px"><input type="radio" name="kopiCup" class="pickAdd" data-id="${this.coffeeId}" data-kind="add" data-price="${Number(coffee.price)}" onchange="App.coffeePickerChanged(${jsArg(menuId)})" ${this.canMake(menuId,[this.coffeeId])?'':'disabled'}> Arabica · +${this.rp(coffee.price)}${this.canMake(menuId,[this.coffeeId])?'':' · stok tidak cukup'}</label></fieldset>`:''}
+        <label style="display:block;margin-top:8px"><input type="radio" name="kopiCup" class="pickAdd" data-id="${this.coffeeId}" data-kind="add" data-price="${Number(coffee.price)*this.state.coffeeCatalog.get(menuId)}" onchange="App.coffeePickerChanged(${jsArg(menuId)})" ${this.canMake(menuId,[this.coffeeId])?'':'disabled'}> Arabica · <span id="coffeeShotPrice">${this.state.coffeeCatalog.get(menuId)} shot · +${this.rp(coffee.price*this.state.coffeeCatalog.get(menuId))}</span>${this.canMake(menuId,[this.coffeeId])?'':' · stok tidak cukup'}</label></fieldset>`:''}
       ${addList}
       <div id="addPickerTotal" class="mini" style="margin:12px 0;color:var(--muted)">Harga: ${this.rp(m.final_price)}</div>
       <div style="display:flex;gap:10px;margin-top:8px">
@@ -2054,6 +2078,14 @@ const App={
   },
   _updateAddPickerTotal(menuId){
     const m=this.state.menu.find(x=>x.id===menuId);
+    const option=this.coffeeOption(menuId);
+    if(option){
+      const ids=[...document.querySelectorAll('.pickAdd[data-kind="add"]:checked')].map(c=>c.dataset.id);
+      const shots=this.coffeeShots(menuId,ids,this.state.coffeeCatalog,this.state.additionalItems);
+      const radio=document.querySelector('input[name=kopiCup].pickAdd');
+      radio.dataset.price=shots*Number(option.price);
+      document.getElementById('coffeeShotPrice').textContent=shots+' shot · +'+this.rp(radio.dataset.price);
+    }
     let extra=0;
     document.querySelectorAll('.pickAdd:checked').forEach(c=>{ if(c.dataset.kind==='add') extra+=Number(c.dataset.price); });
     const el=document.getElementById('addPickerTotal');
@@ -2065,6 +2097,11 @@ const App={
     if(!this.canMake(menuId,chosen)){this.toast('Stok tambahan/bahan tidak cukup.','bad');return;}
     const m=this.state.menu.find(x=>x.id===menuId);
     const picked=Array.from(document.querySelectorAll('.pickAdd:checked')).map(c=>({id:c.dataset.id,kind:c.dataset.kind,price:Number(c.dataset.price),name:this.state.additionals.find(a=>a.id===c.dataset.id)?.name||''}));
+    const upgrade=picked.find(a=>a.id===this.coffeeId);
+    if(upgrade){
+      const shots=this.coffeeShots(menuId,picked.filter(a=>a.kind==='add').map(a=>a.id),this.state.coffeeCatalog,this.state.additionalItems);
+      upgrade.name+=' · '+shots+' shot';upgrade.price=shots*Number(this.coffeeOption(menuId).price);
+    }
     if(!picked.length){ this.addCartPlain(menuId); return; } // tak ada tambahan = item normal
     const addPrice=picked.filter(p=>p.kind==='add').reduce((a,p)=>a+p.price,0);
     const addNames=picked.map(p=>p.name).join(', ');
@@ -2086,7 +2123,7 @@ const App={
   chg(key,d){if(this._checkoutBusy||this._empPreviewBusy)return;const c=this.state.cart.find(x=>x.key===key);if(!c)return;
     if(d>0&&!this.canMake(c.id,c.adds)){this.toast('Stok tidak cukup untuk seluruh keranjang.','bad');return;}
     // baris dengan additional tidak boleh qty>1 (tiap cup = baris sendiri)
-    if(c.adds&&c.adds.length&&d>0){ this.toast('Item dengan tambahan: buat baris baru dari menu untuk cup lain','bad'); return; }
+    if(c.adds&&c.adds.length&&!c.adds.includes(this.coffeeId)&&d>0){ this.toast('Item dengan tambahan: buat baris baru dari menu untuk cup lain','bad'); return; }
     c.qty+=d;if(c.qty<=0)this.state.cart=this.state.cart.filter(x=>x.key!==key);this.state.cartClientId=null;this.renderCart();this.refreshBundlePreview();},
   setPay(p){if(this._checkoutBusy||!['cash','qris'].includes(p))return;this.state.pay=p;if(p!=='cash')this.state.cashReceived='';this.state.cartClientId=null;this.renderCart();},
   // diskon pegawai HANYA untuk diri sendiri: pakai akun yang login
@@ -6331,8 +6368,8 @@ const App={
 
       v.innerHTML=`
         ${coffee?`<form class="card pad" style="margin-bottom:14px" onsubmit="event.preventDefault();App.saveCoffeeUpgrade(this)">
-          <h3>Upgrade kopi Robusta ke Arabica</h3><p class="mini">Mengganti kopi instan sesuai gram pada resep. Isi stok dan HPP kopi instan Arabica per outlet sebelum mengaktifkan pilihan ini.</p>
-          <label>Tambahan harga per cup (Rp)<input name="price" type="number" step="1" min="0" max="10000000" value="${Number(coffee.price)}" required></label>
+          <h3>Upgrade kopi Robusta ke Arabica</h3><p class="mini">Satu shot = 2 g. Biaya upgrade mengikuti shot resep dan ekstra shot, dikalikan jumlah cup. Isi stok dan HPP kopi instan Arabica per outlet sebelum mengaktifkan pilihan ini.</p>
+          <label>Harga upgrade per shot (Rp)<input name="price" type="number" step="1" min="0" max="10000000" value="${Number(coffee.price)}" required></label>
           <label><input name="enabled" type="checkbox" ${coffee.active?'checked':''}> Aktif di kasir</label>
           <button class="btn" type="submit">Simpan opsi kopi</button></form>`:''}
         <div class="banner info"><span class="i">＋</span><div>Buat opsi tambahan untuk menu di kasir. <b>ADD</b> = tambah bahan & harga (mis. Add Susu). <b>LESS</b> = kurangi bahan, harga tetap (mis. Less Sugar). Tiap additional bisa mempengaruhi beberapa bahan. Berlaku untuk semua menu — kasir pilih yang relevan.</div></div>
@@ -8740,7 +8777,7 @@ const App={
           <button class="btn" style="width:auto;padding:6px 14px;margin-top:8px;font-size:12px;background:var(--surface-2);border:1px solid var(--line-strong);font-weight:700" onclick="App.go(${jsArg(tujuan)})">→ Ajukan Minta Stok</button>
         </div></div>`;
       }
-      html+=`<div class="mini" style="margin-top:4px;opacity:.7">Metode: rata-rata pemakaian harian 28 hari kalender (resep + topping "add" + waste; request "less" tidak dikurangkan → estimasi sedikit konservatif) + stok pengaman 90% (1.28σ). "Saran pesan" sudah dikurangi permintaan pending. Prediksi buta terhadap promo, menu baru, dan cuaca — angka besar pada outlet ber-data tipis wajar tampil "90+".</div>`;
+      html+=`<div class="mini" style="margin-top:4px;opacity:.7">Metode: rata-rata pemakaian harian 28 hari kalender (pemakaian bahan saat transaksi + waste; transaksi lama tanpa rincian bahan menggunakan estimasi) + stok pengaman 90% (1.28σ). "Saran pesan" sudah dikurangi permintaan pending. Prediksi buta terhadap promo, menu baru, dan cuaca — angka besar pada outlet ber-data tipis wajar tampil "90+".</div>`;
       v.innerHTML=html;
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
@@ -10802,7 +10839,7 @@ App.render_member_register=function(...a){const r=previousRegisterPage.apply(thi
 const portal={client:null,catalog:null,key:null,epoch:0,pending:null,tab:'home',account:null,
  async rpc(a,p={}){const{data,error}=await this.client.rpc('sruput_member_portal',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Halaman member belum diaktifkan. Silakan hubungi kasir.':error.message);if(data?.error)throw Error(data.error);return data;},
  nav(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Menu minuman'],['register','Daftar member'],[this.key?'account':'login',this.key?'Member saya':'Masuk member']].map(([id,title])=>`<button data-tab="${id}" aria-current="${this.tab===id}">${title}</button>`).join('')}</nav>`;},
- shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.16</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
+ shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.17</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
  policy(){const c=this.catalog?.policy;if(!c?.active)return '<p>Saldo poin member berlaku di seluruh cabang SRUPUT. Program poin belum aktif; pengumpulan dan penukaran mengikuti aktivasi owner.</p>';return `<p>${Number(c.min_spend)>0?'Setiap kelipatan <b>'+rp(c.min_spend)+'</b> setelah semua potongan':'Setiap transaksi berbayar'} mendapat <b>${E(c.earn_points)} poin</b>. Nilai penukaran 1 poin = <b>${rp(c.point_value)}</b>.</p><p><b>Poin dapat dikumpulkan dan digunakan di seluruh cabang SRUPUT.</b> Outlet asal pendaftaran tidak membatasi pemakaian poin.</p><p>Poin dapat digunakan untuk potongan harga atau menukar satu unit produk dasar. Topping tetap dibayar. Penukaran tidak digabung voucher atau promo lain.</p>`;},
  async start(){document.body.classList.add('mp-mode');document.title='Member SRUPUT';const root=document.createElement('div');root.id='memberPortal';document.body.append(root);this.shell('<div class="mp-card" role="status">Memuat halaman member…</div>');try{this.client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'sruput-member-public-v170'}});try{this.key=sessionStorage.getItem('sruput_member_access');}catch{}this.catalog=await this.rpc('catalog');this.render(this.key?'account':new URL(location.href).searchParams.has('invite')?'register':'login');}catch(e){this.shell(`<div class="mp-card"><h1>Belum dapat terhubung</h1><p role="alert">${E(e.message)}</p><button id="mp_retry">Coba lagi</button></div>`);$('mp_retry').onclick=()=>location.reload();}},
  async render(tab){const epoch=++this.epoch;this.tab=tab;
@@ -10861,7 +10898,7 @@ const labels={active:'Siap ditukar',cancelled:'Dibatalkan',used:'Sudah ditukar',
 const rawRender=P.render;P.category='';P.search='';P.rewards=null;P.claimOp=null;
 P.rewardRPC=async function(a,p={}){const{data,error}=await this.client.rpc('sruput_member_rewards',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Penukaran mandiri belum tersedia. Silakan hubungi kasir.':error.message);return data;};
 P.nav=function(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Tukar poin'],['vouchers','Voucher saya'],[this.key?'account':'login',this.key?'Akun saya':'Masuk / daftar']].map(([t,n])=>`<button data-tab="${t}" aria-current="${this.tab===t}">${n}</button>`).join('')}</nav>`;};
-P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Untuk menukar, tunjukkan kode voucher dan sebutkan nomor HP. Simpan kata sandi dan kode pemulihan untuk Anda sendiri.<br>SRUPUT OS · WF1.9.16</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
+P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Untuk menukar, tunjukkan kode voucher dan sebutkan nomor HP. Simpan kata sandi dan kode pemulihan untuk Anda sendiri.<br>SRUPUT OS · WF1.9.17</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
 P.terms=function(){return `<div class="mh-notice">Klaim dari rumah mencadangkan poin selama <b>7 hari</b>. Poin baru dipotong saat voucher ditukar di kasir. Batalkan voucher yang belum dipakai untuk melepas cadangan. Voucher kedaluwarsa otomatis melepas cadangan.</div><details><summary>Bagaimana cara mendapatkan poin?</summary>${this.policy()}<p>Poin masuk setelah pembayaran berhasil. Sebutkan nomor telepon member sebelum membayar; bonus undangan masuk saat pendaftaran dengan kode yang berlaku.</p></details><details><summary>Bagaimana menukar voucher di outlet?</summary><p>Tunjukkan kode voucher dan sebutkan nomor telepon member. Kasir menggunakan tombol Voucher produk member. Satu kode hanya bisa ditukar satu kali di seluruh booth, untuk satu produk dasar pada transaksi terpisah, tanpa minimum belanja tambahan. Topping dibeli terpisah. Tidak digabung dengan promo lain.</p></details><details><summary>Kalau stok habis atau aturan berubah?</summary><p>Voucher tidak memesan stok. Coba cabang lain, atau batalkan voucher sebelum dipakai. Bila harga produk atau kebutuhan poin berubah, kasir akan meminta pembatalan dan klaim ulang sesuai aturan terbaru. Tidak ada tambahan poin yang dipotong diam-diam.</p></details><details><summary>Apakah bisa ditukar di cabang mitra?</summary><p>Bisa. Penukaran di kasir otomatis tercatat pada transaksi member dan menjadi kandidat penggantian Dana Loyalty untuk outlet. Pencairan dana kepada mitra dikelola pusat.</p></details>`;};
 P.walletHTML=function(){const a=this.account,r=this.rewards,c=this.catalog?.policy;return `<div class="mh-wallet"><span class="mh-label">${a?'POIN TERSEDIA':'SATU NOMOR, BANYAK BENEFIT'}</span><span class="mh-seal">✦</span><strong>${a?num(r?.available??a.balance):'✦'} <small>${a?'poin':'SRUPUT MEMBER'}</small></strong><p>${a&&c?.active?'Setara hingga '+rp(Math.max(0,Number(r?.available??a.balance))*Number(c.point_value)):'Daftar, belanja, lalu pilih produk favoritmu.'}</p><div class="mh-line"><span>${a?'Total saldo: '+num(r?.balance??a.balance):'Berlaku di semua cabang'}</span><b>${a?'Dicadangkan: '+num(r?.held||0):'100% untuk member'}</b></div><p>${a?'Poin dicadangkan belum dipotong dari saldo total.':'Aturan perolehan dan penukaran mengikuti program aktif.'}</p></div>`;};
 P.productsHTML=function(limit=0){const c=this.catalog.policy,available=Number(this.rewards?.available??this.account?.balance??0);let rows=this.catalog.menu.filter(m=>(!this.category||(m.category||'Lainnya')===this.category)&&(!this.search||m.name.toLowerCase().includes(this.search.toLowerCase())));if(limit)rows=rows.slice(0,limit);return rows.map(m=>{const cost=Math.ceil(Number(m.price)/Number(c?.point_value||1)),enough=available>=cost,progress=Math.max(0,Math.min(100,Math.round(available/cost*100)));return `<article class="mh-product" data-product="${E(m.id)}"><div class="mh-icon" aria-hidden="true">♨</div><span class="mh-label" style="font-size:9px;color:#a0836c">${E(m.category||'SRUPUT FAVORITES')}</span><h3>${E(m.name)}</h3><span class="mh-price">Harga dasar ${rp(m.price)}</span><div class="mh-cost">${num(cost)} <small>poin / produk</small></div>${this.key?`<div class="mh-progress" aria-label="Progres poin ${progress}%"><span style="width:${progress}%"></span></div><p class="mh-muted" style="margin:8px 0 0">${enough?'Poin cukup untuk diklaim':'Kurang '+num(cost-available)+' poin'}</p>`:'<p class="mh-muted">1 produk dasar · tanpa topping</p>'}<button data-claim="${E(m.id)}" ${!c?.active||(this.key&&!enough)?'disabled':''}>${!c?.active?'Program belum aktif':this.key?(enough?'Klaim voucher produk':'Kumpulkan poin lagi'):'Masuk untuk klaim'}</button></article>`;}).join('')||'<div class="mh-empty">Produk tidak ditemukan. Coba kata lain.</div>';};
