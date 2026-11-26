@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="sruput-build" content="2026-11-12-workflow-v1.9.17">
+<meta name="sruput-build" content="2026-11-12-workflow-v1.9.21">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>SRUPUT OS v2.0 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -357,7 +357,7 @@ body.mp-mode > :not(#memberPortal){display:none!important}
     <div class="topbar">
       <div><h2 id="pageTitle">Dashboard</h2><div class="sub" id="pageSub"></div></div>
       <div class="grow"></div>
-      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">16.11.2026 · WF1.9.17</span>
+      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">16.11.2026 · WF1.9.21</span>
       <span class="badge alert hidden" id="alertBadge"></span>
     </div>
     <div class="content" id="view"></div>
@@ -495,6 +495,11 @@ const Data={
   async salesRange(branch,fromISO,toISO){
     return this._pages(()=>{let q=sb.from('sales').select('*').order('created_at',{ascending:false}).order('id',{ascending:false});
       if(branch)q=q.eq('branch_id',branch); if(fromISO)q=q.gte('created_at',fromISO); if(toISO)q=this._timeEnd(q,'created_at',toISO); return q;});
+  },
+  async historySalesRange(branch,fromISO,toISO){
+    // Exclude recipe/payload snapshots from annual history downloads.
+    return this._pages(()=>{let q=sb.from('sales').select('id,invoice_no,branch_id,created_at,total,cogs,payment,status,channel,online_order_ref,online_detail,loyalty_discount,bundle_discount').order('created_at',{ascending:false}).order('id',{ascending:false});
+      if(branch)q=q.eq('branch_id',branch);q=q.gte('created_at',fromISO);return this._timeEnd(q,'created_at',toISO);});
   },
   async saleDetail(saleId){ return this._pages(()=>sb.from('sale_items').select('*').eq('sale_id',saleId).order('id')); },
   async saleAdditionals(saleId){const{data,error}=await sb.from("sale_item_additionals").select("*").eq("sale_id",saleId);if(error)throw error;return data||[];},
@@ -866,7 +871,8 @@ const BTPrint={
     rc=Object.assign({brand:'SRUPUT',address:'',footer1:'',footer2:'',
       hdrSize:2,hdrFont:'A',bodyFont:'A',bodyBold:false,totSize:2,totBold:true,qSize:3,
       sep:'dash',spacing:true,qrOn:false,qrSrc:'ig',qrVal:'',qrLabel:''},rc||{}); // v89
-    const o=d.outlet||{}; // v88: alamat/kontak per-outlet
+    const o=d.outlet||{}; // per-outlet identity
+    if(o.brand){rc.brand=o.brand;rc.footer1='Terima kasih sudah berkunjung!';}
     const enc=new TextEncoder(), out=[];
     const push=a=>{ for(const b of a) out.push(b); };
     const txt=t=>{ const e=enc.encode(this.ascii(t)); for(const b of e) out.push(b); };
@@ -1319,7 +1325,7 @@ const App={
     const old=document.getElementById('view');if(old&&old.cloneNode&&old.replaceWith){const fresh=old.cloneNode(false);old.replaceWith(fresh);}
     this.state.page=page;
     document.querySelectorAll('.navlink[data-page]').forEach(e=>e.classList.toggle('active',e.dataset.page===page));
-    const t={vouchers:['Voucher','Kelola kode promo'],members:['Member','Database pelanggan dan benefit member'],loyalty:['Voucher & Member','Atur kampanye voucher dan benefit member'],onlinepos:['Kasir Online','ShopeeFood · GrabFood · GoFood · harga aplikasi dan estimasi penerimaan'],content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:[CURRENT.role==='owner'?'Setting':'Akun & Printer',CURRENT.role==='owner'?'Kelola user & role (owner)':'Atur printer struk Bluetooth untuk perangkat ini'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],picreview:[CURRENT.role==='crew'?'Nilai PIC':'Penilaian PIC',CURRENT.role==='crew'?'Umpan balik anonim untuk PIC outlet Anda':'Hasil penilaian dari crew · anonim'],exreq:[CURRENT.role==='crew'?'Ajukan Biaya':'ACC Biaya',CURRENT.role==='crew'?'Ajukan pengeluaran untuk disetujui PIC':'Setujui atau tolak pengajuan biaya dari crew'],produksi:['Produksi','Masak bahan mentah jadi bahan olahan · pantau rendemen'],employees:['Pegawai & Gaji','Data pegawai, absensi, dan perhitungan gaji bulanan'],attend:['Absensi Saya','Absen masuk & pulang · riwayat kehadiran bulan ini'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],ajukanbiaya:['Ajukan Pengeluaran','Ajukan biaya operasional · perlu persetujuan PIC'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Penjualan · bahan terpakai · rekomendasi stok · ide konten per outlet'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi stok · cetak permintaan & surat jalan · harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Menu Outlet','Atur menu yang boleh dijual per outlet mitra'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
+    const t={vouchers:['Voucher','Kelola kode promo'],members:['Member','Database pelanggan dan benefit member'],loyalty:['Voucher & Member','Atur kampanye voucher dan benefit member'],onlinepos:['Kasir Online','ShopeeFood · GrabFood · GoFood · harga aplikasi dan estimasi penerimaan'],content:['Studio Konten','Amunisi dari data penjualan · rencana konten crew · tren · dampak kampanye (lift jujur, bukan klaim)'],dashboard:['Dashboard','Data langsung dari cloud'],pos:['Kasir (POS)','Transaksi → record_sale (atomik)'],inventory:['Stok & Bahan','Pantau & restock (langsung ke cloud)'],reports:['Laporan Penjualan','Hanya owner & PIC · data cloud'],analytik:['Analitik Lanjutan','Peak hour · per karyawan · margin produk · void & diskon'],menu:['Menu · Resep · COGS','Kelola menu (owner) · COGS dari harga bahan'],transfer:['Transfer Stok','Gudang ⇄ cabang · atomik (owner)'],transferlog:['Riwayat Transfer','Jejak perpindahan stok antar outlet'],branches:['Cabang','Kelola jaringan (owner)'],settings:[CURRENT.role==='owner'?'Setting':'Akun & Printer',CURRENT.role==='owner'?'Kelola user & role (owner)':'Atur printer struk Bluetooth untuk perangkat ini'],history:['Riwayat Transaksi','Daftar transaksi · klik untuk detail'],shift:['Shift Kasir','Buka/tutup laci & rekap selisih kas'],audit:['Audit Log','Jejak perubahan data penting (owner)'],stockaudit:['Audit Stok','Siapa mengubah stok, kapan, berapa, dan alasannya'],picreview:[CURRENT.role==='crew'?'Nilai PIC':'Penilaian PIC',CURRENT.role==='crew'?'Umpan balik anonim untuk PIC outlet Anda':'Hasil penilaian dari crew · anonim'],exreq:[CURRENT.role==='crew'?'Ajukan Biaya':'ACC Biaya',CURRENT.role==='crew'?'Ajukan pengeluaran untuk disetujui PIC':'Setujui atau tolak pengajuan biaya dari crew'],produksi:['Produksi','Masak bahan mentah jadi bahan olahan · pantau rendemen'],employees:['Pegawai & Gaji','Data pegawai, absensi, dan perhitungan gaji bulanan'],attend:['Absensi Saya','Absen masuk & pulang · riwayat kehadiran bulan ini'],offlinefail:['Transaksi Gagal','Transaksi offline yang tidak masuk sistem — uang diterima tapi tak tercatat'],expenses:['Pengeluaran','Biaya operasional · untung bersih bulanan'],ajukanbiaya:['Ajukan Pengeluaran','Ajukan biaya operasional · perlu persetujuan PIC'],waste:['Waste / Bahan Terbuang','Catat bahan terbuang · kurangi stok'],purchase:['Pembelian','Beli bahan → masuk stok gudang'],discount:['Diskon','Atur promo & happy hour (owner)'],additional:['Additional Menu','Topping & request: add/less bahan (owner)'],kpi:['KPI Outlet','Perbandingan kinerja antar outlet (owner)'],health:['Skor Kesehatan','Kondisi outlet per dimensi · ambang jelas, bukan angka misterius'],forecast:['Prediksi Stok','Perkiraan habis & saran pesan dari pemakaian 28 hari · metode sederhana yang jujur'],anomali:['Deteksi Anomali','Sinyal untuk diperiksa — bukan bukti. Ambang tertulis di tiap kartu'],aireport:['AI Report','Penjualan · bahan terpakai · rekomendasi stok · ide konten per outlet'],auditctr:[(CURRENT.role==='mitra'||CURRENT.role==='pic'||CURRENT.role==='crew')?'Hasil Audit Outlet':'Audit Center','QA audit outlet internal & mitra · skor berbobot 8 kategori · temuan, CAPA, evidence · independen dari operasional'],ticket:[CURRENT.role==='crew'?'Laporkan Kendala':'Ticket Support','Kanal resmi support SRUPUT · SLA per prioritas · gantikan laporan tercecer di WA'],training:[CURRENT.role==='crew'?'Training Saya':CURRENT.role==='pic'?'Training Crew':CURRENT.role==='mitra'?'Training':'Training Dashboard','SRUPUT Academy · modul, assessment, sertifikasi · penilaian oleh Pusat'],bundle:['Promo Bundle','Paket harga khusus saat menu tertentu dibeli bersama (owner)'],royalty:['Royalti Mitra','Terbitkan & verifikasi tagihan royalti outlet mitra'],mtrhome:['Ringkasan Outlet','Penjualan hari ini · stok · royalti'],mtrstok:['Stok Outlet','Jumlah & biaya per satuan (biaya outlet Anda)'],mtrhpp:['HPP Produk','HPP & margin per cup dari biaya outlet Anda'],mtrminta:['Minta Stok','Ajukan permintaan stok ke Pusat · lihat nota'],mtrlokal:['Beli Lokal','Catat pembelian bahan yang diizinkan Pusat'],mtrwaste:['Waste','Catat bahan terbuang di outlet Anda'],mtropname:['Opname','Ajukan hasil hitung stok fisik'],mtrroyalti:['Royalti','Tagihan royalti untuk outlet Anda'],mtrcrew:['Crew','Buat & kelola kode undangan crew'],mtrexpense:['Pengeluaran','Catat pengeluaran operasional outlet'],mitramgr:['Tetapkan Mitra','Jadikan user sebagai mitra & tetapkan outlet'],auditormgr:['Tetapkan Auditor','Jadikan user sebagai QA auditor & tetapkan outlet yang diaudit (bisa banyak)'],reqmitra:['Permintaan Stok','Penuhi stok · cetak permintaan & surat jalan · harga pasok'],opmitra:['Review Opname','Tinjau & setujui opname stok fisik mitra'],menuoff:['Brand & Menu Outlet','Pengaturan pusat untuk seluruh outlet'],picminta:['Minta Stok','Ajukan permintaan stok ke gudang Pusat'],usuldiskon:['Usul Diskon','Ajukan diskon untuk outlet Anda · perlu persetujuan owner sebelum berlaku'],mtrresep:['Lihat Resep','Takaran & komposisi tiap menu untuk produksi di outlet Anda']}[page]||[page,''];
     document.getElementById('pageTitle').textContent=t[0];document.getElementById('pageSub').textContent=t[1];
     if(this['render_'+page])return this['render_'+page]();
   },
@@ -1845,7 +1851,7 @@ const App={
         final_price:m.final_price==null?Number(m.price):Number(m.final_price),
         category:m.category, happy_hour:hhMap[m.id]||!!m.happy_hour
       }));
-      try{ const {data:_off}=await sb.from('outlet_menu_off').select('menu_id').eq('branch_id',branch);if(!stillHere())return; if(_off&&_off.length){ const _os=new Set(_off.map(r=>r.menu_id)); this.state.menu=this.state.menu.filter(m=>!_os.has(m.id)); } }catch(e){}
+      const {data:_off,error:_offError}=await sb.from('outlet_menu_off').select('menu_id').eq('branch_id',branch);if(!stillHere())return;if(_offError)throw _offError;const _os=new Set((_off||[]).map(r=>r.menu_id));this.state.menu=this.state.menu.filter(m=>!_os.has(m.id));
       this.state.recipes=await Data.recipes();if(!stillHere())return;
       // MITRA diblokir dari tabel `recipes` (lindungi takaran rahasia), sehingga
       // additional "Less sugar/No sugar" tak pernah muncul di POS mereka.
@@ -1878,12 +1884,15 @@ const App={
       await this._loadReceiptCfg();if(!stillHere())return; // v87: branding struk siap sebelum transaksi pertama (mirror offline)
       // v88: simpan alamat/kontak OUTLET INI untuk dicetak di struk (mirror localStorage utk offline)
       try{
+        this._posOutlet=null;
         const blist=await Data.branches();if(!stillHere())return;
         const bo=blist.find(b=>b.id===branch);
-        this._posOutlet={name:bo?bo.name:'',address:bo&&bo.receipt_address||'',phone:bo&&bo.receipt_phone||'',ig:bo&&bo.receipt_ig||''};
+        if(!bo?.brand_name)throw new Error('Brand outlet tidak ditemukan');
+        this._posOutlet={brand:bo?.brand_name||'SRUPUT',name:bo?bo.name:'',address:bo&&bo.receipt_address||'',phone:bo&&bo.receipt_phone||'',ig:bo&&bo.receipt_ig||''};
         try{localStorage.setItem('sruput_outlet_cfg_'+branch,JSON.stringify(this._posOutlet));}catch(e){}
       }catch(e){
         try{ const c=localStorage.getItem('sruput_outlet_cfg_'+branch); if(c)this._posOutlet=JSON.parse(c); }catch(e2){}
+        if(!this._posOutlet?.brand)throw new Error('Identitas brand outlet belum tersedia. Sambungkan kembali lalu muat ulang kasir.');
       }
       v.innerHTML=`
         ${channelPicker}${ownerPicker}${mitraPicker}
@@ -2475,8 +2484,9 @@ const App={
     if(d.payment==='cash'&&d.received!=null){
       pay=`<div class="r"><span>Tunai</span><span>${rp(d.received)}</span></div><div class="r"><span>Kembali</span><span>${rp(d.received-d.total)}</span></div>`;
     }
-    const rc=this._rcpt(); // v87: brand & footer global
-    const o=d.outlet||{}; // v88: alamat/kontak per-outlet
+    const rc={...this._rcpt()}; // copy: do not leak outlet brand across receipts
+    const o=d.outlet||{}; // per-outlet identity
+    if(o.brand){rc.brand=o.brand;rc.footer1='Terima kasih sudah berkunjung!';}
     const addr=o.address||rc.address||''; // alamat outlet menang; fallback ke alamat global lama
     // v89: cerminkan pengaturan ukuran/garis di pratinjau HTML (perkiraan; hasil thermal yang final)
     const hpx={1:15,2:21,3:28}[Number(rc.hdrSize)||2];
@@ -4978,7 +4988,7 @@ const App={
     try{
       const bl=await Data.branches();
       const b=(bl||[]).find(x=>x.id===bid);
-      if(b) return {name:b.name||'',address:b.receipt_address||'',phone:b.receipt_phone||'',ig:b.receipt_ig||''};
+      if(b) return {brand:b.brand_name||'SRUPUT',name:b.name||'',address:b.receipt_address||'',phone:b.receipt_phone||'',ig:b.receipt_ig||''};
     }catch(e){}
     try{ const c=localStorage.getItem('sruput_outlet_cfg_'+bid); if(c) return JSON.parse(c); }catch(e){}
     return {};
@@ -5074,7 +5084,9 @@ const App={
 
 
   /* ---------- RIWAYAT TRANSAKSI ---------- */
-  async render_history(){
+  async render_history(useCache=false){
+    const same=this._sessionGuard(),token=this._historyToken=(this._historyToken||0)+1;
+    const active=()=>same()&&this.state.page==='history'&&token===this._historyToken;
     const v=document.getElementById('view');v.innerHTML=this.loadingHTML('Memuat riwayat…');
     try{
       const isOwner=['owner','ai_review'].includes(CURRENT.role);
@@ -5090,8 +5102,11 @@ const App={
       this._hFrom=from; this._hTo=to;
       const fromISO=wibDayStartISO(from);
       const toISO=wibDayEndISO(to);
-      const sales=await Data.salesRange(branch,fromISO,toISO);
-      const menu=await Data.menuAll().catch(()=>[]);
+      const cacheKey=JSON.stringify([CURRENT.user?.id,CURRENT.sessionEpoch,branch,from,to]);
+      let sales;
+      if(useCache===true&&this._historyCache?.key===cacheKey){sales=this._historyCache.sales;}
+      else{sales=await Data.historySalesRange(branch,fromISO,toISO);if(!active())return;this._hPage=0;this._historyCache={key:cacheKey,sales};}
+      const menu=useCache===true?(this._hMenu||[]):await Data.menuAll().catch(()=>[]);if(!active())return;
       this._hMenu=menu;
       const bName=(id)=>{const b=branches.find(x=>x.id===id);return b?b.name:id;};
       const fld='padding:8px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
@@ -5100,11 +5115,14 @@ const App={
       const rev=sales.filter(s=>s.status!=='voided').reduce((a,s)=>a+Number(s.total),0);
       const todayWIB=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
       // FIX: render dibatasi agar DOM tidak berat saat ribuan transaksi, TAPI export tetap semua.
-      const DOM_CAP=500;
+      const DOM_CAP=200;
+      const pages=Math.max(1,Math.ceil(sales.length/DOM_CAP));
+      const page=Math.min(pages-1,Math.max(0,Number(this._hPage)||0));this._hPage=page;
+      const start=page*DOM_CAP;
       const tooMany=sales.length>DOM_CAP;
-      const salesToShow=tooMany?sales.slice(0,DOM_CAP):sales;
+      const salesToShow=sales.slice(start,start+DOM_CAP);
       let html=`
-        <div class="banner info"><span class="i">▦</span><div>${escHtml(scopeNote)} ${tooMany?`<b>${sales.length.toLocaleString('id-ID')}</b> transaksi dalam rentang — menampilkan ${DOM_CAP} terbaru di layar agar lancar. <b>Ekspor Excel memuat SEMUA ${sales.length.toLocaleString('id-ID')} transaksi.</b>`:'Klik baris untuk detail item.'}</div></div>
+        <div class="banner info"><span class="i">▦</span><div>${escHtml(scopeNote)} ${tooMany?`<b>${sales.length.toLocaleString('id-ID')}</b> transaksi dalam rentang — menampilkan ${start+1}–${Math.min(start+DOM_CAP,sales.length)}. Gunakan navigasi halaman untuk transaksi lama. <b>Ekspor Excel memuat SEMUA ${sales.length.toLocaleString('id-ID')} transaksi.</b>`:'Klik baris untuk detail item.'}</div></div>
         <div class="card pad" style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end">
           ${isOwner?`<div><label class="mini" style="display:block;margin-bottom:4px">Outlet</label>
             <select id="hBranch" onchange="App.applyHistoryFilter()" style="${fld}">
@@ -5114,6 +5132,7 @@ const App={
           <div><label class="mini" style="display:block;margin-bottom:4px">Dari</label><input id="hFrom" type="date" value="${from}" style="${fld}"></div>
           <div><label class="mini" style="display:block;margin-bottom:4px">Sampai</label><input id="hTo" type="date" value="${to}" style="${fld}"></div>
           <button class="btn btn-primary" style="width:auto;margin:0;padding:9px 16px" onclick="App.applyHistoryFilter()">Terapkan</button>
+          <button class="btn" style="width:auto" onclick="App.historyYearStart()">Sejak awal tahun</button>
           <button class="btn" style="width:auto;margin:0;padding:9px 16px;background:var(--good);color:#fff" id="expBtn" onclick="App.exportHistoryXlsx()">⬇ Ekspor Excel</button>
           <div style="flex:1"></div>
           <div class="mini">Total: <b>${sales.length.toLocaleString('id-ID')}</b> transaksi · <b>${this.rp(rev)}</b></div>
@@ -5123,7 +5142,7 @@ const App={
       }else{
         const rows=salesToShow.map(s=>{
           const tgl=fmtWIB(s.created_at);
-          const inv=s.invoice_no||'<span class="muted">(tanpa no)</span>';
+          const inv=escHtml(s.invoice_no)||'<span class="muted">(tanpa no)</span>';
           const payTag=this._salePayHTML(s);
           const isVoid=s.status==='voided';
           const saleDateWIB=new Date(s.created_at).toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
@@ -5138,11 +5157,11 @@ const App={
             <td class="right mini">${voidBtn||'▾'}</td></tr>
             <tr id="det_${escHtml(s.id)}" class="hidden"><td colspan="${escHtml(['owner','ai_review'].includes(CURRENT.role)?6:5)}" style="background:var(--surface-2);padding:0"><div id="detbox_${escHtml(s.id)}" class="pad mini">memuat…</div></td></tr>`;
         }).join('');
-        const moreNote=tooMany?`<tr><td colspan="${escHtml(['owner','ai_review'].includes(CURRENT.role)?6:5)}" class="mini" style="text-align:center;color:var(--muted);padding:14px">… ${(sales.length-DOM_CAP).toLocaleString('id-ID')} transaksi lainnya tidak ditampilkan di layar. Persempit rentang tanggal, atau gunakan <b>Ekspor Excel</b> untuk data lengkap.</td></tr>`:'';
+        const moreNote=tooMany?`<tr><td colspan="${escHtml(['owner','ai_review'].includes(CURRENT.role)?6:5)}" style="padding:14px"><div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" style="width:auto" ${page===0?'disabled':''} onclick="App.historyPage(0)">Terbaru</button><button class="btn" style="width:auto" ${page===0?'disabled':''} onclick="App.historyPage(${page-1})">Sebelumnya</button><span>Halaman ${page+1} / ${pages}</span><button class="btn" style="width:auto" ${page===pages-1?'disabled':''} onclick="App.historyPage(${page+1})">Berikutnya</button><button class="btn" style="width:auto" ${page===pages-1?'disabled':''} onclick="App.historyPage(${pages-1})">Terlama</button></div></td></tr>`:'';
         html+=`<div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Invoice</th><th>Waktu</th>${(['owner','ai_review'].includes(CURRENT.role)?'<th>Cabang</th>':'')}<th>Bayar</th><th class="right">Total</th><th></th></tr></thead><tbody>${rows}${moreNote}</tbody></table></div>`;
       }
       v.innerHTML=html+this._onlineTotalsHTML(sales);
-    }catch(e){ v.innerHTML=this.errHTML(e); }
+    }catch(e){if(active())v.innerHTML=this.errHTML(e);}
   },
   async voidSale(saleId){
     const reason=prompt('Batalkan transaksi ini?\n\nStok akan dikembalikan & transaksi tidak dihitung di laporan. Tindakan ini tercatat (siapa & kapan).\n\nAlasan pembatalan (opsional):');
@@ -5157,12 +5176,13 @@ const App={
     if(typeof XLSX==='undefined'){this.toast('Library Excel belum termuat, coba lagi','bad');return;}
     const btn=document.getElementById('expBtn');if(btn){btn.disabled=true;btn.textContent='Menyiapkan…';}
     try{
-      const isOwner=CURRENT.role==='owner';
+      const isOwner=['owner','ai_review'].includes(CURRENT.role);
       const selB=isOwner?(this._hBranch||'all'):null;
       const branch=isOwner?(selB==='all'?null:selB):CURRENT.branch;
       const from=this._hFrom, to=this._hTo;
       const fromISO=wibDayStartISO(from), toISO=wibDayEndISO(to); // v85
-      const sales=await Data.salesRange(branch,fromISO,toISO);
+      const key=JSON.stringify([CURRENT.user?.id,CURRENT.sessionEpoch,branch,from,to]);
+      const sales=this._historyCache?.key===key?this._historyCache.sales:await Data.historySalesRange(branch,fromISO,toISO);
       if(!sales.length){this.toast('Tidak ada transaksi untuk diekspor','bad');if(btn){btn.disabled=false;btn.textContent='⬇ Ekspor Excel';}return;}
       const menu=this._hMenu&&this._hMenu.length?this._hMenu:await Data.menu().catch(()=>[]);
       const menuName=id=>{const m=menu.find(x=>x.id===id);return m?m.name:id;};
@@ -5216,12 +5236,18 @@ const App={
     }catch(e){ this.toast((e&&e.message)||'Gagal ekspor','bad'); }
     finally{ if(btn){btn.disabled=false;btn.textContent='⬇ Ekspor Excel';} }
   },
+  historyPage(page){if(!Number.isInteger(page)||page<0)return;this._hPage=page;return this.render_history(true);},
+  historyYearStart(){
+    const today=todayWIBStr();this._hFrom=today.slice(0,4)+'-01-01';this._hTo=today;this._hPage=0;
+    const b=document.getElementById('hBranch');if(b)this._hBranch=b.value;
+    return this.render_history();
+  },
   applyHistoryFilter(){
-    this._hFrom=document.getElementById('hFrom').value;
-    this._hTo=document.getElementById('hTo').value;
-    const bSel=document.getElementById('hBranch');
-    if(bSel) this._hBranch=bSel.value;
-    this.render_history();
+    const from=document.getElementById('hFrom').value,to=document.getElementById('hTo').value;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(from)||!/^\d{4}-\d{2}-\d{2}$/.test(to)||from>to){this.toast('Isi rentang tanggal yang valid; tanggal awal tidak boleh melewati tanggal akhir.','bad');return;}
+    this._hFrom=from;this._hTo=to;this._hPage=0;
+    const bSel=document.getElementById('hBranch');if(bSel)this._hBranch=bSel.value;
+    return this.render_history();
   },
   async toggleSaleDetail(saleId){
     const row=document.getElementById('det_'+saleId);
@@ -9735,54 +9761,48 @@ const App={
   /* ===== OWNER: Menu Outlet (matikan/nyalakan menu per outlet mitra) — aditif ===== */
   async render_menuoff(){
     const v=document.getElementById('view');
-    if(CURRENT.role!=='owner'){ v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner</b></div>`; return; }
-    v.innerHTML=this.loadingHTML('Memuat…');
+    if(CURRENT.role!=='owner'){v.innerHTML='<div class="card pad">Hanya pusat / owner.</div>';return;}
+    const token=this._brandMenuToken=(this._brandMenuToken||0)+1,same=this._sessionGuard();
+    const active=()=>same()&&this.state.page==='menuoff'&&token===this._brandMenuToken;
+    v.innerHTML=this.loadingHTML('Memuat brand dan menu…');
     try{
-      const branches=await Data.branches();
-      const mitraOutlets=branches.filter(b=>b.owner_user_id);
-      if(!mitraOutlets.length){ v.innerHTML=`<div class="soon-box"><div class="ic">▦</div><b>Belum ada outlet mitra</b><div class="mini">Tetapkan outlet ke mitra dulu (menu Tetapkan Mitra).</div></div>`; return; }
-      let outlet=this.state.menuOffOutlet;
-      if(!outlet || !mitraOutlets.find(b=>b.id===outlet)) outlet=mitraOutlets[0].id;
-      this.state.menuOffOutlet=outlet;
-      const bname=id=>{const b=branches.find(x=>x.id===id); return b?b.name:id;};
-      const menu=await Data.menuAll();
-      const {data:offRows,error}=await sb.from('outlet_menu_off').select('menu_id').eq('branch_id',outlet);
-      if(error)throw error;
-      const offSet=new Set((offRows||[]).map(r=>r.menu_id));
-      const enabledCount=menu.filter(m=>!offSet.has(m.id)).length;
-      const fld='padding:8px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
-      const picker=mitraOutlets.length>1
-        ? `<select id="moOutlet" onchange="App.switchMenuOffOutlet(this.value)" style="${fld};font-weight:700">${mitraOutlets.map(b=>`<option value="${escHtml(b.id)}" ${escHtml(b.id===outlet?'selected':'')}>${escHtml(b.name)}</option>`).join('')}</select>`
-        : `<b>${escHtml(bname(outlet))}</b>`;
-      const cats={}; menu.forEach(m=>{ const c=m.category||'Lainnya'; (cats[c]=cats[c]||[]).push(m); });
-      let rows='';
-      Object.keys(cats).sort().forEach(cat=>{
-        rows+=`<tr><td colspan="2" style="background:var(--surface-2);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">${escHtml(cat)}</td></tr>`;
-        cats[cat].forEach(m=>{
-          const on=!offSet.has(m.id);
-          rows+=`<tr><td><b>${escHtml(m.name)}</b> <span class="mini muted">${this.rp(m.price)}</span></td><td style="text-align:right"><label style="display:inline-flex;align-items:center;gap:7px;cursor:pointer"><span class="mini ${escHtml(on?'':'muted')}" style="min-width:34px;display:inline-block;text-align:right">${escHtml(on?'nyala':'mati')}</span><input type="checkbox" ${escHtml(on?'checked':'')} onchange="App.toggleMenuOff(${jsArg(outlet)},${jsArg(escHtml(m.id))},this.checked,this)" style="width:19px;height:19px;cursor:pointer"></label></td></tr>`;
-        });
-      });
-      let html=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="mini" style="font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)">Outlet mitra</span>${picker}<span class="mini muted" id="moCount">${enabledCount}/${menu.length} menu nyala</span></div>
-        <div class="banner info"><span class="i">▦</span><div>Centang = menu boleh dijual di outlet ini; hilangkan centang untuk mematikannya (mis. paket mitra terbatas). Perubahan <b>langsung tersimpan</b> & berlaku di kasir outlet tersebut — kasir tak akan menampilkannya, dan penjualannya ditolak server.</div></div>
-        <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Menu</th><th style="text-align:right">Status di outlet ini</th></tr></thead><tbody>${rows}</tbody></table></div>`;
-      v.innerHTML=html;
-    }catch(e){ v.innerHTML=this.errHTML(e); }
+      const [branches,menus]=await Promise.all([Data.branches(),Data.menuAll()]);
+      if(!active())return;
+      const outlets=branches.filter(b=>b.type==='outlet');
+      if(!outlets.length){v.innerHTML='<div class="card pad">Buat outlet melalui menu Cabang terlebih dahulu.</div>';return;}
+      const bid=outlets.some(b=>b.id===this.state.menuOffOutlet)?this.state.menuOffOutlet:outlets[0].id;
+      const outlet=outlets.find(b=>b.id===bid);this.state.menuOffOutlet=bid;
+      const {data,error}=await sb.from('outlet_menu_off').select('menu_id').eq('branch_id',bid);if(error)throw error;
+      if(!active()||CURRENT.role!=='owner')return;
+      this._brandMenuVersion=outlet.menu_config_version;
+      const off=new Set((data||[]).map(r=>r.menu_id));
+      v.innerHTML=`<div class="card pad"><label>Outlet<select id="brandOutlet" onchange="App.switchMenuOffOutlet(this.value)">${outlets.map(b=>`<option value="${escHtml(b.id)}" ${b.id===bid?'selected':''}>${escHtml(b.name)}</option>`).join('')}</select></label>
+      <label>Nama brand<input id="outletBrand" maxlength="60" value="${escHtml(outlet.brand_name||'SRUPUT')}" placeholder="Contoh: NUKALA"></label>
+      <label><input type="checkbox" id="outletSelected" ${outlet.menu_selection_only?'checked':''}> Menu pilihan pusat — menu baru harus dipilih dahulu</label>
+      <p class="mini muted">Centang menu yang boleh dijual di outlet ini. Jika mode pilihan pusat dimatikan, menu yang dibuat berikutnya otomatis tersedia. Menu nonaktif global tetap tidak dapat dijual.</p>
+      <input id="brandMenuSearch" placeholder="Cari menu…" oninput="App.filterBrandMenus(this.value)">
+      <div style="max-height:55vh;overflow:auto">${menus.map(m=>`<label class="brand-menu-row" data-name="${escHtml(m.name.toLowerCase())}" style="display:flex;gap:12px;padding:10px;border-bottom:1px solid var(--line)"><input class="brand-menu-check" type="checkbox" value="${escHtml(m.id)}" ${off.has(m.id)?'':'checked'}><span><b>${escHtml(m.name)}</b> · ${this.rp(m.price)} ${m.active?'':'(nonaktif)'}<br><small>${escHtml(m.category||'Lainnya')}</small></span></label>`).join('')}</div>
+      <p class="mini">Untuk nama, harga, atau resep NUKALA yang berbeda, buat menu tersendiri di Menu · Resep, kemudian pilih hanya untuk outlet NUKALA. Mengedit menu yang sama akan mengubah semua outlet yang memakainya.</p>
+      <button id="saveBrandMenu" class="btn" onclick="App.saveBrandMenu()">Simpan brand & pilihan menu</button><p class="mini muted">Perubahan diterapkan bersama setelah disimpan. Muat ulang kasir outlet setelah pengaturan berubah.</p></div>`;
+    }catch(e){if(active())v.innerHTML=this.errHTML(e);}
   },
-  switchMenuOffOutlet(b){ this.state.menuOffOutlet=b; this.render_menuoff(); },
-  async toggleMenuOff(branch,menuId,checked,el){
-    if(el)el.disabled=true;
-    try{
-      if(checked){
-        const{error}=await sb.from('outlet_menu_off').delete().eq('branch_id',branch).eq('menu_id',menuId);
-        if(error)throw error;
-      } else {
-        const{error}=await sb.from('outlet_menu_off').insert({branch_id:branch,menu_id:menuId});
-        if(error)throw error;
-      }
-      if(el){ const lbl=el.parentElement.querySelector('span'); if(lbl){ lbl.textContent=checked?'nyala':'mati'; lbl.className='mini '+(checked?'':'muted'); lbl.style.minWidth='34px'; lbl.style.display='inline-block'; lbl.style.textAlign='right'; } el.disabled=false; }
-      this.toast(checked?'Menu dinyalakan untuk outlet ini':'Menu dimatikan untuk outlet ini','good');
-    }catch(e){ this.toast((e&&e.message)||'Gagal menyimpan','bad'); if(el){el.checked=!checked;el.disabled=false;} }
+  switchMenuOffOutlet(b){this.state.menuOffOutlet=b;this.render_menuoff();},
+  filterBrandMenus(q){document.querySelectorAll('.brand-menu-row').forEach(e=>e.style.display=e.dataset.name.includes(q.toLowerCase())?'flex':'none');},
+  async saveBrandMenu(){
+    if(CURRENT.role!=='owner'||this.state.page!=='menuoff'||this._savingBrandMenu)return;
+    const same=this._sessionGuard(),token=this._brandMenuToken,op={};const active=()=>same()&&this.state.page==='menuoff'&&token===this._brandMenuToken;
+    if(this._brandMenuVersion==null){this.toast('Patch database v20 belum dipasang. Hubungi pusat.','bad');return;}
+    const bid=this.state.menuOffOutlet,brand=document.getElementById('outletBrand').value.trim();
+    if(!brand||brand.length>60){this.toast('Isi nama brand, maksimal 60 karakter','bad');return;}
+    const ids=[...document.querySelectorAll('.brand-menu-check:checked')].map(e=>e.value);
+    if(!ids.length&&!confirm('Tidak ada menu terpilih. Outlet ini tidak dapat menjual menu apa pun. Simpan?'))return;
+    const selected=document.getElementById('outletSelected').checked;
+    this._savingBrandMenu=op;document.getElementById('saveBrandMenu').disabled=true;document.getElementById('brandOutlet').disabled=true;
+    try{const{error}=await sb.rpc('save_outlet_brand_menu_v2',{p_branch:bid,p_brand:brand,p_selected_only:selected,p_menu_ids:ids,p_expected_version:this._brandMenuVersion});if(error)throw error;
+      try{localStorage.removeItem('sruput_outlet_cfg_'+bid);}catch(e){}
+      if(active()){this.toast('Brand dan menu outlet tersimpan','good');await this.render_menuoff();}
+    }catch(e){if(active())this.toast(e.message||'Gagal menyimpan','bad');}
+    finally{if(this._savingBrandMenu===op)this._savingBrandMenu=false;if(active())for(const id of ['saveBrandMenu','brandOutlet']){const el=document.getElementById(id);if(el)el.disabled=false;}}
   },
   /* ===== MITRA: Pengeluaran (aditif) ===== */
   async render_mtrexpense(){
@@ -10839,7 +10859,7 @@ App.render_member_register=function(...a){const r=previousRegisterPage.apply(thi
 const portal={client:null,catalog:null,key:null,epoch:0,pending:null,tab:'home',account:null,
  async rpc(a,p={}){const{data,error}=await this.client.rpc('sruput_member_portal',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Halaman member belum diaktifkan. Silakan hubungi kasir.':error.message);if(data?.error)throw Error(data.error);return data;},
  nav(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Menu minuman'],['register','Daftar member'],[this.key?'account':'login',this.key?'Member saya':'Masuk member']].map(([id,title])=>`<button data-tab="${id}" aria-current="${this.tab===id}">${title}</button>`).join('')}</nav>`;},
- shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.17</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
+ shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.21</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
  policy(){const c=this.catalog?.policy;if(!c?.active)return '<p>Saldo poin member berlaku di seluruh cabang SRUPUT. Program poin belum aktif; pengumpulan dan penukaran mengikuti aktivasi owner.</p>';return `<p>${Number(c.min_spend)>0?'Setiap kelipatan <b>'+rp(c.min_spend)+'</b> setelah semua potongan':'Setiap transaksi berbayar'} mendapat <b>${E(c.earn_points)} poin</b>. Nilai penukaran 1 poin = <b>${rp(c.point_value)}</b>.</p><p><b>Poin dapat dikumpulkan dan digunakan di seluruh cabang SRUPUT.</b> Outlet asal pendaftaran tidak membatasi pemakaian poin.</p><p>Poin dapat digunakan untuk potongan harga atau menukar satu unit produk dasar. Topping tetap dibayar. Penukaran tidak digabung voucher atau promo lain.</p>`;},
  async start(){document.body.classList.add('mp-mode');document.title='Member SRUPUT';const root=document.createElement('div');root.id='memberPortal';document.body.append(root);this.shell('<div class="mp-card" role="status">Memuat halaman member…</div>');try{this.client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'sruput-member-public-v170'}});try{this.key=sessionStorage.getItem('sruput_member_access');}catch{}this.catalog=await this.rpc('catalog');this.render(this.key?'account':new URL(location.href).searchParams.has('invite')?'register':'login');}catch(e){this.shell(`<div class="mp-card"><h1>Belum dapat terhubung</h1><p role="alert">${E(e.message)}</p><button id="mp_retry">Coba lagi</button></div>`);$('mp_retry').onclick=()=>location.reload();}},
  async render(tab){const epoch=++this.epoch;this.tab=tab;
@@ -10898,7 +10918,7 @@ const labels={active:'Siap ditukar',cancelled:'Dibatalkan',used:'Sudah ditukar',
 const rawRender=P.render;P.category='';P.search='';P.rewards=null;P.claimOp=null;
 P.rewardRPC=async function(a,p={}){const{data,error}=await this.client.rpc('sruput_member_rewards',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Penukaran mandiri belum tersedia. Silakan hubungi kasir.':error.message);return data;};
 P.nav=function(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Tukar poin'],['vouchers','Voucher saya'],[this.key?'account':'login',this.key?'Akun saya':'Masuk / daftar']].map(([t,n])=>`<button data-tab="${t}" aria-current="${this.tab===t}">${n}</button>`).join('')}</nav>`;};
-P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Untuk menukar, tunjukkan kode voucher dan sebutkan nomor HP. Simpan kata sandi dan kode pemulihan untuk Anda sendiri.<br>SRUPUT OS · WF1.9.17</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
+P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Untuk menukar, tunjukkan kode voucher dan sebutkan nomor HP. Simpan kata sandi dan kode pemulihan untuk Anda sendiri.<br>SRUPUT OS · WF1.9.21</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
 P.terms=function(){return `<div class="mh-notice">Klaim dari rumah mencadangkan poin selama <b>7 hari</b>. Poin baru dipotong saat voucher ditukar di kasir. Batalkan voucher yang belum dipakai untuk melepas cadangan. Voucher kedaluwarsa otomatis melepas cadangan.</div><details><summary>Bagaimana cara mendapatkan poin?</summary>${this.policy()}<p>Poin masuk setelah pembayaran berhasil. Sebutkan nomor telepon member sebelum membayar; bonus undangan masuk saat pendaftaran dengan kode yang berlaku.</p></details><details><summary>Bagaimana menukar voucher di outlet?</summary><p>Tunjukkan kode voucher dan sebutkan nomor telepon member. Kasir menggunakan tombol Voucher produk member. Satu kode hanya bisa ditukar satu kali di seluruh booth, untuk satu produk dasar pada transaksi terpisah, tanpa minimum belanja tambahan. Topping dibeli terpisah. Tidak digabung dengan promo lain.</p></details><details><summary>Kalau stok habis atau aturan berubah?</summary><p>Voucher tidak memesan stok. Coba cabang lain, atau batalkan voucher sebelum dipakai. Bila harga produk atau kebutuhan poin berubah, kasir akan meminta pembatalan dan klaim ulang sesuai aturan terbaru. Tidak ada tambahan poin yang dipotong diam-diam.</p></details><details><summary>Apakah bisa ditukar di cabang mitra?</summary><p>Bisa. Penukaran di kasir otomatis tercatat pada transaksi member dan menjadi kandidat penggantian Dana Loyalty untuk outlet. Pencairan dana kepada mitra dikelola pusat.</p></details>`;};
 P.walletHTML=function(){const a=this.account,r=this.rewards,c=this.catalog?.policy;return `<div class="mh-wallet"><span class="mh-label">${a?'POIN TERSEDIA':'SATU NOMOR, BANYAK BENEFIT'}</span><span class="mh-seal">✦</span><strong>${a?num(r?.available??a.balance):'✦'} <small>${a?'poin':'SRUPUT MEMBER'}</small></strong><p>${a&&c?.active?'Setara hingga '+rp(Math.max(0,Number(r?.available??a.balance))*Number(c.point_value)):'Daftar, belanja, lalu pilih produk favoritmu.'}</p><div class="mh-line"><span>${a?'Total saldo: '+num(r?.balance??a.balance):'Berlaku di semua cabang'}</span><b>${a?'Dicadangkan: '+num(r?.held||0):'100% untuk member'}</b></div><p>${a?'Poin dicadangkan belum dipotong dari saldo total.':'Aturan perolehan dan penukaran mengikuti program aktif.'}</p></div>`;};
 P.productsHTML=function(limit=0){const c=this.catalog.policy,available=Number(this.rewards?.available??this.account?.balance??0);let rows=this.catalog.menu.filter(m=>(!this.category||(m.category||'Lainnya')===this.category)&&(!this.search||m.name.toLowerCase().includes(this.search.toLowerCase())));if(limit)rows=rows.slice(0,limit);return rows.map(m=>{const cost=Math.ceil(Number(m.price)/Number(c?.point_value||1)),enough=available>=cost,progress=Math.max(0,Math.min(100,Math.round(available/cost*100)));return `<article class="mh-product" data-product="${E(m.id)}"><div class="mh-icon" aria-hidden="true">♨</div><span class="mh-label" style="font-size:9px;color:#a0836c">${E(m.category||'SRUPUT FAVORITES')}</span><h3>${E(m.name)}</h3><span class="mh-price">Harga dasar ${rp(m.price)}</span><div class="mh-cost">${num(cost)} <small>poin / produk</small></div>${this.key?`<div class="mh-progress" aria-label="Progres poin ${progress}%"><span style="width:${progress}%"></span></div><p class="mh-muted" style="margin:8px 0 0">${enough?'Poin cukup untuk diklaim':'Kurang '+num(cost-available)+' poin'}</p>`:'<p class="mh-muted">1 produk dasar · tanpa topping</p>'}<button data-claim="${E(m.id)}" ${!c?.active||(this.key&&!enough)?'disabled':''}>${!c?.active?'Program belum aktif':this.key?(enough?'Klaim voucher produk':'Kumpulkan poin lagi'):'Masuk untuk klaim'}</button></article>`;}).join('')||'<div class="mh-empty">Produk tidak ditemukan. Coba kata lain.</div>';};
