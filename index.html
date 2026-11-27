@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="sruput-build" content="2026-11-27-workflow-v1.9.22">
+<meta name="sruput-build" content="2026-11-27-workflow-v1.9.23">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <title>SRUPUT OS v2.0 — Tersambung Supabase</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -357,7 +357,7 @@ body.mp-mode > :not(#memberPortal){display:none!important}
     <div class="topbar">
       <div><h2 id="pageTitle">Dashboard</h2><div class="sub" id="pageSub"></div></div>
       <div class="grow"></div>
-      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">27.11.2026 · WF1.9.22</span>
+      <span class="build-label" id="buildLabel" title="Versi aplikasi yang sedang dibuka">27.11.2026 · WF1.9.23</span>
       <span class="badge alert hidden" id="alertBadge"></span>
     </div>
     <div class="content" id="view"></div>
@@ -4556,7 +4556,7 @@ const App={
         <td>${b.type==='outlet'
           ? (b.royalty_exempt===true
               ? `<button class="btn" style="padding:5px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.toggleBranchExempt(${jsArg(b.id)},false)" title="Klik untuk jadikan outlet mitra (kena royalti)"><span class="tag" style="font-size:10px">Pusat · bebas royalti</span></button>`
-              : `<button class="btn" style="padding:5px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.toggleBranchExempt(${jsArg(b.id)},true)" title="Klik untuk jadikan pusat (bebas royalti)"><span class="tag warn" style="font-size:10px">Mitra · kena 6%</span></button>`)
+              : `<button class="btn" style="padding:5px 10px;font-size:11px;background:var(--surface-2);border:1px solid var(--line-strong)" onclick="App.toggleBranchExempt(${jsArg(b.id)},true)" title="Klik untuk jadikan pusat (bebas royalti)"><span class="tag warn" style="font-size:10px">Mitra · royalti</span></button>`)
           : '<span class="mini muted">—</span>'}</td>
         <td>${b.owner_user_id?'<span class="mini muted">—</span>':(b.is_supply_source
           ? `<span class="tag warn" style="font-size:10px">★ Sumber</span>`
@@ -4586,13 +4586,13 @@ const App={
         </div>
         <div class="sec-title">Jaringan Cabang</div>
         <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>ID</th><th>Nama</th><th>Kota</th><th>Alamat struk</th><th>Telp/WA</th><th>IG</th><th>Tipe</th><th>Royalti</th><th>Gudang sumber</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
-        <div class="mini" style="margin-top:10px;opacity:.75">Ketuk label di kolom Royalti untuk mengubah status: <b>Pusat</b> (outlet milikmu, bebas royalti) atau <b>Mitra</b> (kena royalti 6% dari omzet bersih). Lihat tagihan di menu Royalti Mitra.<br><b>Gudang sumber</b>: cabang tempat stok dipotong saat memenuhi permintaan stok mitra/PIC — hanya satu, harus milik Pusat. Klik "Jadikan sumber" untuk memindahkan.<br><b>Alamat struk / Telp / IG</b> dicetak otomatis di struk sesuai outlet tempat transaksi — ubah lalu tekan Simpan. Brand & ucapan footer seragam, diatur di Setting → Tampilan Struk.</div>`;
+        <div class="mini" style="margin-top:10px;opacity:.75">Ketuk label di kolom Royalti untuk mengubah status: <b>Pusat</b> (outlet milikmu, bebas royalti) atau <b>Mitra</b> (royalti persentase atau nominal tetap, diatur per outlet). Lihat tagihan di menu Royalti Mitra.<br><b>Gudang sumber</b>: cabang tempat stok dipotong saat memenuhi permintaan stok mitra/PIC — hanya satu, harus milik Pusat. Klik "Jadikan sumber" untuk memindahkan.<br><b>Alamat struk / Telp / IG</b> dicetak otomatis di struk sesuai outlet tempat transaksi — ubah lalu tekan Simpan. Brand & ucapan footer seragam, diatur di Setting → Tampilan Struk.</div>`;
     }catch(e){ v.innerHTML=this.errHTML(e); }
   },
   async toggleBranchExempt(id,exempt){
     try{
       await Data.setBranchRoyaltyExempt(id,exempt);
-      this.toast(exempt?'Cabang ditandai sebagai Pusat (bebas royalti)':'Cabang ditandai sebagai Mitra (kena 6%)','good');
+      this.toast(exempt?'Cabang ditandai sebagai Pusat (bebas royalti)':'Cabang ditandai sebagai Mitra (royalti diatur per outlet)','good');
       this.render_branches();
     }catch(e){ this.toast((e&&e.message)||'Gagal mengubah status royalti','bad'); }
   },
@@ -7013,126 +7013,87 @@ const App={
     catch(e){ if(active())this.toast((e&&e.message)||'Gagal menghapus','bad'); }
   },
   /* ---------- ROYALTI MITRA (owner) ---------- */
+  royaltyRuleLabel(r){
+    if(!r||!r.calculation_mode)return 'Skema lama';
+    return r.calculation_mode==='fixed'?'Nominal tetap '+this.rp(r.fixed_amount)+'/bulan':Number(r.percent)+'% omzet bersih';
+  },
+  royaltyPreview(r,net){
+    if(!r?.active||!['percent','fixed'].includes(r.calculation_mode))return null;
+    return r.calculation_mode==='fixed'?Number(r.fixed_amount):Math.round((Number(net)*Number(r.percent)/100+Number.EPSILON)*100)/100;
+  },
   async render_royalty(){
-    const v=document.getElementById('view');
-    if(!['owner','ai_review'].includes(CURRENT.role)){v.innerHTML=`<div class="soon-box"><div class="ic">🔒</div><b>Hanya Owner</b></div>`;return;}
+    const v=document.getElementById('view'),session=this._sessionGuard(),op={};this._royaltyRender=op;
+    const active=()=>session()&&this.state.page==='royalty'&&this._royaltyRender===op;
+    if(!['owner','ai_review'].includes(CURRENT.role)){v.innerHTML='<div class="card pad">Hanya owner yang dapat mengatur royalti.</div>';return;}
     v.innerHTML=this.loadingHTML('Memuat royalti…');
     try{
-      const now=new Date();
-      const curMonth=wibISODate(now).slice(0,7);
-      const month=this._royaltyMonth||curMonth;
-      const [y,m]=month.split('-').map(Number);
-      const dim=new Date(y,m,0).getDate();
-      const pStart=month+'-01';
-      const pEnd=month+'-'+String(dim).padStart(2,'0');
-      const nextMonth=(m===12)?((y+1)+'-01'):(y+'-'+String(m+1).padStart(2,'0'));
-      const monStartISO=wibDayStartISO(pStart);
-      const monEndISO=new Date(Date.parse(wibDayStartISO(nextMonth+'-01'))-1).toISOString();
-      const monthLabel=new Date(y,m-1,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
-      const branches=await Data.branches();
-      const mitraOutlets=branches.filter(b=>b.owner_user_id);
-      const [rsRes,rcRes]=await Promise.all([
-        sb.from('royalty_settings').select('branch_id,percent,active'),
-        sb.from('royalty_charges').select('id,branch_id,period_start,period_end,net_sales,percent,amount,status,payment_note').eq('period_start',pStart).eq('period_end',pEnd)
+      const curMonth=wibISODate(new Date()).slice(0,7),month=this._royaltyMonth||curMonth;
+      if(!/^\d{4}-(0[1-9]|1[0-2])$/.test(month))throw Error('Bulan tidak valid.');
+      const [y,m]=month.split('-').map(Number),pStart=month+'-01',pEnd=month+'-'+String(new Date(Date.UTC(y,m,0)).getUTCDate()).padStart(2,'0');
+      const next=new Date(Date.UTC(y,m,1)).toISOString().slice(0,10);
+      const label=new Date(y,m-1,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'});
+      const [branches,settings,charges,sales]=await Promise.all([
+        Data.branches(),
+        Data._pages(()=>sb.from('royalty_settings').select('branch_id,percent,active,calculation_mode,fixed_amount,config_version').order('branch_id')),
+        Data._pages(()=>sb.from('royalty_charges').select('id,branch_id,period_start,period_end,net_sales,percent,amount,status,payment_note,calculation_mode,fixed_amount').eq('period_start',pStart).eq('period_end',pEnd).order('id')),
+        Data.historySalesRange(null,wibDayStartISO(pStart),wibDayEndISO(pEnd))
       ]);
-      if(rsRes.error)throw rsRes.error;if(rcRes.error)throw rcRes.error;
-      const rsmap={}; (rsRes.data||[]).forEach(x=>{ if(x.active) rsmap[x.branch_id]=Number(x.percent); });
-      const rcmap={}; (rcRes.data||[]).forEach(x=>{ rcmap[x.branch_id]=x; });
-      const sales=(await Data.salesRange(null,monStartISO,monEndISO)).filter(s=>s.status==='active');
-      const rev={}; const cogsM={}; sales.forEach(s=>{ rev[s.branch_id]=(rev[s.branch_id]||0)+Number(s.total); cogsM[s.branch_id]=(cogsM[s.branch_id]||0)+Number(s.cogs||0); });
-      const fld='padding:8px 11px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2)';
-      let html=`<div class="card pad" style="margin-bottom:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end"><div><label class="mini" style="display:block;margin-bottom:4px">Bulan</label><input id="royMonth" type="month" value="${month}" max="${curMonth}" onchange="App.switchRoyaltyMonth(this.value)" style="${fld}"></div></div>
-        <div class="banner info"><span class="i">◈</span><div>Royalti outlet <b>mitra</b>, bulan <b>${monthLabel}</b>. <b>Terbitkan tagihan</b> → tersimpan & muncul di aplikasi mitra. Tarif per outlet diatur di bawah. Dihitung dari omzet bersih (setelah diskon, tanpa transaksi batal).</div></div>`;
-      if(!mitraOutlets.length){
-        html+=`<div class="soon-box"><div class="ic">◈</div><b>Belum ada outlet mitra</b><div class="mini">Tetapkan outlet ke mitra dulu (menu Tetapkan Mitra).</div></div>`;
-        v.innerHTML=html; return;
-      }
-      const isOwner=CURRENT.role==='owner';
-      html+=`<div class="sec-title">Atur minimum royalti per outlet</div>
-        <div class="banner info"><span class="i">◈</span><div>Owner menentukan nominal sendiri untuk setiap outlet. Isi <b>0 untuk tanpa minimum</b>; kosong berarti belum diatur. Nominal tidak diisi otomatis saat mengganti paket. Minimum berlaku untuk periode yang dimulai setelah 3 bulan dari tanggal gabung. Tagihan memakai nilai yang lebih besar antara tarif × omzet dan minimum aktif.</div></div>`;
-      html+=mitraOutlets.map(o=>`<div class="card pad" style="margin-bottom:12px">
-        <b>${escHtml(o.name)}</b><div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:10px">
-        <div><label for="pkg_${escHtml(o.id)}" class="mini">Paket</label><select id="pkg_${escHtml(o.id)}" ${isOwner?'':'disabled'} style="display:block;${fld}"><option value="">Belum diatur</option>${['Start','Growth','Signature'].map(pk=>`<option value="${pk}" ${o.package_type===pk?'selected':''}>${pk}</option>`).join('')}</select></div>
-        <div><label for="join_${escHtml(o.id)}" class="mini">Tanggal gabung</label><input id="join_${escHtml(o.id)}" type="date" value="${escHtml(o.join_date||'')}" ${isOwner?'':'disabled'} style="display:block;${fld}"></div>
-        <div><label for="min_${escHtml(o.id)}" class="mini">Minimum royalti (Rp/bulan)</label><input id="min_${escHtml(o.id)}" type="number" step="1" min="0" max="9007199254740991" value="${o.min_royalty!=null?Number(o.min_royalty):''}" placeholder="Masukkan nominal sendiri" ${isOwner?'':'disabled'} style="display:block;width:230px;max-width:100%;${fld}"></div>
-        ${isOwner?`<button class="btn btn-primary" id="minSave_${escHtml(o.id)}" style="width:auto" onclick="App.doSavePackageMin(${jsArg(o.id)})">Simpan minimum outlet</button>`:''}</div>
-        <div class="mini muted" style="margin-top:10px">Pengaturan tersimpan: <b>${o.min_royalty==null?'belum diatur':Number(o.min_royalty)===0?'tanpa minimum (Rp0)':this.rp(o.min_royalty)+'/bulan'}</b>. Tagihan yang sudah terbit tetap; tagihan belum lunas dapat dihitung ulang melalui Terbitkan ulang. Tagihan lunas terkunci.</div>
-        </div>`).join('');
-      html+=`<div class="sec-title">Tagihan per outlet mitra · ${monthLabel}</div>`;
-      html+=mitraOutlets.map(o=>{
-        const pct=rsmap[o.id];
-        const charge=rcmap[o.id];
-        const previewNet=rev[o.id]||0;
-        const marginPct=previewNet>0?Math.round((previewNet-(cogsM[o.id]||0))/previewNet*100):0;
-        const net=charge?Number(charge.net_sales):previewNet;
-        const usedPct=charge?Number(charge.percent):pct;
-        const percentAmount=pct!=null?Math.round((previewNet*pct/100+Number.EPSILON)*100)/100:null;
-        const minActive=this.royaltyMinimumActive(o.join_date,pStart);
-        const previewAmount=percentAmount==null?null:Math.max(percentAmount,minActive&&o.min_royalty!=null?Number(o.min_royalty):0);
-        const amt=charge?Number(charge.amount):previewAmount;
-        let badge;
-        if(charge){ badge=charge.status==='paid'?'<span class="tag ok">Lunas</span>':'<span class="tag warn">Belum bayar</span>'; }
-        else { badge='<span class="tag" style="background:var(--surface-2);color:var(--muted);border:1px solid var(--line)">Belum terbit</span>'; }
-        const canIssue=pct!=null && !(charge&&charge.status==='paid');
-        let action=`<button class="btn ${escHtml(canIssue?'btn-primary':'')}" ${escHtml(canIssue?'':'disabled')} style="width:auto;padding:8px 14px${escHtml(canIssue?'':';opacity:.45')}" onclick="App.doIssueRoyalty(${jsArg(o.id)},${jsArg(pStart)},${jsArg(pEnd)},this)">${escHtml(charge?'Terbitkan ulang':'Terbitkan tagihan')}</button>`;
-        if(charge && charge.status!=='paid'){ action+=` <button class="btn" style="width:auto;padding:8px 14px;background:var(--good);color:#fff" onclick="App.doVerifyRoyalty(${jsArg(charge.id)},this)">Verifikasi bayar</button>`; }
-        const pkg=o.package_type, join=o.join_date, minR=o.min_royalty!=null?Number(o.min_royalty):null;
-        let minInfo='';
-        if(o.owner_user_id){
-          if(!join){ minInfo=`<div class="mini" style="color:var(--gold);margin-top:4px">Tanggal gabung belum diatur — minimum royalti belum berlaku. Atur di atas.</div>`; }
-          else {
-            const pctAmt=percentAmount;
-            const willUseMin=!charge&&minActive&&minR!=null&&pctAmt!=null&&minR>pctAmt;
-            minInfo=`<div class="mini muted" style="margin-top:4px">Paket <b>${escHtml(pkg||'belum diatur')}</b> · gabung ${join} · minimum ${minR!=null?this.rp(minR):'—'} ${(minActive?'<span class="tag ok" style="font-size:10px">aktif</span>':'<span class="tag" style="font-size:10px;background:var(--surface-2)">belum (masa 3 bln)</span>')}${(willUseMin?' → <b style="color:var(--accent)">tagihan pakai minimum</b>':'')}</div>`;
-          }
-        }
-        return `<div class="card pad" style="margin-bottom:12px">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">
-            <div><b>${escHtml(o.name)}</b> ${badge}<div class="mini muted">omzet bersih ${this.rp(net)} · margin <b>${marginPct}%</b> · tarif ${usedPct!=null?usedPct+'%':'<span style="color:var(--bad)">belum diatur</span>'}</div>${minInfo}</div>
-            <div style="text-align:right"><div class="mono" style="font-size:18px;font-weight:700;color:${escHtml(amt?'var(--accent)':'var(--muted)')}">${amt!=null?this.rp(amt):'—'}</div></div>
-          </div>
-          ${charge&&charge.payment_note?`<div class="mini muted" style="margin-top:4px">Catatan: ${escHtml(charge.payment_note)}</div>`:''}
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">${action}</div>
-          ${pct==null?`<div class="mini" style="color:var(--bad);margin-top:6px">Atur tarif royalti outlet ini di bawah sebelum menerbitkan.</div>`:''}
-        </div>`;
+      if(!active())return;
+      const outlets=branches.filter(b=>b.owner_user_id&&b.type==='outlet'),rs=new Map(settings.map(s=>[s.branch_id,s])),rc=new Map(charges.map(c=>[c.branch_id,c]));
+      this._royaltySettings=rs;
+      const revenue=new Map();sales.filter(s=>s.status==='active').forEach(s=>revenue.set(s.branch_id,(revenue.get(s.branch_id)||0)+Number(s.total)));
+      const owner=CURRENT.role==='owner',fld='display:block;padding:10px;border:1px solid var(--line-strong);border-radius:9px;background:var(--surface-2);width:100%;min-height:44px';
+      let h=`<div class="card pad"><label>Bulan tagihan<input type="month" id="royMonth" value="${month}" max="${curMonth}" onchange="App.switchRoyaltyMonth(this.value)" style="${fld};max-width:220px"></label></div>
+      <div class="banner info"><div>Pilih <b>satu metode royalti</b> untuk setiap outlet: persentase omzet bersih setelah diskon (transaksi batal tidak dihitung), atau nominal tetap per bulan. Kedua metode tidak digabung. Nominal tetap berlaku penuh untuk bulan yang dipilih; tanpa prorata atau minimum tiga bulan.</div></div>
+      <div class="sec-title">Pengaturan royalti per outlet</div>`;
+      if(!outlets.length)h+='<div class="card pad">Belum ada outlet mitra.</div>';
+      h+=outlets.map(o=>{const r=rs.get(o.id),mode=r?.calculation_mode||'',value=mode==='fixed'?r.fixed_amount:mode==='percent'?r.percent:'';
+        return `<div class="card pad" style="margin-bottom:12px"><b>${escHtml(o.name)}</b><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:12px">
+        <label>Paket<select id="pkg_${escHtml(o.id)}" style="${fld}" ${owner?'':'disabled'}><option value="">Belum diatur</option>${['Start','Growth','Signature'].map(p=>`<option ${o.package_type===p?'selected':''}>${p}</option>`).join('')}</select></label>
+        <label>Tanggal gabung<input id="join_${escHtml(o.id)}" type="date" value="${escHtml(o.join_date||'')}" style="${fld}" ${owner?'':'disabled'}></label>
+        <label>Metode royalti<select id="royMode_${escHtml(o.id)}" style="${fld}" ${owner?'':'disabled'} onchange="App.royaltyModeChanged(${jsArg(o.id)})"><option value="">Pilih satu metode</option><option value="percent" ${mode==='percent'?'selected':''}>Persentase omzet (%)</option><option value="fixed" ${mode==='fixed'?'selected':''}>Nominal tetap (Rp/bulan)</option></select></label>
+        <label><span id="royValueLabel_${escHtml(o.id)}">${mode==='fixed'?'Nominal tetap (Rp/bulan)':mode==='percent'?'Persentase (%)':'Pilih metode dahulu'}</span><input id="royValue_${escHtml(o.id)}" type="number" min="0" max="${mode==='fixed'?'9007199254740991':'100'}" step="${mode==='fixed'?'1':'0.01'}" value="${value}" style="${fld}" ${owner&&mode?'':'disabled'}></label></div>
+        ${owner?`<button class="btn btn-primary" style="width:auto;margin-top:12px" id="roySave_${escHtml(o.id)}" onclick="App.doSaveRoyaltyChoice(${jsArg(o.id)})">Simpan royalti outlet</button>`:''}
+        <div class="mini muted" style="margin-top:10px">Tersimpan: <b>${r?.calculation_mode?escHtml(this.royaltyRuleLabel(r))+(r.active?'':' · nonaktif'):'belum memilih metode'+(r?' (tarif lama '+Number(r.percent)+'%)':'')}</b>. ${o.min_royalty!=null?'Minimum lama '+this.rp(o.min_royalty)+' tidak dipakai pada metode baru. ':''}Menyimpan pengaturan tidak mengubah tagihan yang sudah terbit. Tagihan belum lunas dapat dihitung ulang; tagihan lunas terkunci.</div></div>`;
       }).join('');
-      html+=`<div class="sec-title" style="margin-top:24px">Tarif royalti per outlet</div>
-        <div class="banner info"><span class="i">%</span><div>Persentase royalti dari omzet bersih, per outlet mitra. Dipakai saat menerbitkan tagihan.</div></div>
-        <div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Outlet mitra</th><th class="right">Tarif (%)</th></tr></thead><tbody>
-        ${mitraOutlets.map(o=>`<tr><td><b>${escHtml(o.name)}</b></td><td class="right"><input id="rs_${escHtml(o.id)}" type="number" step="0.1" min="0" max="100" value="${rsmap[o.id]!=null?rsmap[o.id]:''}" placeholder="—" style="width:110px;text-align:right;padding:7px 9px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface-2)"></td></tr>`).join('')}
-        </tbody></table><button class="btn btn-primary" style="width:auto;margin-top:14px;padding:10px 18px" id="rsSaveBtn" onclick="App.doSaveRoyaltySettings()">Simpan tarif</button></div>
-`;
-      v.innerHTML=html;
-    }catch(e){ v.innerHTML=this.errHTML(e); }
+      h+=`<div class="sec-title">Tagihan per outlet · ${label}</div>`;
+      h+=outlets.map(o=>{const r=rs.get(o.id),c=rc.get(o.id),net=revenue.get(o.id)||0,preview=this.royaltyPreview(r,net),amount=c?Number(c.amount):preview,canIssue=owner&&preview!=null&&c?.status!=='paid';
+        return `<div class="card pad" style="margin-bottom:12px"><b>${escHtml(o.name)}</b> <span class="tag ${c?.status==='paid'?'ok':'warn'}">${c?c.status==='paid'?'Lunas':'Belum bayar':'Belum terbit'}</span>
+        <div class="mini muted" style="margin-top:8px">Omzet bersih ${this.rp(c?c.net_sales:net)} · ${c?escHtml(this.royaltyRuleLabel(c)):preview!=null?escHtml(this.royaltyRuleLabel(r)):'Pilih dan simpan metode dahulu'}</div>
+        <div class="mono" style="font-size:22px;font-weight:700;margin:8px 0">${amount==null?'—':this.rp(amount)}</div>
+        ${c?.payment_note?`<div class="mini">Catatan: ${escHtml(c.payment_note)}</div>`:''}
+        ${c&&c.status!=='paid'&&preview!=null?`<div class="mini muted">Jika diterbitkan ulang: ${this.rp(preview)} · ${escHtml(this.royaltyRuleLabel(r))}.</div>`:''}
+        ${owner?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"><button class="btn btn-primary" style="width:auto" ${canIssue?'':'disabled'} onclick="App.doIssueRoyalty(${jsArg(o.id)},${jsArg(pStart)},${jsArg(pEnd)},this)">${c?'Terbitkan ulang':'Terbitkan tagihan'}</button>${c&&c.status!=='paid'?`<button class="btn" style="width:auto" onclick="App.doVerifyRoyalty(${jsArg(c.id)},this)">Verifikasi bayar</button>`:''}</div>`:''}</div>`;
+      }).join('');
+      v.innerHTML=h;
+    }catch(e){if(active())v.innerHTML=this.errHTML(e);}
   },
-  switchRoyaltyMonth(mn){ this._royaltyMonth=mn; this.render_royalty(); },
-  royaltyMinimumActive(join,periodStart){
-    if(!/^\d{4}-\d{2}-\d{2}$/.test(join||'')||!/^\d{4}-\d{2}-\d{2}$/.test(periodStart||''))return false;
-    const [y,m,d]=join.split('-').map(Number),target=new Date(Date.UTC(y,m-1+3,1));
-    const last=new Date(Date.UTC(target.getUTCFullYear(),target.getUTCMonth()+1,0)).getUTCDate();
-    target.setUTCDate(Math.min(d,last));
-    return periodStart>=target.toISOString().slice(0,10);
+  switchRoyaltyMonth(month){this._royaltyMonth=month;this.render_royalty();},
+  royaltyModeChanged(id){
+    const mode=document.getElementById('royMode_'+id).value,input=document.getElementById('royValue_'+id),label=document.getElementById('royValueLabel_'+id),saved=this._royaltySettings?.get(id);
+    input.disabled=CURRENT.role!=='owner'||!mode;input.value=saved?.calculation_mode===mode?(mode==='fixed'?saved.fixed_amount:saved.percent):'';
+    input.max=mode==='fixed'?'9007199254740991':'100';input.step=mode==='fixed'?'1':'0.01';
+    label.textContent=mode==='fixed'?'Nominal tetap (Rp/bulan)':mode==='percent'?'Persentase (%)':'Pilih metode dahulu';
   },
-  async doSavePackageMin(id){
-    if(CURRENT.role!=='owner'){this.toast('Hanya owner yang dapat mengubah minimum royalti.','bad');return;}
-    if(!id)return;
-    const btn=document.getElementById('minSave_'+id);if(btn?.disabled)return;
+  async doSaveRoyaltyChoice(id){
+    if(CURRENT.role!=='owner'){this.toast('Hanya owner yang dapat mengatur royalti.','bad');return;}
+    if(this._royaltySaving)return;
+    const session=this._sessionGuard(),render=this._royaltyRender,active=()=>session()&&this.state.page==='royalty'&&render===this._royaltyRender,btn=document.getElementById('roySave_'+id);
     try{
-      const pkg=document.getElementById('pkg_'+id).value||null;
-      const joinEl=document.getElementById('join_'+id),join=joinEl.value||null;
-      const raw=document.getElementById('min_'+id).value.trim();
-      const min=raw===''?null:Number(raw);
-      if(min!=null&&(!Number.isSafeInteger(min)||min<0))throw Error('Minimum harus berupa rupiah bulat, minimal 0.');
-      if(min>0&&!join)throw Error('Isi tanggal gabung agar minimum dapat berlaku setelah 3 bulan.');
-      if(!joinEl.checkValidity())throw Error('Tanggal gabung tidak valid.');
-      if(btn){btn.disabled=true;btn.textContent='Menyimpan…';}
-      const{data,error}=await sb.from('branches').update({package_type:pkg,join_date:join,min_royalty:min}).eq('id',id).select('id').single();
-      if(error)throw error;if(!data)throw Error('Pengaturan tidak tersimpan. Periksa izin owner dan outlet.');
-      this.toast('Minimum royalti outlet tersimpan.','good');await this.render_royalty();
-    }catch(e){this.toast((e&&e.message)||'Gagal menyimpan minimum royalti.','bad');}
-    finally{if(btn){btn.disabled=false;btn.textContent='Simpan minimum outlet';}}
+      const mode=document.getElementById('royMode_'+id).value,raw=document.getElementById('royValue_'+id).value.trim(),value=Number(raw),join=document.getElementById('join_'+id);
+      if(!['percent','fixed'].includes(mode)||!raw||!Number.isFinite(value)||value<0)throw Error('Pilih satu metode dan isi nilainya, minimal 0.');
+      if(mode==='percent'&&(value>100||Math.abs(value*100-Math.round(value*100))>1e-8))throw Error('Persentase 0–100, maksimal 2 desimal.');
+      if(mode==='fixed'&&!Number.isSafeInteger(value))throw Error('Nominal harus berupa rupiah bulat, minimal 0.');
+      if(!join.checkValidity())throw Error('Tanggal gabung tidak valid.');
+      this._royaltySaving=true;if(btn){btn.disabled=true;btn.textContent='Menyimpan…';}
+      const {error}=await sb.rpc('save_royalty_choice',{p_branch:id,p_mode:mode,p_value:value,p_package:document.getElementById('pkg_'+id).value||null,p_join:join.value||null,p_expected_version:Number(this._royaltySettings?.get(id)?.config_version||0)});
+      if(error)throw error;if(active()){this.toast('Royalti outlet tersimpan.','good');await this.render_royalty();}
+    }catch(e){if(active())this.toast(e.message||'Gagal menyimpan royalti.','bad');}
+    finally{this._royaltySaving=false;if(btn){btn.disabled=false;btn.textContent='Simpan royalti outlet';}}
   },
   async doIssueRoyalty(branch,pStart,pEnd,btn){
+    if(CURRENT.role!=='owner')return;
+    if(btn?.disabled)return;
     if(!confirm('Terbitkan tagihan royalti untuk periode ini? Tagihan akan tersimpan & muncul di aplikasi mitra.'))return;
     if(btn){btn.disabled=true;btn.textContent='…';}
     try{
@@ -7142,6 +7103,8 @@ const App={
     }catch(e){ this.toast((e&&e.message)||'Gagal menerbitkan','bad'); if(btn){btn.disabled=false;btn.textContent='Terbitkan tagihan';} }
   },
   async doVerifyRoyalty(chargeId,btn){
+    if(CURRENT.role!=='owner')return;
+    if(btn?.disabled)return;
     if(!confirm('Verifikasi bahwa royalti periode ini SUDAH DIBAYAR mitra? Tandai lunas.'))return;
     if(btn){btn.disabled=true;btn.textContent='…';}
     try{
@@ -7149,17 +7112,6 @@ const App={
       if(error)throw error;
       this.toast('Pembayaran royalti diverifikasi lunas','good'); this.render_royalty();
     }catch(e){ this.toast((e&&e.message)||'Gagal verifikasi','bad'); if(btn){btn.disabled=false;btn.textContent='Verifikasi bayar';} }
-  },
-  async doSaveRoyaltySettings(){
-    const inputs=document.querySelectorAll('[id^="rs_"]'); const rows=[];
-    inputs.forEach(el=>{ const val=(el.value||'').trim(); if(val==='')return; const n=Number(val); if(!Number.isFinite(n)||n<0||n>100)return; rows.push({branch_id:el.id.slice(3),percent:n,active:true}); });
-    if(!rows.length){ this.toast('Tidak ada tarif untuk disimpan','bad'); return; }
-    const btn=document.getElementById('rsSaveBtn'); if(btn){btn.disabled=true;btn.textContent='Menyimpan…';}
-    try{
-      const{error}=await sb.from('royalty_settings').upsert(rows,{onConflict:'branch_id'});
-      if(error)throw error;
-      this.toast(rows.length+' tarif tersimpan','good'); this.render_royalty();
-    }catch(e){ this.toast((e&&e.message)||'Gagal menyimpan','bad'); if(btn){btn.disabled=false;btn.textContent='Simpan tarif';} }
   },
   async render_kpi(){
     const v=document.getElementById('view');
@@ -7667,7 +7619,7 @@ const App={
     key.push(['Waste',rp(waste)+' ('+N(cur.waste_count)+'×)']);
     key.push(['Pengeluaran',rp(exp)]);
     (cur.pay||[]).forEach(pm=>key.push(['Bayar '+pm.payment, pm.n+'× · '+rp(pm.amt)]));
-    if(type==='monthly'){ key.push(['Laba kotor − pengeluaran',rp(gp-exp)]); if(cur.is_mitra)key.push(['Royalti berjalan ('+cur.royalty_pct+'%)',rp(N(cur.royalty_est))]); key.push(['Rasio HPP',omz>0?(cogs/omz*100).toFixed(1)+'%':'—']); key.push(['Rasio waste',omz>0?(waste/omz*100).toFixed(1)+'%':'—']); key.push(['Rasio pengeluaran',omz>0?(exp/omz*100).toFixed(1)+'%':'—']); }
+    if(type==='monthly'){ key.push(['Laba kotor − pengeluaran',rp(gp-exp)]); if(cur.is_mitra)key.push([cur.royalty_mode==='fixed'?'Estimasi royalti nominal tetap':'Estimasi royalti persentase',cur.royalty_est==null?'Belum tersedia untuk periode ini':rp(N(cur.royalty_est))]); key.push(['Rasio HPP',omz>0?(cogs/omz*100).toFixed(1)+'%':'—']); key.push(['Rasio waste',omz>0?(waste/omz*100).toFixed(1)+'%':'—']); key.push(['Rasio pengeluaran',omz>0?(exp/omz*100).toFixed(1)+'%':'—']); }
     // RULES
     if(g!=null&&g<=-15) alerts.push({level:'High',text:'Omzet turun '+Math.abs(g).toFixed(1)+'% vs periode sebelumnya ('+rp(N(prev.omzet))+' → '+rp(omz)+')',action:'Bandingkan per hari & per jam; cek apakah ada hari tutup, stok kosong, atau kompetitor baru.'});
     else if(g!=null&&g>=15) alerts.push({level:'Low',text:'Omzet NAIK '+g.toFixed(1)+'% vs periode sebelumnya — momentum positif',action:'Pastikan stok bahan top menu aman agar momentum tidak putus.'});
@@ -9136,14 +9088,14 @@ const App={
     const v=document.getElementById('view'); v.innerHTML=this.loadingHTML('Memuat…');
     try{
       if(!await this.mtrEnsure()){ v.innerHTML=this.mtrNoOutlet(); return; }
-      const{data,error}=await sb.from('royalty_charges').select('period_start,period_end,net_sales,percent,amount,status,payment_note').eq('branch_id',this.state.mtrOutlet).order('period_start',{ascending:false}).limit(40);
+      const{data,error}=await sb.from('royalty_charges').select('period_start,period_end,net_sales,percent,amount,status,payment_note,calculation_mode,fixed_amount').eq('branch_id',this.state.mtrOutlet).order('period_start',{ascending:false}).limit(40);
       if(error)throw error;
       let html=this.mtrBar();
       html+=`<div class="banner info"><span class="i">◈</span><div>Tagihan royalti untuk outlet ini beserta status pembayaran.</div></div>`;
       if(!data||!data.length){ html+=`<div class="soon-box"><div class="ic">◈</div><b>Belum ada tagihan</b><div class="mini">Tagihan royalti dari Pusat akan tampil di sini.</div></div>`; v.innerHTML=html; return; }
       const unpaid=data.filter(r=>r.status==='unpaid').reduce((a,r)=>a+Number(r.amount||0),0);
       if(unpaid>0) html+=`<div class="grid-stats" style="margin-bottom:16px">${this.stat('Total belum dibayar',this.rp(unpaid),'segera bayar','var(--bad)')}</div>`;
-      const rows=data.map(r=>`<tr><td>${fmtDateWIB(r.period_start+'T12:00:00')} – ${fmtDateWIB(r.period_end+'T12:00:00')}</td><td class="right mono">${this.rp(r.net_sales)}</td><td class="right mono">${Number(r.percent)}%</td><td class="right mono"><b>${this.rp(r.amount)}</b></td><td>${this.mtrBadge(r.status)}</td></tr>`).join('');
+      const rows=data.map(r=>`<tr><td>${fmtDateWIB(r.period_start+'T12:00:00')} – ${fmtDateWIB(r.period_end+'T12:00:00')}</td><td class="right mono">${this.rp(r.net_sales)}</td><td class="right mono">${escHtml(this.royaltyRuleLabel(r))}</td><td class="right mono"><b>${this.rp(r.amount)}</b></td><td>${this.mtrBadge(r.status)}</td></tr>`).join('');
       html+=`<div class="card pad" style="overflow-x:auto"><table><thead><tr><th>Periode</th><th class="right">Omzet bersih</th><th class="right">Tarif</th><th class="right">Tagihan</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></div>`;
       v.innerHTML=html;
     }catch(e){ v.innerHTML=this.errHTML(e); }
@@ -10859,7 +10811,7 @@ App.render_member_register=function(...a){const r=previousRegisterPage.apply(thi
 const portal={client:null,catalog:null,key:null,epoch:0,pending:null,tab:'home',account:null,
  async rpc(a,p={}){const{data,error}=await this.client.rpc('sruput_member_portal',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Halaman member belum diaktifkan. Silakan hubungi kasir.':error.message);if(data?.error)throw Error(data.error);return data;},
  nav(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Menu minuman'],['register','Daftar member'],[this.key?'account':'login',this.key?'Member saya':'Masuk member']].map(([id,title])=>`<button data-tab="${id}" aria-current="${this.tab===id}">${title}</button>`).join('')}</nav>`;},
- shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.22</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
+ shell(content){$('memberPortal').innerHTML=`<header class="mp-head"><div><div class="mp-brand">sruput<span>MEMBER · SRUPUT dulu biar fokus.</span></div></div><span>Membership</span></header>${this.nav()}<main>${content}</main><footer>Gunakan nomor telepon saat bertransaksi di kasir. Kode akses pribadi hanya untuk membuka halaman member; simpan sendiri dan jangan bagikan. Gunakan nomor telepon milik Anda. Jika memerlukan pemulihan akses, minta bantuan owner untuk verifikasi.<br>SRUPUT OS · WF1.9.23</footer>`;for(const n of $('memberPortal').querySelectorAll('[data-tab]'))n.onclick=()=>this.render(n.dataset.tab);},
  policy(){const c=this.catalog?.policy;if(!c?.active)return '<p>Saldo poin member berlaku di seluruh cabang SRUPUT. Program poin belum aktif; pengumpulan dan penukaran mengikuti aktivasi owner.</p>';return `<p>${Number(c.min_spend)>0?'Setiap kelipatan <b>'+rp(c.min_spend)+'</b> setelah semua potongan':'Setiap transaksi berbayar'} mendapat <b>${E(c.earn_points)} poin</b>. Nilai penukaran 1 poin = <b>${rp(c.point_value)}</b>.</p><p><b>Poin dapat dikumpulkan dan digunakan di seluruh cabang SRUPUT.</b> Outlet asal pendaftaran tidak membatasi pemakaian poin.</p><p>Poin dapat digunakan untuk potongan harga atau menukar satu unit produk dasar. Topping tetap dibayar. Penukaran tidak digabung voucher atau promo lain.</p>`;},
  async start(){document.body.classList.add('mp-mode');document.title='Member SRUPUT';const root=document.createElement('div');root.id='memberPortal';document.body.append(root);this.shell('<div class="mp-card" role="status">Memuat halaman member…</div>');try{this.client=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'sruput-member-public-v170'}});try{this.key=sessionStorage.getItem('sruput_member_access');}catch{}this.catalog=await this.rpc('catalog');this.render(this.key?'account':new URL(location.href).searchParams.has('invite')?'register':'login');}catch(e){this.shell(`<div class="mp-card"><h1>Belum dapat terhubung</h1><p role="alert">${E(e.message)}</p><button id="mp_retry">Coba lagi</button></div>`);$('mp_retry').onclick=()=>location.reload();}},
  async render(tab){const epoch=++this.epoch;this.tab=tab;
@@ -10918,7 +10870,7 @@ const labels={active:'Siap ditukar',cancelled:'Dibatalkan',used:'Sudah ditukar',
 const rawRender=P.render;P.category='';P.search='';P.rewards=null;P.claimOp=null;
 P.rewardRPC=async function(a,p={}){const{data,error}=await this.client.rpc('sruput_member_rewards',{p_action:a,p_data:p});if(error)throw Error(['PGRST202','42883'].includes(error.code)?'Penukaran mandiri belum tersedia. Silakan hubungi kasir.':error.message);return data;};
 P.nav=function(){return `<nav class="mp-nav" aria-label="Menu member">${[['home','Beranda'],['menu','Tukar poin'],['vouchers','Voucher saya'],[this.key?'account':'login',this.key?'Akun saya':'Masuk / daftar']].map(([t,n])=>`<button data-tab="${t}" aria-current="${this.tab===t}">${n}</button>`).join('')}</nav>`;};
-P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Untuk menukar, tunjukkan kode voucher dan sebutkan nomor HP. Simpan kata sandi dan kode pemulihan untuk Anda sendiri.<br>SRUPUT OS · WF1.9.22</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
+P.shell=function(content){$('memberPortal').innerHTML=`<header class="mp-head"><div class="mp-brand">sruput<span>SMALL SIPS. MORE REWARDS.</span></div><div class="mh-pill">✦ MEMBER CLUB</div></header>${this.nav()}<main class="mh-head-space">${content}</main><footer><b>SRUPUT Member</b> · Poin dan voucher produk berlaku di seluruh cabang SRUPUT.<br>Ketersediaan produk mengikuti stok outlet. Untuk menukar, tunjukkan kode voucher dan sebutkan nomor HP. Simpan kata sandi dan kode pemulihan untuk Anda sendiri.<br>SRUPUT OS · WF1.9.23</footer>`;for(const b of $('memberPortal').querySelectorAll('[data-tab]'))b.onclick=()=>this.render(b.dataset.tab);};
 P.terms=function(){return `<div class="mh-notice">Klaim dari rumah mencadangkan poin selama <b>7 hari</b>. Poin baru dipotong saat voucher ditukar di kasir. Batalkan voucher yang belum dipakai untuk melepas cadangan. Voucher kedaluwarsa otomatis melepas cadangan.</div><details><summary>Bagaimana cara mendapatkan poin?</summary>${this.policy()}<p>Poin masuk setelah pembayaran berhasil. Sebutkan nomor telepon member sebelum membayar; bonus undangan masuk saat pendaftaran dengan kode yang berlaku.</p></details><details><summary>Bagaimana menukar voucher di outlet?</summary><p>Tunjukkan kode voucher dan sebutkan nomor telepon member. Kasir menggunakan tombol Voucher produk member. Satu kode hanya bisa ditukar satu kali di seluruh booth, untuk satu produk dasar pada transaksi terpisah, tanpa minimum belanja tambahan. Topping dibeli terpisah. Tidak digabung dengan promo lain.</p></details><details><summary>Kalau stok habis atau aturan berubah?</summary><p>Voucher tidak memesan stok. Coba cabang lain, atau batalkan voucher sebelum dipakai. Bila harga produk atau kebutuhan poin berubah, kasir akan meminta pembatalan dan klaim ulang sesuai aturan terbaru. Tidak ada tambahan poin yang dipotong diam-diam.</p></details><details><summary>Apakah bisa ditukar di cabang mitra?</summary><p>Bisa. Penukaran di kasir otomatis tercatat pada transaksi member dan menjadi kandidat penggantian Dana Loyalty untuk outlet. Pencairan dana kepada mitra dikelola pusat.</p></details>`;};
 P.walletHTML=function(){const a=this.account,r=this.rewards,c=this.catalog?.policy;return `<div class="mh-wallet"><span class="mh-label">${a?'POIN TERSEDIA':'SATU NOMOR, BANYAK BENEFIT'}</span><span class="mh-seal">✦</span><strong>${a?num(r?.available??a.balance):'✦'} <small>${a?'poin':'SRUPUT MEMBER'}</small></strong><p>${a&&c?.active?'Setara hingga '+rp(Math.max(0,Number(r?.available??a.balance))*Number(c.point_value)):'Daftar, belanja, lalu pilih produk favoritmu.'}</p><div class="mh-line"><span>${a?'Total saldo: '+num(r?.balance??a.balance):'Berlaku di semua cabang'}</span><b>${a?'Dicadangkan: '+num(r?.held||0):'100% untuk member'}</b></div><p>${a?'Poin dicadangkan belum dipotong dari saldo total.':'Aturan perolehan dan penukaran mengikuti program aktif.'}</p></div>`;};
 P.productsHTML=function(limit=0){const c=this.catalog.policy,available=Number(this.rewards?.available??this.account?.balance??0);let rows=this.catalog.menu.filter(m=>(!this.category||(m.category||'Lainnya')===this.category)&&(!this.search||m.name.toLowerCase().includes(this.search.toLowerCase())));if(limit)rows=rows.slice(0,limit);return rows.map(m=>{const cost=Math.ceil(Number(m.price)/Number(c?.point_value||1)),enough=available>=cost,progress=Math.max(0,Math.min(100,Math.round(available/cost*100)));return `<article class="mh-product" data-product="${E(m.id)}"><div class="mh-icon" aria-hidden="true">♨</div><span class="mh-label" style="font-size:9px;color:#a0836c">${E(m.category||'SRUPUT FAVORITES')}</span><h3>${E(m.name)}</h3><span class="mh-price">Harga dasar ${rp(m.price)}</span><div class="mh-cost">${num(cost)} <small>poin / produk</small></div>${this.key?`<div class="mh-progress" aria-label="Progres poin ${progress}%"><span style="width:${progress}%"></span></div><p class="mh-muted" style="margin:8px 0 0">${enough?'Poin cukup untuk diklaim':'Kurang '+num(cost-available)+' poin'}</p>`:'<p class="mh-muted">1 produk dasar · tanpa topping</p>'}<button data-claim="${E(m.id)}" ${!c?.active||(this.key&&!enough)?'disabled':''}>${!c?.active?'Program belum aktif':this.key?(enough?'Klaim voucher produk':'Kumpulkan poin lagi'):'Masuk untuk klaim'}</button></article>`;}).join('')||'<div class="mh-empty">Produk tidak ditemukan. Coba kata lain.</div>';};
